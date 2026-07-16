@@ -29,13 +29,9 @@
     <uses-permission android:name="com.samsung.android.providers.context.permission.WRITE_USE_APP_FEATURE_SURVEY"/>
     <uses-permission android:name="com.samsung.android.sdk.look.permission.READ"/>
     
-    <!-- Optional hardware features for TV and Android Auto compatibility -->
+    <!-- Optional features -->
     <uses-feature android:name="android.hardware.bluetooth" android:required="false"/>
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false"/>
-    <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
-    <uses-feature android:name="android.software.leanback" android:required="false"/>
-    <uses-feature android:name="android.hardware.type.television" android:required="false"/>
-    <uses-feature android:name="android.hardware.type.automotive" android:required="false"/>
     
     <!-- Queries for url_launcher package -->
     <queries>
@@ -52,9 +48,8 @@
     
     <application
         android:label="musly"
-        android:name=".MuslyApplication"
+        android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config">
         
@@ -86,21 +81,24 @@
             </intent-filter>
         </activity>
         
-        <!-- audio_service: media browser service used by Android Auto and
-             the media notification. Hosts a headless Flutter engine when the
-             car connects while the app UI is closed. -->
+        <!-- Media Browser Service for Android Auto -->
         <service
-            android:name="com.ryanheise.audioservice.AudioService"
+            android:name=".MusicService"
             android:exported="true"
+            android:enabled="true"
+            android:stopWithTask="false"
             android:foregroundServiceType="mediaPlayback">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService"/>
             </intent-filter>
+            <meta-data
+                android:name="android.media.browse.SEARCH_SUPPORTED"
+                android:value="true"/>
         </service>
-
-        <!-- audio_service media button receiver -->
+        
+        <!-- Media Button Receiver -->
         <receiver
-            android:name="com.ryanheise.audioservice.MediaButtonReceiver"
+            android:name="androidx.media.session.MediaButtonReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON"/>
@@ -116,7 +114,7 @@
         <!-- Google Cast Options Provider -->
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-            android:value="com.felnanuke.google_cast.GoogleCastOptionsProvider" />
+            android:value="com.ijlaal.google_cast.GoogleCastOptionsProvider" />
 
         <!-- Media notification service for cast controls -->
         <service
