@@ -1,17 +1,18 @@
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=JvHzI9AZM0A">
+    <img src="https://github.com/ijlaal1610/Musly/blob/master/musly-promo.gif?raw=true" alt="Musly App Demo" width="100%">
+  </a>
+</div>
 
 # Musly - Best Free Navidrome Client & Subsonic Music Player
 
 **Musly** is a free **Navidrome client** and **Subsonic music player** with a beautiful modern and elegant interface. Stream your self-hosted music library from Navidrome, Subsonic, or Airsonic servers on Android, iOS, Windows, Linux, and macOS.
 
-## GitAds Sponsored
-[![Sponsored by GitAds](https://gitads.dev/v1/ad-serve?source=dddevid/musly@github)](https://gitads.dev/v1/ad-track?source=dddevid/musly@github)
+🌐 **Website:** [musly.app](https://musly.app)
 
-
-🌐 **Website:** [musly.devid.lol](https://musly.devid.lol/)
-
-[![Download Musly](https://img.shields.io/badge/Download-Musly%20v2.0.1-fa243c?style=for-the-badge&logo=github)](https://github.com/dddevid/Musly/releases/tag/v2.0.1)
-[![Navidrome Client](https://img.shields.io/badge/Navidrome-Client-blue?style=for-the-badge)](https://musly.devid.lol)
-[![Subsonic Client](https://img.shields.io/badge/Subsonic-Client-green?style=for-the-badge)](https://musly.devid.lol)
+[![Download Musly](https://img.shields.io/badge/Download-Musly%20v2.0.1-fa243c?style=for-the-badge&logo=github)](https://github.com/ijlaal1610/Musly/releases/tag/v2.0.1)
+[![Navidrome Client](https://img.shields.io/badge/Navidrome-Client-blue?style=for-the-badge)](https://musly.app)
+[![Subsonic Client](https://img.shields.io/badge/Subsonic-Client-green?style=for-the-badge)](https://musly.app)
 [![Crowdin](https://badges.crowdin.net/musly/localized.svg)](https://crowdin.com/project/musly)
 
 ## Why Choose Musly as Your Navidrome Client?
@@ -19,7 +20,7 @@
 Musly is the best Navidrome client for 2026, offering:
 
 - 🎵 **Music Streaming** - Stream music from your Subsonic server
-- 🎨 **Modern Music Player UI** - Beautiful, modern interface inspired by Musly
+- 🎨 **Modern Music Player UI** - Beautiful, modern interface
 - 🌙 **Dark/Light Mode** - Automatic theme switching based on system settings
 - 📱 **Responsive Design** - Works on phones and tablets
 - 🔍 **Search** - Search artists, albums, and songs
@@ -29,7 +30,7 @@ Musly is the best Navidrome client for 2026, offering:
 - 🔀 **Shuffle & Repeat** - Control playback modes
 - 📊 **Queue Management** - View and modify the play queue
 - 🚗 **Android Auto** - Full support for Android Auto integration
-- 🎧 **Synced Lyrics** - Time-synced lyrics with Musly–style desktop fullscreen mode
+- 🎧 **Synced Lyrics** - Time-synced lyrics with desktop fullscreen mode
 - 🧠 **Smart Recommendations** - Personalized mixes, "For You" feed, and listening history
 
 ### Prerequisites
@@ -49,7 +50,7 @@ Musly is a cross-platform application that supports:
 ## Download Musly - Best Navidrome Client
 
 You can download the latest release of Musly (the best Navidrome client):
-👉 **[Download Musly v2.0.1 - Navidrome Client](https://github.com/dddevid/Musly/releases/tag/v2.0.1)**
+👉 **[Download Musly v2.0.1 - Navidrome Client](https://github.com/ijlaal1610/Musly/releases/tag/v2.0.1)**
 
 ## Community
 
@@ -65,7 +66,7 @@ Join our Discord community to get support, share feedback, and connect with othe
 
 ## 💖 Support the Project
 
-If you find Musly useful and want to support its development
+If you find Musly useful and want to support its development:
 
 | Network | Address |
 | :--- | :--- |
@@ -78,7 +79,7 @@ If you find Musly useful and want to support its development
 ## Roadmap
 
 - [x] **Custom PC UX**: Basic desktop layout with persistent sidebar and dedicated player bar.
-- [x] **Desktop Lyrics & Fullscreen Mode**: Musly–style synced lyrics view with smooth scrolling and true fullscreen on desktop.
+- [x] **Desktop Lyrics & Fullscreen Mode**: Synced lyrics view with smooth scrolling and true fullscreen on desktop.
 - [-] **CarPlay Support**: Add a dedicated browsing interface for CarPlay. (Carplay needs a signed certificate, until the app is available on the appstore carplay wont work, only if selfsigned and with carplay enabled in the code)
 - [X] **Local Playlists**: Manage playlists locally, independent of the Subsonic server.
 - [ ] **Custom API Server**: Support for custom backend implementations and extended APIs.
@@ -94,6 +95,16 @@ If you find Musly useful and want to support its development
   <img src="screenshots/Screenshot_20260101_024751.png" width="200" />
   <img src="screenshots/Screenshot_20260101_024803.png" width="200" />
 </p>
+
+## Star History
+
+<a href="https://www.star-history.com/?repos=ijlaal1610%2Fmusly&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/image?repos=ijlaal1610/musly&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/image?repos=ijlaal1610/musly&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/image?repos=ijlaal1610/musly&type=date&legend=top-left" />
+ </picture>
+</a>
 
 ## Installation
 
@@ -143,12 +154,13 @@ This project is open source and available under the **Creative Commons Attributi
 ---
 
 <div align="center">
-  <sub>Made with <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2764.svg" width="14" height="14" alt="❤️"> in Italy <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f1ee-1f1f9.svg" width="14" height="14" alt="🇮🇹"> by an Albanian developer <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f1e6-1f1f1.svg" width="14" height="14" alt="🇦🇱"></sub>
+  <sub>Made with <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/2764.svg" width="14" height="14" alt="❤️"> by Ijlaal Akhtar</sub>
 </div>
 
 <br/>
 
 <div align="center">
 
-[![Views](https://komarev.com/ghpvc/?username=dddevid-Musly&label=VIEWS&color=fa243c&style=for-the-badge)](https://github.com/dddevid/Musly)
+[![Views](https://komarev.com/ghpvc/?username=ijlaal1610-Musly&label=VIEWS&color=fa243c&style=for-the-badge)](https://github.com/ijlaal1610/Musly)
 
+</div>

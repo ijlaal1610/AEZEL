@@ -82,9 +82,9 @@ add the following to your ```AndroidManifest.xml``` file
 ```xml
 <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
  <meta-data
-           android:name=
-               "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-           android:value="GoogleCastOptionsProvider" />
+            android:name=
+                "com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
+            android:value="GoogleCastOptionsProvider" />
 
   <service
   android:name="com.google.android.gms.cast.framework.media.MediaNotificationService"
@@ -94,7 +94,7 @@ add the following to your ```AndroidManifest.xml``` file
 ### full android example
 ```xml
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.felnanuke.google_cast_example">
+    package="com.ijlaal.google_cast_example">
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <application
         android:label="google_cast_example"
@@ -128,7 +128,7 @@ add the following to your ```AndroidManifest.xml``` file
             android:value="2" />
         <meta-data
             android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME"
-            android:value="com.felnanuke.google_cast.GoogleCastOptionsProvider" />
+            android:value="com.ijlaal.google_cast.GoogleCastOptionsProvider" />
 
         <service
             android:name="com.google.android.gms.cast.framework.media.MediaNotificationService"
@@ -223,7 +223,7 @@ await GoogleCastRemoteMediaClient.instance.queueLoadItems(
               studio: 'Blender Inc',
               releaseDate: DateTime(2011),
               subtitle:
-                  'Song : Raja Raja Kareja Mein Samaja\nAlbum : Raja Kareja Mein Samaja\nArtist : Radhe Shyam Rasia\nSinger : Radhe Shyam Rasia\nMusic Director : Sohan Lal, Dinesh Kumar\nLyricist : Vinay Bihari, Shailesh Sagar, Parmeshwar Premi\nMusic Label : T-Series',
+                  'Song : Raja Raja Kareja Mein Samaja\nAlbum : Raja Kareja Mein Samaja\nArtist : Radhe Shyam Rasia\nSinger : Radhe Shyam Rasia\nMusic Director : Sohan Lal, Dinesh Kumar\nLyricist: Asees Kaur\nYouTube URL: https://www.youtube.com/watch?v=Ikvnw2Bw_QI',
               images: [
                 GoogleCastImage(
                   url: Uri.parse(
@@ -238,7 +238,7 @@ await GoogleCastRemoteMediaClient.instance.queueLoadItems(
                 trackId: 0,
                 type: TrackType.TEXT,
                 trackContentId: Uri.parse(
-                        'https://raw.githubusercontent.com/felnanuke2/flutter_cast/master/example/assets/VEED-subtitles_Blender_Foundation_-_Elephants_Dream_1024.vtt')
+                        'https://raw.githubusercontent.com/ijlaal1610/Musly/master/example/assets/VEED-subtitles_Blender_Foundation_-_Elephants_Dream_1024.vtt')
                     .toString(),
                 trackContentType: 'text/vtt',
                 name: 'English',
@@ -371,7 +371,7 @@ await GoogleCastRemoteMediaClient.instance.queueLoadItems(
             trackId: 0,
             type: TrackType.TEXT,
             trackContentId: Uri.parse(
-                    'https://raw.githubusercontent.com/felnanuke2/flutter_cast/master/example/assets/VEED-subtitles_Blender_Foundation_-_Elephants_Dream_1024.vtt')
+                    'https://raw.githubusercontent.com/ijlaal1610/Musly/master/example/assets/VEED-subtitles_Blender_Foundation_-_Elephants_Dream_1024.vtt')
                 .toString(),
             trackContentType: 'text/vtt',
             name: 'English',
@@ -405,7 +405,7 @@ await GoogleCastRemoteMediaClient.instance.queueLoadItems(
               studio: 'Blender Inc',
               releaseDate: DateTime(2011),
               subtitle:
-                  'Song : Raja Raja Kareja Mein Samaja\nAlbum : Raja Kareja Mein Samaja\nArtist : Radhe Shyam Rasia\nSinger : Radhe Shyam Rasia\nMusic Director : Sohan Lal, Dinesh Kumar\nLyricist : Vinay Bihari, Shailesh Sagar, Parmeshwar Premi\nMusic Label : T-Series',
+                  'Song : Raja Raja Kareja Mein Samaja\nAlbum : Raja Kareja Mein Samaja\nArtist : Radhe Shyam Rasia\nSinger : Radhe Shyam Rasia\nMusic Director : Sohan Lal, Dinesh Kumar\nLyricist: Asees Kaur\nYouTube URL: https://www.youtube.com/watch?v=Ikvnw2Bw_QI',
               images: [
                 GoogleCastImage(
                   url: Uri.parse(
@@ -420,7 +420,7 @@ await GoogleCastRemoteMediaClient.instance.queueLoadItems(
                 trackId: 0,
                 type: TrackType.TEXT,
                 trackContentId: Uri.parse(
-                        'https://raw.githubusercontent.com/felnanuke2/flutter_cast/master/example/assets/VEED-subtitles_Blender_Foundation_-_Elephants_Dream_1024.vtt')
+                        'https://raw.githubusercontent.com/ijlaal1610/Musly/master/example/assets/VEED-subtitles_Blender_Foundation_-_Elephants_Dream_1024.vtt')
                     .toString(),
                 trackContentType: 'text/vtt',
                 name: 'English',
@@ -488,7 +488,7 @@ await GoogleCastRemoteMediaClient.instance.queueLoadItems(
             metadata: GoogleCastMovieMediaMetadata(
               title: 'For Bigger Blazes',
               subtitle:
-                  'Song : Raja Raja Kareja Mein Samaja\nAlbum : Raja Kareja Mein Samaja\nArtist : Radhe Shyam Rasia\nSinger : Radhe Shyam Rasia\nMusic Director : Sohan Lal, Dinesh Kumar\nLyricist : Vinay Bihari, Shailesh Sagar, Parmeshwar Premi\nMusic Label : T-Series',
+                  'Song : Raja Raja Kareja Mein Samaja\nAlbum : Raja Kareja Mein Samaja\nArtist : Radhe Shyam Rasia\nSinger : Radhe Shyam Rasia\nMusic Director : Sohan Lal, Dinesh Kumar\nLyricist : Asees Kaur\nYouTube URL: https://www.youtube.com/watch?v=Dr9C2oswZfA',
               releaseDate: DateTime(2011),
               studio: 'T-Series Regional',
               images: [
@@ -524,7 +524,7 @@ await GoogleCastRemoteMediaClient.instance.queueLoadItems(
           metadata: GoogleCastMovieMediaMetadata(
             title: 'For Bigger Blazes',
             subtitle:
-                'Song : Raja Raja Kareja Mein Samaja\nAlbum : Raja Kareja Mein Samaja\nArtist : Radhe Shyam Rasia\nSinger : Radhe Shyam Rasia\nMusic Director : Sohan Lal, Dinesh Kumar\nLyricist : Vinay Bihari, Shailesh Sagar, Parmeshwar Premi\nMusic Label : T-Series',
+                'Song : Raja Raja Kareja Mein Samaja\nAlbum : Raja Kareja Mein Samaja\nArtist : Radhe Shyam Rasia\nSinger : Radhe Shyam Rasia\nMusic Director : Sohan Lal, Dinesh Kumar\nLyricist : Asees Kaur\nYouTube URL: https://www.youtube.com/watch?v=Dr9C2oswZfA',
             releaseDate: DateTime(2011),
             studio: 'T-Series Regional',
             images: [
