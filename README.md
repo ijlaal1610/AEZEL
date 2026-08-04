@@ -176,6 +176,7 @@ AEZEL/
 
 ## 📚 Documentation Index
 
+- 📊 [`docs/claude_vs_antigravity_comparison.md`](docs/claude_vs_antigravity_comparison.md) — Technical architecture comparison between Claude (main) and Antigravity (gemini)
 - 🛡️ [`docs/remote_control.md`](docs/remote_control.md) — Isolated RemoteControlManager safety interlocks & actuator safety rules
 - 🏗️ [`docs/incremental_build.md`](docs/incremental_build.md) — Staged hardware build roadmap & peripheral probes
 - 🛵 [`docs/vehicle_compatibility_avenger_jupiter.md`](docs/vehicle_compatibility_avenger_jupiter.md) — Vehicle compatibility matrix & harness wiring for Bajaj Avenger 150 (2015) & TVS Jupiter ZX (2017)
