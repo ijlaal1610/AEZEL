@@ -1,5 +1,6 @@
 #include "SensorManager.h"
 #include "Config.h"
+#include "VehicleMath.h"
 #include <Wire.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
