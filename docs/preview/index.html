@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AEZEL — Interactive Cockpit & Animation Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #07090e;
+            --card-bg: #0f141c;
+            --accent-cyan: #00d4ff;
+            --accent-red: #ff1744;
+            --accent-green: #39ff14;
+            --accent-amber: #ff8a00;
+            --active-theme: var(--accent-cyan);
+            --text-main: #e2e8f0;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        h1 {
+            font-weight: 900;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #00d4ff, #39ff14);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+            font-size: 2rem;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+        }
+
+        /* Enclosure & Screen Container */
+        .cockpit-housing {
+            position: relative;
+            background: radial-gradient(circle at center, #1a2230 0%, #0b0f17 100%);
+            padding: 30px;
+            border-radius: 40px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), inset 0 2px 4px rgba(255, 255, 255, 0.05);
+            border: 2px solid #1e293b;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* WS2812B NeoPixel Accent Ring */
+        .neopixel-ring {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border-radius: 30px;
+            border: 3px solid rgba(0, 212, 255, 0.1);
+            pointer-events: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .neopixel-ring.welcome {
+            animation: ringPulse 1.2s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;
+        }
+
+        .neopixel-ring.goodbye {
+            border-color: rgba(255, 23, 68, 0.8);
+            box-shadow: 0 0 30px rgba(255, 23, 68, 0.5);
+            animation: ringFadeOut 1.2s forwards;
+        }
+
+        @keyframes ringPulse {
+            0% { border-color: rgba(0, 212, 255, 0.2); box-shadow: 0 0 10px rgba(0, 212, 255, 0.1); }
+            100% { border-color: rgba(0, 212, 255, 0.9); box-shadow: 0 0 35px rgba(0, 212, 255, 0.6); }
+        }
+
+        @keyframes ringFadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Screen Canvas Dimensions 480x320 scaled */
+        .tft-screen {
+            width: 520px;
+            height: 347px;
+            background-color: #000;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #0f172a;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9);
+        }
+
+        /* Screen States */
+        .screen-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .screen-layer.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Off State */
+        #screen-off {
+            background-color: #000;
+        }
+
+        .deep-sleep-badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: #334155;
+            letter-spacing: 1px;
+        }
+
+        /* Goodbye State */
+        #screen-goodbye {
+            background-color: #050505;
+        }
+
+        .goodbye-text {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: 2px;
+            animation: textPulse 1s infinite alternate;
+        }
+
+        @keyframes textPulse {
+            0% { opacity: 0.7; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1.02); }
+        }
+
+        /* Main Dashboard State */
+        #screen-dashboard {
+            background-color: #0a0e14;
+            padding: 16px;
+            justify-content: space-between;
+        }
+
+        /* Top Indicators */
+        .indicator-bar {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            height: 30px;
+        }
+
+        .ind-icon {
+            font-size: 1.2rem;
+            color: #1e293b;
+            transition: color 0.2s ease, text-shadow 0.2s ease;
+        }
+
+        .ind-icon.active-left, .ind-icon.active-right {
+            color: var(--accent-green);
+            text-shadow: 0 0 12px var(--accent-green);
+        }
+
+        .ind-icon.active-neutral {
+            color: var(--accent-cyan);
+            text-shadow: 0 0 12px var(--accent-cyan);
+        }
+
+        .ind-icon.active-highbeam {
+            color: #2979ff;
+            text-shadow: 0 0 12px #2979ff;
+        }
+
+        .clock-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            color: #cbd5e1;
+            font-weight: 700;
+        }
+
+        /* Center Display Area */
+        .dash-center {
+            position: relative;
+            width: 260px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rpm-svg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+        }
+
+        .rpm-bg-track {
+            fill: none;
+            stroke: #1e293b;
+            stroke-width: 14;
+            stroke-linecap: round;
+        }
+
+        .rpm-val-track {
+            fill: none;
+            stroke: var(--active-theme);
+            stroke-width: 14;
+            stroke-linecap: round;
+            stroke-dasharray: 440;
+            stroke-dashoffset: 440;
+            transition: stroke-dashoffset 0.1s linear, stroke 0.3s ease;
+            filter: drop-shadow(0 0 8px var(--active-theme));
+        }
+
+        .speed-val {
+            font-size: 4.2rem;
+            font-weight: 900;
+            color: #fff;
+            line-height: 1;
+            margin-top: -10px;
+        }
+
+        .speed-unit {
+            font-size: 0.85rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 2px;
+        }
+
+        .gear-val {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #ffc400;
+            margin-top: 8px;
+            text-shadow: 0 0 10px rgba(255, 196, 0, 0.4);
+        }
+
+        /* Side Bars */
+        .side-gauges {
+            position: absolute;
+            top: 60px;
+            width: 100%;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .fuel-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .fuel-bar-bg {
+            width: 14px;
+            height: 120px;
+            background-color: #1e293b;
+            border-radius: 7px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column-reverse;
+        }
+
+        .fuel-bar-fill {
+            width: 100%;
+            height: 80%;
+            background-color: var(--accent-green);
+            box-shadow: 0 0 10px var(--accent-green);
+            transition: height 0.3s ease;
+        }
+
+        .gauge-lbl {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        .engine-temp {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.1rem;
+            color: #f8fafc;
+            font-weight: 700;
+        }
+
+        /* Bottom Trip Bar */
+        .trip-bar {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        /* Control Panel */
+        .controls-panel {
+            margin-top: 24px;
+            width: 100%;
+            max-width: 650px;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid #1e293b;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .control-label {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* Ignition Switch */
+        .ignition-btn {
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: none;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .ignition-btn.off {
+            background-color: #1e293b;
+            color: #94a3b8;
+        }
+
+        .ignition-btn.on {
+            background: linear-gradient(135deg, #00d4ff, #0055ff);
+            color: #fff;
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+        }
+
+        /* Sliders & Selects */
+        input[type="range"] {
+            accent-color: var(--accent-cyan);
+            cursor: pointer;
+        }
+
+        select, button.action-btn {
+            background-color: #1e293b;
+            color: #fff;
+            border: 1px solid #334155;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-family: inherit;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        select:focus, button.action-btn:hover {
+            border-color: var(--accent-cyan);
+            outline: none;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .toggle-chip {
+            padding: 8px 12px;
+            border-radius: 8px;
+            background-color: #1e293b;
+            color: #64748b;
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            border: 1px solid transparent;
+            text-align: center;
+            flex: 1;
+        }
+
+        .toggle-chip.active {
+            background-color: rgba(0, 212, 255, 0.15);
+            color: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>AEZEL Cockpit & Animation Preview</h1>
+    <div class="subtitle">Interactive Software & Hardware Simulation • ESP32-S3 VCU Platform</div>
+
+    <!-- Housing -->
+    <div class="cockpit-housing">
+        <div id="neopixel-ring" class="neopixel-ring"></div>
+
+        <!-- Simulated TFT Screen -->
+        <div class="tft-screen">
+
+            <!-- OFF / DEEP SLEEP LAYER -->
+            <div id="screen-off" class="screen-layer active">
+                <div class="deep-sleep-badge">[ DEEP SLEEP — WAKE ON IGNITION ]</div>
+            </div>
+
+            <!-- GOODBYE LAYER -->
+            <div id="screen-goodbye" class="screen-layer">
+                <div class="goodbye-text">See you next ride</div>
+            </div>
+
+            <!-- DASHBOARD LAYER -->
+            <div id="screen-dashboard" class="screen-layer">
+                <!-- Top Indicator Bar -->
+                <div class="indicator-bar">
+                    <div class="ind-icon" id="ind-left">◀</div>
+                    <div class="ind-icon active-neutral" id="ind-neutral">N</div>
+                    <div class="ind-icon" id="ind-highbeam">👁</div>
+                    <div class="ind-icon" id="ind-right">▶</div>
+                    <div class="clock-display" id="clock-txt">12:45</div>
+                </div>
+
+                <!-- Side Gauges -->
+                <div class="side-gauges">
+                    <div class="fuel-container">
+                        <div class="gauge-lbl">FUEL</div>
+                        <div class="fuel-bar-bg">
+                            <div class="fuel-bar-fill" id="fuel-fill"></div>
+                        </div>
+                    </div>
+                    <div class="fuel-container">
+                        <div class="gauge-lbl">TEMP</div>
+                        <div class="engine-temp" id="temp-txt">88°C</div>
+                    </div>
+                </div>
+
+                <!-- Center Gauge & Speed -->
+                <div class="dash-center">
+                    <svg class="rpm-svg" viewBox="0 0 200 200">
+                        <!-- Arc background track -->
+                        <path class="rpm-bg-track" d="M 30 150 A 80 80 0 1 1 170 150" />
+                        <!-- Value track -->
+                        <path id="rpm-arc" class="rpm-val-track" d="M 30 150 A 80 80 0 1 1 170 150" />
+                    </svg>
+
+                    <div class="speed-val" id="speed-txt">0</div>
+                    <div class="speed-unit">km/h</div>
+                    <div class="gear-val" id="gear-txt">N</div>
+                </div>
+
+                <!-- Bottom Trip Bar -->
+                <div class="trip-bar">
+                    TRIP A <span id="trip-txt">0.0</span> km &nbsp;|&nbsp; ODO <span id="odo-txt">14250</span> km
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="controls-panel">
+        <!-- Ignition Control -->
+        <div class="control-group">
+            <div class="control-label">Ignition Switch</div>
+            <button id="ignition-btn" class="ignition-btn off" onclick="toggleIgnition()">
+                🔑 TURN IGNITION ON
+            </button>
+        </div>
+
+        <!-- Theme Selector -->
+        <div class="control-group">
+            <div class="control-label">UI Theme</div>
+            <select id="theme-select" onchange="changeTheme(this.value)">
+                <option value="cyan">Modern Digital (Cyan)</option>
+                <option value="red">Sport Mode (Flame Red)</option>
+                <option value="green">Neon Mode (Lime)</option>
+                <option value="amber">Retro Analog (Amber)</option>
+            </select>
+        </div>
+
+        <!-- Throttle & RPM -->
+        <div class="control-group">
+            <div class="control-label">Speed & RPM Simulator</div>
+            <input type="range" id="speed-slider" min="0" max="140" value="0" oninput="updateThrottle(this.value)" disabled>
+        </div>
+
+        <!-- Signals -->
+        <div class="control-group">
+            <div class="control-label">Indicator Signals</div>
+            <div class="btn-row">
+                <div class="toggle-chip" id="chip-left" onclick="toggleSignal('left')">LEFT</div>
+                <div class="toggle-chip" id="chip-high" onclick="toggleSignal('high')">BEAM</div>
+                <div class="toggle-chip" id="chip-right" onclick="toggleSignal('right')">RIGHT</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isIgnitionOn = false;
+        let speed = 0;
+        let rpm = 0;
+        let currentTheme = 'cyan';
+
+        const themes = {
+            cyan: '#00d4ff',
+            red: '#ff1744',
+            green: '#39ff14',
+            amber: '#ff8a00'
+        };
+
+        function toggleIgnition() {
+            isIgnitionOn = !isIgnitionOn;
+            const btn = document.getElementById('ignition-btn');
+            const ring = document.getElementById('neopixel-ring');
+            const layerOff = document.getElementById('screen-off');
+            const layerGoodbye = document.getElementById('screen-goodbye');
+            const layerDash = document.getElementById('screen-dashboard');
+            const speedSlider = document.getElementById('speed-slider');
+
+            if (isIgnitionOn) {
+                btn.className = 'ignition-btn on';
+                btn.innerHTML = '⚡ IGNITION ON';
+                speedSlider.disabled = false;
+
+                // 1. Off -> Goodbye layer hidden
+                layerOff.classList.remove('active');
+                layerGoodbye.classList.remove('active');
+
+                // 2. Play Welcome NeoPixel Ring animation
+                ring.className = 'neopixel-ring welcome';
+
+                // 3. LVGL Boot Screen Fade-In
+                setTimeout(() => {
+                    layerDash.classList.add('active');
+                }, 400);
+
+            } else {
+                btn.className = 'ignition-btn off';
+                btn.innerHTML = '🔑 TURN IGNITION ON';
+                speedSlider.disabled = true;
+                speedSlider.value = 0;
+                updateThrottle(0);
+
+                // 1. Enter Goodbye Screen
+                layerDash.classList.remove('active');
+                layerGoodbye.classList.add('active');
+                ring.className = 'neopixel-ring goodbye';
+
+                // 2. Linger & Goodbye animation duration (1.2s) -> Deep Sleep
+                setTimeout(() => {
+                    layerGoodbye.classList.remove('active');
+                    layerOff.classList.add('active');
+                    ring.className = 'neopixel-ring';
+                }, 1400);
+            }
+        }
+
+        function updateThrottle(val) {
+            speed = parseInt(val);
+            // Calculate simulated RPM based on speed and gear
+            if (speed === 0) {
+                rpm = isIgnitionOn ? 1200 : 0; // idle
+                document.getElementById('gear-txt').innerText = 'N';
+                document.getElementById('ind-neutral').classList.add('active-neutral');
+            } else {
+                let gear = 1;
+                if (speed > 25) gear = 2;
+                if (speed > 45) gear = 3;
+                if (speed > 70) gear = 4;
+                if (speed > 95) gear = 5;
+
+                rpm = Math.min(11500, 2000 + (speed % 25) * 280 + gear * 600);
+                document.getElementById('gear-txt').innerText = gear;
+                document.getElementById('ind-neutral').classList.remove('active-neutral');
+            }
+
+            document.getElementById('speed-txt').innerText = speed;
+            
+            // Arc math: 440 max dashoffset -> 0 at max RPM (12000)
+            const arc = document.getElementById('rpm-arc');
+            const offset = 440 - (rpm / 12000) * 440;
+            arc.style.strokeDashoffset = offset;
+        }
+
+        function changeTheme(themeKey) {
+            currentTheme = themeKey;
+            const color = themes[themeKey];
+            document.documentElement.style.setProperty('--active-theme', color);
+        }
+
+        function toggleSignal(sig) {
+            if (sig === 'left') {
+                const icon = document.getElementById('ind-left');
+                const chip = document.getElementById('chip-left');
+                icon.classList.toggle('active-left');
+                chip.classList.toggle('active');
+            } else if (sig === 'right') {
+                const icon = document.getElementById('ind-right');
+                const chip = document.getElementById('chip-right');
+                icon.classList.toggle('active-right');
+                chip.classList.toggle('active');
+            } else if (sig === 'high') {
+                const icon = document.getElementById('ind-highbeam');
+                const chip = document.getElementById('chip-high');
+                icon.classList.toggle('active-highbeam');
+                chip.classList.toggle('active');
+            }
+        }
+    </script>
+</body>
+</html>
