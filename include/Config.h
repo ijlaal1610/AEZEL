@@ -5,6 +5,36 @@
 // ============================================================================
 #include <Arduino.h>
 
+// ============================================================================
+//  FEATURE FLAGS — build with only the hardware you actually have installed.
+//
+//  Every manager checks the matching flag in its begin()/tick() before
+//  touching its pins/bus, so leaving a flag OFF means that manager's begin()
+//  becomes a harmless no-op and its task is never even created in main.cpp —
+//  no crashes, no "sensor not found" spam, no wasted RAM/CPU on a peripheral
+//  that isn't physically wired up yet. See docs/incremental_build.md for the
+//  recommended purchase order that pairs with these flags.
+// ============================================================================
+#define ENABLE_GPS            0   // NEO-6M/8M module — Tier 3
+#define ENABLE_IMU             0   // MPU6050/ICM — Tier 4 (lean angle, crash detect)
+#define ENABLE_BAROMETER        0   // BMP280 — Tier 4 (altitude, pressure)
+#define ENABLE_AMBIENT_LIGHT     0   // BH1750 — Tier 2 (auto-brightness; falls back to fixed brightness when off)
+#define ENABLE_SD_CARD             1   // Tier 1 — cheap and worth having from day one for ride logs
+#define ENABLE_RGB_ACCENT           0   // WS2812 strip — Tier 4, cosmetic only
+#define ENABLE_BLE                   1   // built into every ESP32 — no extra hardware, keep on
+#define ENABLE_ONEWIRE_TEMP            0   // DS18B20 x2 — Tier 2
+#define ENABLE_FUEL_SENDER               0   // Tier 2 — needs signal-conditioning board
+#define ENABLE_TOUCHSCREEN                 0   // Tier 1 optional — UI works with rotary/buttons alone
+
+// --- Remote-control sub-features (all gated behind ENABLE_BLE) -----------
+// See docs/remote_control.md before enabling anything in this block — the
+// starter/ignition ones are NOT "flip it on and go," they require the
+// physical interlock wiring described there.
+#define ENABLE_REMOTE_HORN               0   // Tier 1.5 — one relay, low risk
+#define ENABLE_REMOTE_INDICATORS          0   // Tier 1.5 — one relay per side, low risk
+#define ENABLE_REMOTE_IMMOBILIZER           0   // Tier 4 — cuts ignition circuit; fail-safe = unlocked
+#define ENABLE_REMOTE_STARTER                 0   // Tier 5 — highest risk, see docs/remote_control.md. Off by default.
+
 // ---------------------------------------------------------------- Display --
 // Parallel/SPI TFT wired per TFT_eSPI User_Setup.h (kept in sync with these).
 #define PIN_TFT_BL          9      // backlight PWM (also drives auto-brightness)
@@ -54,6 +84,15 @@
 #define PIN_OUT_RGB_ACCENT_DATA 26   // WS2812B accent strip (welcome/goodbye/theme)
 #define PIN_OUT_BUZZER          27
 
+// ------------------------------------------------- Remote-control outputs -
+// Every one of these drives a relay/MOSFET, never the load directly — see
+// docs/remote_control.md for the driver-stage requirements per output.
+#define PIN_OUT_HORN_RELAY        28   // ENABLE_REMOTE_HORN
+#define PIN_OUT_LEFT_IND_RELAY    29   // ENABLE_REMOTE_INDICATORS (drives indicator circuit in parallel with the stock switch)
+#define PIN_OUT_RIGHT_IND_RELAY   30   // ENABLE_REMOTE_INDICATORS
+#define PIN_OUT_IMMOBILIZER_RELAY 31   // ENABLE_REMOTE_IMMOBILIZER — normally-closed relay in the ignition-coil-enable circuit; see docs/remote_control.md fail-safe requirement
+#define PIN_OUT_STARTER_RELAY     32   // ENABLE_REMOTE_STARTER — see docs/remote_control.md interlock requirements before wiring
+
 // ------------------------------------------------------------- Storage ---
 #define PIN_SD_CS            5   // shares SPI bus with TFT (separate CS)
 #define PIN_SD_MOSI          38
@@ -74,7 +113,14 @@
 // Wheel circumference for a stock 90/90-18 rear tyre - recalibrate in
 // Settings > Calibration Wizard after fitting non-stock tyres.
 constexpr float WHEEL_CIRCUMFERENCE_M   = 1.518f;
-constexpr uint8_t HALL_PULSES_PER_REV   = 1;
+// 4 magnets equally spaced around the wheel/disc (or reuse an existing ABS
+// reluctor ring's tooth count if fitted). A single magnet (1 pulse/rev)
+// sounds simpler but doesn't give enough pulses per calculation window at
+// normal riding speed for a stable reading — this was caught by
+// test/native/test_vehicle_math.cpp's regression test, see that file's
+// comments for the numbers. Update this to match however many magnets you
+// actually install.
+constexpr uint8_t HALL_PULSES_PER_REV   = 4;
 constexpr uint8_t RPM_PICKUP_PULSES_PER_REV = 1;   // single-cylinder, 1 pulse/rev on coil-negative
 
 // Voltage-divider ratios (must match your resistor values on the board)

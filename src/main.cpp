@@ -21,10 +21,11 @@
 #include "managers/NotificationManager.h"
 #include "managers/GpsManager.h"
 #include "managers/BleManager.h"
+#include "managers/RemoteControlManager.h"
 #include "managers/DisplayManager.h"
 
 // Task handles kept for diagnostics (stack high-water-mark reporting, etc.)
-static TaskHandle_t hDisplay, hSensor, hRide, hPower, hStorage, hLighting, hNotif, hGps, hBle, hDiag;
+static TaskHandle_t hDisplay, hSensor, hRide, hPower, hStorage, hLighting, hNotif, hGps, hBle, hDiag, hRemote;
 
 static void diagnosticsTask(void* pv) {
     for (;;) {
@@ -49,10 +50,13 @@ void setup() {
     RideManager::instance().begin();        // loads odometer/trip from NVS
     LightingManager::instance().begin();
     NotificationManager::instance().begin();
+    RemoteControlManager::instance().begin();
     DisplayManager::instance().begin();     // dashboard visible from here on
 
     // --- Phase 2: background subsystems (can lock/connect asynchronously) --
+#if ENABLE_GPS
     GpsManager::instance().begin();
+#endif
     // BleManager::begin() is called lazily inside its own task on first run
 
     LightingManager::instance().playWelcomeAnimation();
@@ -66,14 +70,21 @@ void setup() {
     xTaskCreatePinnedToCore(PowerManager::taskEntry,        "Power",    3072, nullptr, PRIO_POWER,       &hPower,    CORE_REALTIME);
     xTaskCreatePinnedToCore(LightingManager::taskEntry,     "Lighting", 3072, nullptr, PRIO_SENSOR,      &hLighting, CORE_REALTIME);
     xTaskCreatePinnedToCore(NotificationManager::taskEntry, "Notif",    3072, nullptr, PRIO_SENSOR,      &hNotif,    CORE_REALTIME);
+    xTaskCreatePinnedToCore(RemoteControlManager::taskEntry,"Remote",   3072, nullptr, PRIO_SAFETY_MONITOR, &hRemote, CORE_REALTIME);
     xTaskCreatePinnedToCore(DisplayManager::taskEntry,      "Display",  8192, nullptr, PRIO_DISPLAY,     &hDisplay,  CORE_REALTIME);
 
     // Connectivity core (0): GPS parsing, BLE, SD-heavy storage flush,
     // diagnostics — anything that can stall on I/O lives here so it never
-    // steals cycles from the render loop.
+    // steals cycles from the render loop. GPS/BLE tasks are only created
+    // when their feature flag is on (Config.h) — no point spinning a task
+    // that would just poll a UART/radio nobody wired up yet.
     xTaskCreatePinnedToCore(StorageManager::taskEntry, "Storage", 4096, nullptr, PRIO_STORAGE,     &hStorage, CORE_CONNECTIVITY);
+#if ENABLE_GPS
     xTaskCreatePinnedToCore(GpsManager::taskEntry,      "GPS",     4096, nullptr, PRIO_GPS,          &hGps,     CORE_CONNECTIVITY);
+#endif
+#if ENABLE_BLE
     xTaskCreatePinnedToCore(BleManager::taskEntry,      "BLE",     6144, nullptr, PRIO_BLE,          &hBle,     CORE_CONNECTIVITY);
+#endif
     xTaskCreatePinnedToCore(diagnosticsTask,             "Diag",    2048, nullptr, PRIO_DIAGNOSTICS,  &hDiag,    CORE_CONNECTIVITY);
 
     Serial.println("All tasks started. Boot complete.");

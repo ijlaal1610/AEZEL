@@ -1,10 +1,8 @@
 #include "LightingManager.h"
 #include "Config.h"
 
-// Accent strip is optional hardware — kept behind a define so builds without
-// it don't need the WS2812 dependency, and so it's a one-line toggle in
-// Config.h to disable for a "budget" build variant.
-#define ENABLE_RGB_ACCENT 1
+// Accent strip is optional hardware, gated by ENABLE_RGB_ACCENT in Config.h —
+// builds without it don't need the WS2812 dependency at all.
 #if ENABLE_RGB_ACCENT
 #include <Adafruit_NeoPixel.h>
 static Adafruit_NeoPixel accent(24, PIN_OUT_RGB_ACCENT_DATA, NEO_GRB + NEO_KHZ800);

@@ -1,12 +1,15 @@
 #include "StorageManager.h"
 #include "Config.h"
+#if ENABLE_SD_CARD
 #include <SD.h>
 #include <SPI.h>
+#endif
 #include <time.h>
 
 void StorageManager::begin() {
-    _prefs.begin("phoenix", false);   // read-write namespace
+    _prefs.begin("aezel", false);   // read-write namespace — NVS works with zero optional parts installed
 
+#if ENABLE_SD_CARD
     SPIClass sdSpi(HSPI);
     sdSpi.begin(PIN_SD_SCK, PIN_SD_MISO, PIN_SD_MOSI, PIN_SD_CS);
     _sdOk = SD.begin(PIN_SD_CS, sdSpi);
@@ -17,6 +20,9 @@ void StorageManager::begin() {
         if (!SD.exists("/logs")) SD.mkdir("/logs");
         if (!SD.exists("/export")) SD.mkdir("/export");
     }
+#else
+    _sdOk = false;   // SD not installed yet — ride logging/export silently no-ops, everything else works
+#endif
 
     SharedState::instance().update([&](VehicleState& s) { s.sdCardOk = _sdOk; });
     _lastFlushMs = millis();
@@ -56,6 +62,7 @@ void StorageManager::saveMaintenanceRecord(const char* key, uint32_t dueOdometer
 
 void StorageManager::logRidePoint(const RideLogPoint& pt) {
     if (!_sdOk) return;
+#if ENABLE_SD_CARD
     char path[48];
     // one CSV file per calendar day keeps files small & export-friendly
     time_t t = pt.timestamp;
@@ -70,10 +77,12 @@ void StorageManager::logRidePoint(const RideLogPoint& pt) {
     f.printf("%lu,%.6f,%.6f,%.1f,%u,%.1f\n",
               pt.timestamp, pt.lat, pt.lon, pt.speedKmh, pt.rpm, pt.leanAngle);
     f.close();
+#endif
 }
 
 bool StorageManager::exportTripCsv(const char* srcDailyLogPath) {
     if (!_sdOk) return false;
+#if ENABLE_SD_CARD
     // Straight copy for now — a richer implementation would merge multiple
     // days for a multi-day trip and recompute trip-relative stats.
     File src = SD.open(srcDailyLogPath, FILE_READ);
@@ -84,17 +93,21 @@ bool StorageManager::exportTripCsv(const char* srcDailyLogPath) {
     src.close();
     dst.close();
     return true;
+#else
+    return false;
+#endif
 }
 
 bool StorageManager::exportTripGpx(const char* srcDailyLogPath) {
     if (!_sdOk) return false;
+#if ENABLE_SD_CARD
     File src = SD.open(srcDailyLogPath, FILE_READ);
     if (!src) return false;
     File dst = SD.open("/export/trip_export.gpx", FILE_WRITE);
     if (!dst) { src.close(); return false; }
 
     dst.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-    dst.println("<gpx version=\"1.1\" creator=\"ProjectPhoenix\">");
+    dst.println("<gpx version=\"1.1\" creator=\"AEZEL\">");
     dst.println("<trk><name>Ride</name><trkseg>");
 
     src.readStringUntil('\n');   // skip CSV header
@@ -111,14 +124,19 @@ bool StorageManager::exportTripGpx(const char* srcDailyLogPath) {
     src.close();
     dst.close();
     return true;
+#else
+    return false;
+#endif
 }
 
 void StorageManager::appendCrashLog(const char* reason) {
     if (!_sdOk) return;
+#if ENABLE_SD_CARD
     File f = SD.open("/logs/crash.log", FILE_APPEND);
     if (!f) return;
     f.printf("[%lu] %s\n", millis(), reason);
     f.close();
+#endif
 }
 
 void StorageManager::flushAll() {
