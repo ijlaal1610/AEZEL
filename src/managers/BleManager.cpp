@@ -115,6 +115,29 @@ void BleManager::handleIncomingCommand(const String& json) {
             s.inIgnitionOn = false;
         });
     }
+    else if (strcmp(cmd, "remote_start_engine") == 0) {
+        // --- Remote Engine Start Procedure & Safety Interlocks ---
+        VehicleState cur = SharedState::instance().snapshot();
+        if (cur.gear != GearState::NEUTRAL && !cur.inNeutral) {
+            // Safety Interlock Violation: Vehicle is in gear!
+            NotificationManager::instance().push("START BLOCKED", "Shift to Neutral (N) to remote start!", NotifPriority::WARNING);
+            return;
+        }
+        if (cur.inKillSwitch) {
+            NotificationManager::instance().push("START BLOCKED", "Turn Kill Switch OFF to remote start!", NotifPriority::WARNING);
+            return;
+        }
+
+        // Turn ON Ignition (primes fuel pump) and pulse starter solenoid relay
+        SharedState::instance().update([](VehicleState& s) {
+            s.inIgnitionOn = true;
+            s.inStarterActive = true;
+            s.inEngineRunning = true;
+            s.rpm = 1200; // Simulated idle RPM
+        });
+
+        NotificationManager::instance().push("REMOTE START", "Engine Started via Smartphone", NotifPriority::INFO);
+    }
     else if (strcmp(cmd, "remote_horn_beep") == 0) {
         // Triggers 300ms horn pulse relay hook
     }

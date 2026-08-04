@@ -51,6 +51,8 @@
 // ------------------------------------------------------ Output / lighting -
 #define PIN_OUT_DRL_PWM         47
 #define PIN_OUT_HAZARD_RELAY    48
+#define PIN_OUT_STARTER_RELAY   19   // Relays 12V to starter motor solenoid (Remote Start)
+#define PIN_OUT_IGNITION_RELAY  20   // Relays 12V to ignition circuit / ECU
 #define PIN_OUT_RGB_ACCENT_DATA 26   // WS2812B accent strip (welcome/goodbye/theme)
 #define PIN_OUT_BUZZER          27
 

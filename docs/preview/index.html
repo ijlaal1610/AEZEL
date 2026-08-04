@@ -511,6 +511,7 @@
         <div class="control-group" style="grid-column: span 2; background: rgba(0, 212, 255, 0.05); padding: 12px; border-radius: 12px; border: 1px solid rgba(0, 212, 255, 0.2);">
             <div class="control-label" style="color: var(--accent-cyan);">📱 Smartphone Remote & Navigation API (BLE / Wi-Fi OTA)</div>
             <div class="btn-row" style="flex-wrap: wrap;">
+                <button class="action-btn" onclick="triggerRemoteStart()" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 900;">🚀 REMOTE START ENGINE</button>
                 <button class="action-btn" onclick="toggleIgnition()" style="background: #0284c7; font-weight: 700;">⚡ Keyless Ignition</button>
                 <button class="action-btn" onclick="triggerRemoteHorn()" style="background: #e11d48;">📣 Horn Beep</button>
                 <button class="action-btn" onclick="toggleHazard()" style="background: #d97706;">🚨 Hazards</button>
@@ -689,6 +690,24 @@
 
         function triggerSeatRelease() {
             alert('🔓 SEAT LOCK RELEASED — Solenoid Pulse Fired!');
+        }
+
+        function triggerRemoteStart() {
+            const gear = document.getElementById('gear-txt').innerText;
+            if (gear !== 'N') {
+                alert('⚠️ SAFETY INTERLOCK VIOLATION:\n\nEngine Start Blocked! Shift vehicle to Neutral (N) before remote starting!');
+                return;
+            }
+
+            if (!isIgnitionOn) {
+                toggleIgnition();
+            }
+
+            setTimeout(() => {
+                const ring = document.getElementById('neopixel-ring');
+                ring.className = 'neopixel-ring welcome';
+                alert('🚀 REMOTE ENGINE START ACTIVATED:\n\n1. Ignition Circuit & ECU Primed\n2. Fuel Pump Pressure Built\n3. Starter Solenoid Relayed (1.2s Pulse)\n4. Engine Fired -> 1200 RPM Idle!');
+            }, 600);
         }
 
         function triggerNavSim() {

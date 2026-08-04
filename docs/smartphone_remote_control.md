@@ -43,6 +43,7 @@ Commands are sent as JSON packets over BLE:
 
 | Action | JSON Command Payload | Description / Hardware Response |
 | :--- | :--- | :--- |
+| **🚀 Remote Engine Start** | `{"cmd":"remote_start_engine"}` | Enforces Neutral safety check, primes ECU, & pulses starter solenoid relay |
 | **⚡ Keyless Ignition Toggle** | `{"cmd":"remote_ignition_toggle"}` | Toggles VCU ignition relay (Keyless start/stop) |
 | **⚡ Force Ignition ON** | `{"cmd":"remote_ignition_on"}` | Energizes VCU ignition circuit via smartphone |
 | **🔑 Force Ignition OFF** | `{"cmd":"remote_ignition_off"}` | Disengages ignition circuit & starts shutdown |
