@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "author": "AEZEL Team",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "board-esp32-s3-devkitc-1",
+      "id": "esp",
+      "top": 0,
+      "left": 0,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-ili9341",
+      "id": "display",
+      "top": -220,
+      "left": 180,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-ky-040",
+      "id": "encoder",
+      "top": 180,
+      "left": -220,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_mode",
+      "top": 180,
+      "left": -60,
+      "attrs": { "color": "blue", "label": "MODE" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn_ok",
+      "top": 180,
+      "left": 40,
+      "attrs": { "color": "green", "label": "OK" }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "pot_fuel",
+      "top": -160,
+      "left": -220,
+      "attrs": { "label": "Fuel Sender ADC" }
+    },
+    {
+      "type": "wokwi-potentiometer",
+      "id": "pot_battery",
+      "top": -60,
+      "left": -220,
+      "attrs": { "label": "Battery Sense ADC" }
+    },
+    {
+      "type": "wokwi-mpu6050",
+      "id": "mpu",
+      "top": 320,
+      "left": -220,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-bmp280",
+      "id": "bmp",
+      "top": 320,
+      "left": -60,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-ds18b20",
+      "id": "ds18b20",
+      "top": 320,
+      "left": 100,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "buzzer",
+      "top": 180,
+      "left": 200,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-neopixel-canvas",
+      "id": "rgb_strip",
+      "top": 320,
+      "left": 240,
+      "attrs": { "pixels": "8" }
+    }
+  ],
+  "connections": [
+    [ "esp:GND.1", "display:GND", "black", [ "v0" ] ],
+    [ "esp:3V3.1", "display:VCC", "red", [ "v0" ] ],
+    [ "esp:9", "display:LED", "orange", [ "h0" ] ],
+    [ "esp:10", "display:CS", "green", [ "h0" ] ],
+    [ "esp:11", "display:D/C", "yellow", [ "h0" ] ],
+    [ "esp:12", "display:RESET", "purple", [ "h0" ] ],
+
+    [ "esp:GND.1", "encoder:GND", "black", [ "v0" ] ],
+    [ "esp:3V3.1", "encoder:VCC", "red", [ "v0" ] ],
+    [ "esp:4", "encoder:CLK", "green", [ "h0" ] ],
+    [ "esp:5", "encoder:DT", "yellow", [ "h0" ] ],
+    [ "esp:6", "encoder:SW", "blue", [ "h0" ] ],
+
+    [ "esp:7", "btn_mode:1.A", "blue", [ "h0" ] ],
+    [ "esp:GND.1", "btn_mode:2.A", "black", [ "h0" ] ],
+
+    [ "esp:8", "btn_ok:1.A", "green", [ "h0" ] ],
+    [ "esp:GND.1", "btn_ok:2.A", "black", [ "h0" ] ],
+
+    [ "esp:1", "pot_fuel:SIG", "purple", [ "h0" ] ],
+    [ "esp:3V3.1", "pot_fuel:VCC", "red", [ "h0" ] ],
+    [ "esp:GND.1", "pot_fuel:GND", "black", [ "h0" ] ],
+
+    [ "esp:2", "pot_battery:SIG", "orange", [ "h0" ] ],
+    [ "esp:3V3.1", "pot_battery:VCC", "red", [ "h0" ] ],
+    [ "esp:GND.1", "pot_battery:GND", "black", [ "h0" ] ],
+
+    [ "esp:21", "mpu:SDA", "green", [ "h0" ] ],
+    [ "esp:22", "mpu:SCL", "yellow", [ "h0" ] ],
+    [ "esp:3V3.1", "mpu:VCC", "red", [ "h0" ] ],
+    [ "esp:GND.1", "mpu:GND", "black", [ "h0" ] ],
+
+    [ "esp:21", "bmp:SDA", "green", [ "h0" ] ],
+    [ "esp:22", "bmp:SCL", "yellow", [ "h0" ] ],
+    [ "esp:3V3.1", "bmp:VCC", "red", [ "h0" ] ],
+    [ "esp:GND.1", "bmp:GND", "black", [ "h0" ] ],
+
+    [ "esp:15", "ds18b20:DQ", "cyan", [ "h0" ] ],
+    [ "esp:3V3.1", "ds18b20:VCC", "red", [ "h0" ] ],
+    [ "esp:GND.1", "ds18b20:GND", "black", [ "h0" ] ],
+
+    [ "esp:27", "buzzer:1", "red", [ "h0" ] ],
+    [ "esp:GND.1", "buzzer:2", "black", [ "h0" ] ],
+
+    [ "esp:26", "rgb_strip:DIN", "green", [ "h0" ] ],
+    [ "esp:5V", "rgb_strip:VDD", "red", [ "h0" ] ],
+    [ "esp:GND.1", "rgb_strip:GND", "black", [ "h0" ] ]
+  ]
+}
