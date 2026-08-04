@@ -176,6 +176,7 @@ AEZEL/
 
 ## 📚 Documentation Index
 
+- 📱 [`docs/android_app_architecture.md`](docs/android_app_architecture.md) — Native Jetpack Compose Android Companion App, BLE GATT stack & GitHub Actions CI/CD
 - 🛵 [`docs/vehicle_compatibility_avenger_jupiter.md`](docs/vehicle_compatibility_avenger_jupiter.md) — Vehicle compatibility matrix & harness wiring for Bajaj Avenger 150 (2015) & TVS Jupiter ZX (2017)
 - 🌐 [`docs/ota_can_and_navigation.md`](docs/ota_can_and_navigation.md) — Over-The-Air Wi-Fi updates, Automotive CAN Bus (TWAI) & Turn-by-Turn Navigation
 - 💰 [`docs/modular_budget_build.md`](docs/modular_budget_build.md) — Modular budget upgrade roadmap ($15–$55) & non-blocking peripheral probes
