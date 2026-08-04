@@ -2,6 +2,8 @@
 #include <NimBLEDevice.h>
 #include <ArduinoJson.h>
 #include "RideManager.h"
+#include "NotificationManager.h"
+#include "OtaManager.h"
 
 // Custom 128-bit UUIDs — regenerate for your own build to avoid clashing
 // with anyone reusing this firmware on the same channel during development.
@@ -20,10 +22,10 @@ class CommandCallbacks : public NimBLECharacteristicCallbacks {
 };
 
 class ServerCallbacks : public NimBLEServerCallbacks {
-    void onConnect(NimBLEServer*, NimBLEConnInfo&) override {
+    void onConnect(NimBLEServer* pServer) override {
         SharedState::instance().update([](VehicleState& s) { s.bleConnected = true; });
     }
-    void onDisconnect(NimBLEServer*, NimBLEConnInfo&, int) override {
+    void onDisconnect(NimBLEServer* pServer) override {
         SharedState::instance().update([](VehicleState& s) { s.bleConnected = false; });
         NimBLEDevice::startAdvertising();
     }
@@ -184,7 +186,6 @@ void BleManager::handleIncomingCommand(const String& json) {
     }
     else if (strcmp(cmd, "remote_ota_wifi") == 0) {
         // Triggers Wi-Fi AP + Web Server for wireless firmware uploads
-        #include "OtaManager.h"
         OtaManager::instance().enableWifiAp();
     }
     // Every command is intentionally an explicit allow-listed string match
