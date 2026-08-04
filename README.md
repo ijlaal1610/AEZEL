@@ -176,6 +176,8 @@ AEZEL/
 
 ## 📚 Documentation Index
 
+- 🔬 [`docs/features_deep_dive.md`](docs/features_deep_dive.md) — Low-level technical deep dive into every single feature & math formula
+- ❓ [`docs/faq_and_qna.md`](docs/faq_and_qna.md) — Comprehensive technical Q&A reference & architectural decisions
 - ⭐ [`docs/features.md`](docs/features.md) — Comprehensive feature specification & boot animation details
 - ⚡ [`docs/power_and_animations.md`](docs/power_and_animations.md) — Power architecture, ignition sensing & animation guide
 - 📋 [`docs/bom.md`](docs/bom.md) — Complete Bill of Materials and recommended components
