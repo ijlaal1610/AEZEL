@@ -509,13 +509,15 @@
 
         <!-- Smartphone App Controls -->
         <div class="control-group" style="grid-column: span 2; background: rgba(0, 212, 255, 0.05); padding: 12px; border-radius: 12px; border: 1px solid rgba(0, 212, 255, 0.2);">
-            <div class="control-label" style="color: var(--accent-cyan);">📱 Smartphone Remote App Control (BLE GATT API)</div>
+            <div class="control-label" style="color: var(--accent-cyan);">📱 Smartphone Remote & Navigation API (BLE / Wi-Fi OTA)</div>
             <div class="btn-row" style="flex-wrap: wrap;">
                 <button class="action-btn" onclick="toggleIgnition()" style="background: #0284c7; font-weight: 700;">⚡ Keyless Ignition</button>
                 <button class="action-btn" onclick="triggerRemoteHorn()" style="background: #e11d48;">📣 Horn Beep</button>
                 <button class="action-btn" onclick="toggleHazard()" style="background: #d97706;">🚨 Hazards</button>
                 <button class="action-btn" onclick="triggerFindMyBike()" style="background: #7c3aed;">📍 Find My Bike</button>
                 <button class="action-btn" onclick="triggerSeatRelease()" style="background: #059669;">🔓 Seat Lock</button>
+                <button class="action-btn" onclick="triggerNavSim()" style="background: #00d4ff; color: #000; font-weight: 700;">🗺️ Turn Navigation</button>
+                <button class="action-btn" onclick="triggerOtaWeb()" style="background: #eab308; color: #000; font-weight: 700;">🌐 Wi-Fi OTA Update</button>
             </div>
         </div>
 
@@ -687,6 +689,14 @@
 
         function triggerSeatRelease() {
             alert('🔓 SEAT LOCK RELEASED — Solenoid Pulse Fired!');
+        }
+
+        function triggerNavSim() {
+            alert('🗺️ TURN-BY-TURN NAVIGATION SIMULATION:\n\n◀ Turn Left in 150m onto MG Road\nETA: 12 Mins | Remaining: 4.2 km\n\n(Pushed via BLE GATT nav_update payload)');
+        }
+
+        function triggerOtaWeb() {
+            alert('🌐 WI-FI OTA FIRMWARE SERVER:\n\nAccess Point Active: "AEZEL-VCU-AP"\nIP Address: 192.168.4.1\n\nOpen browser to http://192.168.4.1 to upload firmware (.bin)');
         }
     </script>
 </body>

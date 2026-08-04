@@ -56,6 +56,13 @@ struct VehicleState {
     bool     gpsFixValid = false;
     uint8_t  gpsSatellites = 0;
 
+    // --- Turn-by-Turn Navigation (BLE companion map integration) --------
+    bool     navActive = false;
+    uint32_t navDistanceMeters = 0;
+    uint8_t  navTurnIcon = 0;          // 0=Straight, 1=Left, 2=Right, 3=UTurn
+    char     navStreetName[32] = "";
+    uint16_t navEtaMinutes = 0;
+
     // --- Environment -----------------------------------------------------
     float    outsideTempC = 0;
     float    engineTempC  = 0;

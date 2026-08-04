@@ -31,12 +31,12 @@ private:
 
     void buildMainDashboard();
     void buildTripInfoScreen();
+    void buildNavigationScreen();
     void buildNotificationBanner();
     void applyTheme(ThemeMode mode);
     void refreshWidgetsFromState();
 
-    // LVGL objects for the main dashboard (kept as members so refresh() can
-    // update text/value without recreating widgets every frame)
+    // LVGL objects for main dashboard
     lv_obj_t* _screenMain = nullptr;
     lv_obj_t* _labelSpeed = nullptr;
     lv_obj_t* _labelSpeedUnit = nullptr;
@@ -51,6 +51,13 @@ private:
     lv_obj_t* _iconNeutral = nullptr;
     lv_obj_t* _iconHighBeam = nullptr;
     lv_obj_t* _labelWarningBanner = nullptr;
+
+    // LVGL objects for Turn-by-Turn Navigation Screen
+    lv_obj_t* _screenNav = nullptr;
+    lv_obj_t* _labelNavTurnIcon = nullptr;
+    lv_obj_t* _labelNavDistance = nullptr;
+    lv_obj_t* _labelNavStreet = nullptr;
+    lv_obj_t* _labelNavEta = nullptr;
 
     Screen _currentScreen = Screen::MAIN_DASHBOARD;
     uint32_t _lastRenderMs = 0;

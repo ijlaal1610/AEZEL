@@ -145,6 +145,25 @@ void BleManager::handleIncomingCommand(const String& json) {
     else if (strcmp(cmd, "remote_seat_release") == 0) {
         // Solenoid 500ms impulse pulse hook
     }
+    else if (strcmp(cmd, "nav_update") == 0) {
+        uint32_t dist = doc["dist"] | 0;
+        uint8_t turn = doc["turn"] | 0;
+        const char* street = doc["street"] | "";
+        uint16_t eta = doc["eta"] | 0;
+
+        SharedState::instance().update([=](VehicleState& s) {
+            s.navActive = true;
+            s.navDistanceMeters = dist;
+            s.navTurnIcon = turn;
+            strncpy(s.navStreetName, street, sizeof(s.navStreetName) - 1);
+            s.navEtaMinutes = eta;
+        });
+    }
+    else if (strcmp(cmd, "remote_ota_wifi") == 0) {
+        // Triggers Wi-Fi AP + Web Server for wireless firmware uploads
+        #include "OtaManager.h"
+        OtaManager::instance().enableWifiAp();
+    }
     // Every command is intentionally an explicit allow-listed string match
     // rather than a generic eval-style dispatch — keeps the remote attack
     // surface auditable as features grow (Security section of the spec).
