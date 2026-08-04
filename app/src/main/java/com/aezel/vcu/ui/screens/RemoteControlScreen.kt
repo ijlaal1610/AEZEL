@@ -148,12 +148,71 @@ fun RemoteControlScreen(bleManager: AezelBleManager, telemetry: VehicleTelemetry
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             RemoteTile(
+                title = "◀ LEFT SIGNAL",
+                icon = Icons.Default.ArrowBack,
+                active = false,
+                activeColor = AccentLime,
+                modifier = Modifier.weight(1f),
+                onClick = { bleManager.indicatorLeft() }
+            )
+
+            RemoteTile(
+                title = "RIGHT SIGNAL ▶",
+                icon = Icons.Default.ArrowForward,
+                active = false,
+                activeColor = AccentLime,
+                modifier = Modifier.weight(1f),
+                onClick = { bleManager.indicatorRight() }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            RemoteTile(
                 title = "FIND MY BIKE ALARM",
                 icon = Icons.Default.LocationOn,
                 active = false,
                 activeColor = AccentPurple,
                 modifier = Modifier.weight(1f),
                 onClick = { bleManager.triggerFindMyBike() }
+            )
+
+            RemoteTile(
+                title = "WI-FI OTA MODE",
+                icon = Icons.Default.Wifi,
+                active = false,
+                activeColor = AccentCyan,
+                modifier = Modifier.weight(1f),
+                onClick = { bleManager.triggerOtaWifi() }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            RemoteTile(
+                title = "RESET TRIP A",
+                icon = Icons.Default.Refresh,
+                active = false,
+                activeColor = TextSecondary,
+                modifier = Modifier.weight(1f),
+                onClick = { bleManager.resetTripA() }
+            )
+
+            RemoteTile(
+                title = "RESET TRIP B",
+                icon = Icons.Default.Refresh,
+                active = false,
+                activeColor = TextSecondary,
+                modifier = Modifier.weight(1f),
+                onClick = { bleManager.resetTripB() }
             )
         }
     }

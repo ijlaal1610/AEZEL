@@ -173,6 +173,14 @@ class AezelBleManager private constructor(private val context: Context) {
         sendCommand("{\"cmd\":\"remote_ignition_toggle\"}")
     }
 
+    fun forceIgnitionOn() {
+        sendCommand("{\"cmd\":\"remote_ignition_on\"}")
+    }
+
+    fun forceIgnitionOff() {
+        sendCommand("{\"cmd\":\"remote_ignition_off\"}")
+    }
+
     fun pulseHorn() {
         sendCommand("{\"cmd\":\"remote_horn_beep\"}")
     }
@@ -181,12 +189,40 @@ class AezelBleManager private constructor(private val context: Context) {
         sendCommand("{\"cmd\":\"remote_hazard_toggle\"}")
     }
 
+    fun indicatorLeft() {
+        sendCommand("{\"cmd\":\"remote_indicator_left\"}")
+    }
+
+    fun indicatorRight() {
+        sendCommand("{\"cmd\":\"remote_indicator_right\"}")
+    }
+
+    fun indicatorOff() {
+        sendCommand("{\"cmd\":\"remote_indicator_off\"}")
+    }
+
     fun triggerSeatRelease() {
         sendCommand("{\"cmd\":\"remote_seat_release\"}")
     }
 
     fun triggerFindMyBike() {
         sendCommand("{\"cmd\":\"find_bike\"}")
+    }
+
+    fun setTheme(theme: String) {
+        sendCommand("{\"cmd\":\"set_theme\",\"val\":\"$theme\"}")
+    }
+
+    fun resetTripA() {
+        sendCommand("{\"cmd\":\"reset_trip_a\"}")
+    }
+
+    fun resetTripB() {
+        sendCommand("{\"cmd\":\"reset_trip_b\"}")
+    }
+
+    fun triggerOtaWifi() {
+        sendCommand("{\"cmd\":\"remote_ota_wifi\"}")
     }
 
     fun sendNavigationUpdate(distMeters: Int, turnIcon: Int, streetName: String, etaMins: Int) {
