@@ -177,6 +177,7 @@ AEZEL/
 ## 📚 Documentation Index
 
 - ⭐ [`docs/features.md`](docs/features.md) — Comprehensive feature specification & boot animation details
+- ⚡ [`docs/power_and_animations.md`](docs/power_and_animations.md) — Power architecture, ignition sensing & animation guide
 - 📋 [`docs/bom.md`](docs/bom.md) — Complete Bill of Materials and recommended components
 - ⚡ [`docs/power_distribution.md`](docs/power_distribution.md) — Power tree, buck regulation, and transient protection
 - 🔌 [`docs/wiring.md`](docs/wiring.md) — Harness wiring diagrams, opto-coupler circuits, and routing
