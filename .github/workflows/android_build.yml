@@ -31,10 +31,17 @@ jobs:
       - name: Make Gradlew Executable
         run: chmod +x gradlew
 
-      - name: Build Android Debug APK
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Build Android Self-Signed Release & Debug APKs
+        run: ./gradlew assembleRelease assembleDebug --stacktrace
 
-      - name: Upload Built APK Artifact
+      - name: Upload Self-Signed Release APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: aezel-vcu-app-release
+          path: app/build/outputs/apk/release/app-release.apk
+          if-no-files-found: error
+
+      - name: Upload Debug APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: aezel-vcu-app-debug
