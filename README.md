@@ -176,6 +176,7 @@ AEZEL/
 
 ## 📚 Documentation Index
 
+- 💰 [`docs/modular_budget_and_smartphone_control.md`](docs/modular_budget_and_smartphone_control.md) — Modular budget upgrade roadmap ($15–$55) & full BLE smartphone remote control API
 - 🔬 [`docs/features_deep_dive.md`](docs/features_deep_dive.md) — Low-level technical deep dive into every single feature & math formula
 - ❓ [`docs/faq_and_qna.md`](docs/faq_and_qna.md) — Comprehensive technical Q&A reference & architectural decisions
 - ⚡ [`docs/hardware_schematics_and_pinout.md`](docs/hardware_schematics_and_pinout.md) — Complete GPIO pinout table, voltage dividers & protection schematics

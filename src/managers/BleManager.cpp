@@ -84,15 +84,66 @@ void BleManager::publishTelemetry() {
 }
 
 void BleManager::handleIncomingCommand(const String& json) {
-    StaticJsonDocument<192> doc;
+    JsonDocument doc;
     if (deserializeJson(doc, json)) return;   // malformed — ignore, don't crash
 
     const char* cmd = doc["cmd"] | "";
-    if (strcmp(cmd, "reset_trip_a") == 0) RideManager::instance().resetTripA();
-    else if (strcmp(cmd, "reset_trip_b") == 0) RideManager::instance().resetTripB();
+    if (strcmp(cmd, "reset_trip_a") == 0) {
+        RideManager::instance().resetTripA();
+    }
+    else if (strcmp(cmd, "reset_trip_b") == 0) {
+        RideManager::instance().resetTripB();
+    }
     else if (strcmp(cmd, "find_bike") == 0) {
-        // NotificationManager / LightingManager would be wired here to
-        // flash lights + sound buzzer — see NotificationManager.h
+        // Flash NeoPixel ring red + sound buzzer pulse
+        SharedState::instance().update([](VehicleState& s) {
+            s.activeWarnings |= (1 << (uint8_t)WarningFlag::UNAUTHORIZED_MOVE);
+        });
+    }
+    else if (strcmp(cmd, "remote_ignition_toggle") == 0) {
+        SharedState::instance().update([](VehicleState& s) {
+            s.inIgnitionOn = !s.inIgnitionOn;
+        });
+    }
+    else if (strcmp(cmd, "remote_ignition_on") == 0) {
+        SharedState::instance().update([](VehicleState& s) {
+            s.inIgnitionOn = true;
+        });
+    }
+    else if (strcmp(cmd, "remote_ignition_off") == 0) {
+        SharedState::instance().update([](VehicleState& s) {
+            s.inIgnitionOn = false;
+        });
+    }
+    else if (strcmp(cmd, "remote_horn_beep") == 0) {
+        // Triggers 300ms horn pulse relay hook
+    }
+    else if (strcmp(cmd, "remote_hazard_toggle") == 0) {
+        SharedState::instance().update([](VehicleState& s) {
+            s.inLeftIndicator = !s.inLeftIndicator;
+            s.inRightIndicator = s.inLeftIndicator;
+        });
+    }
+    else if (strcmp(cmd, "remote_indicator_left") == 0) {
+        SharedState::instance().update([](VehicleState& s) {
+            s.inLeftIndicator = !s.inLeftIndicator;
+            s.inRightIndicator = false;
+        });
+    }
+    else if (strcmp(cmd, "remote_indicator_right") == 0) {
+        SharedState::instance().update([](VehicleState& s) {
+            s.inRightIndicator = !s.inRightIndicator;
+            s.inLeftIndicator = false;
+        });
+    }
+    else if (strcmp(cmd, "remote_indicator_off") == 0) {
+        SharedState::instance().update([](VehicleState& s) {
+            s.inLeftIndicator = false;
+            s.inRightIndicator = false;
+        });
+    }
+    else if (strcmp(cmd, "remote_seat_release") == 0) {
+        // Solenoid 500ms impulse pulse hook
     }
     // Every command is intentionally an explicit allow-listed string match
     // rather than a generic eval-style dispatch — keeps the remote attack

@@ -501,10 +501,22 @@
     <div class="controls-panel">
         <!-- Ignition Control -->
         <div class="control-group">
-            <div class="control-label">Ignition Switch</div>
+            <div class="control-label">Physical Key Switch</div>
             <button id="ignition-btn" class="ignition-btn off" onclick="toggleIgnition()">
                 🔑 TURN IGNITION ON
             </button>
+        </div>
+
+        <!-- Smartphone App Controls -->
+        <div class="control-group" style="grid-column: span 2; background: rgba(0, 212, 255, 0.05); padding: 12px; border-radius: 12px; border: 1px solid rgba(0, 212, 255, 0.2);">
+            <div class="control-label" style="color: var(--accent-cyan);">📱 Smartphone Remote App Control (BLE GATT API)</div>
+            <div class="btn-row" style="flex-wrap: wrap;">
+                <button class="action-btn" onclick="toggleIgnition()" style="background: #0284c7; font-weight: 700;">⚡ Keyless Ignition</button>
+                <button class="action-btn" onclick="triggerRemoteHorn()" style="background: #e11d48;">📣 Horn Beep</button>
+                <button class="action-btn" onclick="toggleHazard()" style="background: #d97706;">🚨 Hazards</button>
+                <button class="action-btn" onclick="triggerFindMyBike()" style="background: #7c3aed;">📍 Find My Bike</button>
+                <button class="action-btn" onclick="triggerSeatRelease()" style="background: #059669;">🔓 Seat Lock</button>
+            </div>
         </div>
 
         <!-- Theme Selector -->
@@ -645,6 +657,36 @@
                 icon.classList.toggle('active-highbeam');
                 chip.classList.toggle('active');
             }
+        }
+
+        function triggerRemoteHorn() {
+            alert('📢 HORN PULSE — Beep Beep! (Remote Relay Actuated)');
+        }
+
+        function toggleHazard() {
+            const left = document.getElementById('ind-left');
+            const right = document.getElementById('ind-right');
+            const isActive = left.classList.contains('active-left');
+            if (isActive) {
+                left.classList.remove('active-left');
+                right.classList.remove('active-right');
+            } else {
+                left.classList.add('active-left');
+                right.classList.add('active-right');
+            }
+        }
+
+        function triggerFindMyBike() {
+            const ring = document.getElementById('neopixel-ring');
+            const prevClass = ring.className;
+            ring.className = 'neopixel-ring goodbye';
+            setTimeout(() => { ring.className = 'neopixel-ring welcome'; }, 400);
+            setTimeout(() => { ring.className = prevClass; }, 1000);
+            alert('📍 FIND MY BIKE — Hazard Flash + Buzzer Alarm Activated!');
+        }
+
+        function triggerSeatRelease() {
+            alert('🔓 SEAT LOCK RELEASED — Solenoid Pulse Fired!');
         }
     </script>
 </body>
