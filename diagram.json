@@ -29,41 +29,34 @@
       "id": "btn_mode",
       "top": 180,
       "left": -60,
-      "attrs": { "color": "blue", "label": "MODE" }
+      "attrs": { "color": "blue" }
     },
     {
       "type": "wokwi-pushbutton",
       "id": "btn_ok",
       "top": 180,
       "left": 40,
-      "attrs": { "color": "green", "label": "OK" }
+      "attrs": { "color": "green" }
     },
     {
       "type": "wokwi-potentiometer",
       "id": "pot_fuel",
       "top": -160,
       "left": -220,
-      "attrs": { "label": "Fuel Sender ADC" }
+      "attrs": {}
     },
     {
       "type": "wokwi-potentiometer",
       "id": "pot_battery",
       "top": -60,
       "left": -220,
-      "attrs": { "label": "Battery Sense ADC" }
+      "attrs": {}
     },
     {
       "type": "wokwi-mpu6050",
       "id": "mpu",
       "top": 320,
       "left": -220,
-      "attrs": {}
-    },
-    {
-      "type": "wokwi-bmp280",
-      "id": "bmp",
-      "top": 320,
-      "left": -60,
       "attrs": {}
     },
     {
@@ -81,11 +74,11 @@
       "attrs": {}
     },
     {
-      "type": "wokwi-neopixel-canvas",
+      "type": "wokwi-neopixel",
       "id": "rgb_strip",
       "top": 320,
       "left": 240,
-      "attrs": { "pixels": "8" }
+      "attrs": {}
     }
   ],
   "connections": [
@@ -94,7 +87,10 @@
     [ "esp:9", "display:LED", "orange", [ "h0" ] ],
     [ "esp:10", "display:CS", "green", [ "h0" ] ],
     [ "esp:11", "display:D/C", "yellow", [ "h0" ] ],
-    [ "esp:12", "display:RESET", "purple", [ "h0" ] ],
+    [ "esp:12", "display:RST", "purple", [ "h0" ] ],
+    [ "esp:40", "display:SCK", "blue", [ "h0" ] ],
+    [ "esp:38", "display:MOSI", "green", [ "h0" ] ],
+    [ "esp:39", "display:MISO", "yellow", [ "h0" ] ],
 
     [ "esp:GND.1", "encoder:GND", "black", [ "v0" ] ],
     [ "esp:3V3.1", "encoder:VCC", "red", [ "v0" ] ],
@@ -102,11 +98,11 @@
     [ "esp:5", "encoder:DT", "yellow", [ "h0" ] ],
     [ "esp:6", "encoder:SW", "blue", [ "h0" ] ],
 
-    [ "esp:7", "btn_mode:1.A", "blue", [ "h0" ] ],
-    [ "esp:GND.1", "btn_mode:2.A", "black", [ "h0" ] ],
+    [ "esp:7", "btn_mode:1.l", "blue", [ "h0" ] ],
+    [ "esp:GND.1", "btn_mode:2.l", "black", [ "h0" ] ],
 
-    [ "esp:8", "btn_ok:1.A", "green", [ "h0" ] ],
-    [ "esp:GND.1", "btn_ok:2.A", "black", [ "h0" ] ],
+    [ "esp:8", "btn_ok:1.l", "green", [ "h0" ] ],
+    [ "esp:GND.1", "btn_ok:2.l", "black", [ "h0" ] ],
 
     [ "esp:1", "pot_fuel:SIG", "purple", [ "h0" ] ],
     [ "esp:3V3.1", "pot_fuel:VCC", "red", [ "h0" ] ],
@@ -117,24 +113,19 @@
     [ "esp:GND.1", "pot_battery:GND", "black", [ "h0" ] ],
 
     [ "esp:21", "mpu:SDA", "green", [ "h0" ] ],
-    [ "esp:22", "mpu:SCL", "yellow", [ "h0" ] ],
+    [ "esp:20", "mpu:SCL", "yellow", [ "h0" ] ],
     [ "esp:3V3.1", "mpu:VCC", "red", [ "h0" ] ],
     [ "esp:GND.1", "mpu:GND", "black", [ "h0" ] ],
-
-    [ "esp:21", "bmp:SDA", "green", [ "h0" ] ],
-    [ "esp:22", "bmp:SCL", "yellow", [ "h0" ] ],
-    [ "esp:3V3.1", "bmp:VCC", "red", [ "h0" ] ],
-    [ "esp:GND.1", "bmp:GND", "black", [ "h0" ] ],
 
     [ "esp:15", "ds18b20:DQ", "cyan", [ "h0" ] ],
     [ "esp:3V3.1", "ds18b20:VCC", "red", [ "h0" ] ],
     [ "esp:GND.1", "ds18b20:GND", "black", [ "h0" ] ],
 
-    [ "esp:27", "buzzer:1", "red", [ "h0" ] ],
+    [ "esp:36", "buzzer:1", "red", [ "h0" ] ],
     [ "esp:GND.1", "buzzer:2", "black", [ "h0" ] ],
 
-    [ "esp:26", "rgb_strip:DIN", "green", [ "h0" ] ],
+    [ "esp:35", "rgb_strip:DIN", "green", [ "h0" ] ],
     [ "esp:5V", "rgb_strip:VDD", "red", [ "h0" ] ],
-    [ "esp:GND.1", "rgb_strip:GND", "black", [ "h0" ] ]
+    [ "esp:GND.1", "rgb_strip:VSS", "black", [ "h0" ] ]
   ]
 }

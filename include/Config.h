@@ -30,29 +30,30 @@
 #define PIN_ONEWIRE_BUS      15    // DS18B20 x2 (engine + ambient) on one bus
 #define PIN_LIGHT_SENSOR_ADC 16    // ambient light (LDR or BH1750 via I2C instead - see below)
 #define I2C_SDA              21    // shared bus: IMU, RTC, BMP280, ambient light (BH1750)
-#define I2C_SCL              22
+#define I2C_SCL              20
 
 // ------------------------------------------------------- Indicator inputs -
 // All read from existing motorcycle harness through opto-isolators / voltage
 // dividers - NEVER connect 12V direct to ESP32 GPIO.
-#define PIN_IN_LEFT_INDICATOR   33
-#define PIN_IN_RIGHT_INDICATOR  34
+#define PIN_IN_LEFT_INDICATOR   19
+#define PIN_IN_RIGHT_INDICATOR  0
 #define PIN_IN_NEUTRAL          35
 #define PIN_IN_HIGH_BEAM        36
 #define PIN_IN_HORN_SW          37
-#define PIN_IN_SIDE_STAND       38
-#define PIN_IN_FRONT_BRAKE      39
-#define PIN_IN_REAR_BRAKE       40
-#define PIN_IN_CLUTCH           41
-#define PIN_IN_KILL_SWITCH      42
-#define PIN_IN_IGNITION         45   // wake source, see PowerManager
-#define PIN_IN_STARTER          46
+#define PIN_IN_SIDE_STAND       41
+#define PIN_IN_FRONT_BRAKE      42
+#define PIN_IN_REAR_BRAKE       45
+#define PIN_IN_CLUTCH           46
+#define PIN_IN_KILL_SWITCH      47
+#define PIN_IN_IGNITION         48   // wake source, see PowerManager
+#define PIN_IN_STARTER          0
 
 // ------------------------------------------------------ Output / lighting -
+// Note: Output pins use distinct GPIOs
 #define PIN_OUT_DRL_PWM         47
 #define PIN_OUT_HAZARD_RELAY    48
-#define PIN_OUT_RGB_ACCENT_DATA 26   // WS2812B accent strip (welcome/goodbye/theme)
-#define PIN_OUT_BUZZER          27
+#define PIN_OUT_RGB_ACCENT_DATA 35
+#define PIN_OUT_BUZZER          36
 
 // ------------------------------------------------------------- Storage ---
 #define PIN_SD_CS            5   // shares SPI bus with TFT (separate CS)
