@@ -104,3 +104,63 @@ The 2017 TVS Jupiter ZX is a 110cc single-cylinder 4-stroke automatic CVT scoote
 - **Electric Seat Solenoid Wire**: Blue/Yellow wire under seat lock -> GPIO 19 Solenoid Relay.
 - **Left Indicator**: Orange wire under nose panel -> GPIO 19 Opto-Isolator.
 - **Right Indicator**: Light Blue wire under nose panel -> GPIO 0 Opto-Isolator.
+
+---
+
+## 3. Detailed Impact Analysis of Unsupported / Non-Working Features
+
+This section explains the exact system behavior, fail-over mechanisms, and user experience when a feature is not supported by either the Bajaj Avenger 150 (2015) or TVS Jupiter ZX (2017).
+
+---
+
+### 3.1 Automotive CAN Bus / OBD-II Non-Availability
+
+#### Vehicle Context:
+Neither the 2015 Bajaj Avenger 150 nor the 2017 TVS Jupiter ZX possesses an Engine Control Unit (ECU) or CAN Bus OBD-II port (both are carburetted BS4 models using mechanical/analog harness wiring).
+
+#### System Behavior & Fail-Over Mechanism:
+- **Startup Bus Probe**: During boot, [`CanManager`](file:///workspaces/AEZEL/src/managers/CanManager.cpp) executes a non-blocking probe on the ESP32-S3 TWAI controller (`GPIO 4 TX / GPIO 5 RX`).
+- **Automatic Silent Deactivation**: When no CAN transceiver or OBD-II signals respond, `CanManager` evaluates `_canActive = false` and disables CAN polling.
+- **Zero Crashes or Error Banners**: No exception is thrown, no error banners appear on the dashboard, and no warnings clutter the notification queue.
+- **Primary Sensor Fallback**: Telemetry seamlessly reads from primary discrete hardware inputs:
+  - **Speed**: Wheel Hall Effect Sensor on GPIO 18 (`PIN_SPEED_HALL`).
+  - **RPM**: Ignition Coil Negative pickup on GPIO 17 (`PIN_RPM_PICKUP`).
+  - **Temperature**: DS18B20 1-Wire bus on GPIO 15 (`PIN_ONEWIRE_BUS`).
+
+---
+
+### 3.2 Gear Position (1 to 5) Non-Availability on Bajaj Avenger 150
+
+#### Vehicle Context:
+The stock 2015 Bajaj Avenger 150 features a Neutral switch wire on the crankcase (showing when the gearbox is in Neutral), but does **NOT** contain individual gear contact switches for 1st, 2nd, 3rd, 4th, or 5th gear.
+
+#### System Behavior & Visual Experience:
+- **In Neutral**: When the shift lever is in Neutral, GPIO 35 (`PIN_IN_NEUTRAL`) reads `0V` (`LOW`). The center gear readout displays a bold, bright **`N`** alongside the green neutral status icon.
+- **In Gear (1st to 5th)**: When shifted into gear, the Neutral switch opens (`HIGH`). The display cleanly shows **`-`** (or utilizes AEZEL's ratio-based gear estimation heuristic calculating $\text{Ratio} = \frac{\text{RPM}}{\text{Speed}}$).
+- **Riding Impact**: **Zero negative impact.** Speedometer, Tachometer arc sweep, Fuel bar, Odometer, Trip A/B, and **Remote Engine Start** operate 100% normally.
+- **Optional Hardware Upgrade**: Installing an inexpensive 5-pin aftermarket gear switch ($2) onto the Avenger's shift drum allows AEZEL to display `1`, `2`, `3`, `4`, `5` cleanly.
+
+---
+
+### 3.3 Manual Transmission & Clutch Non-Availability on TVS Jupiter ZX (CVT Scooter)
+
+#### Vehicle Context:
+The 2017 TVS Jupiter ZX uses a Continuously Variable Transmission (CVT) automatic centrifugal clutch. It has no manual gear shifter and no clutch lever (the left handlebar lever operates the rear drum brake).
+
+#### System Behavior & Safety Adaptation:
+- **Gear Display**: Operates permanently in **`A`** (Automatic) or **`N`** (Neutral).
+- **Clutch Input Adaptation**: The clutch input (`PIN_IN_CLUTCH`) is tied to ground or left un-wired.
+- **Scooter Remote Start Safety Interlock**: Instead of checking for a clutch lever pull, AEZEL's **Remote Engine Start** verifies the rear brake switch line (`PIN_IN_REAR_BRAKE`) before engaging the starter relay, matching OEM scooter safety standards.
+- **Riding Impact**: **Zero negative impact.** Speedometer, RPM, fuel level, indicators, hazard flasher, GPS tracking, and **smartphone electric seat lock release** operate 100% normally.
+
+---
+
+### 3.4 Comprehensive System Impact Summary Table
+
+| Feature / Subsystem | Bajaj Avenger 150 (2015) | TVS Jupiter ZX (2017) | System Behavior When Unsupported | Rider Impact |
+| :--- | :---: | :---: | :--- | :---: |
+| **Automotive CAN Bus** | Unsupported | Unsupported | Silent probe fail-over to physical pulse/analog sensors. | **ZERO** (No errors/crashes) |
+| **Gears 1 to 5** | Unsupported (Stock) | N/A (CVT Auto) | Shows `N` in neutral, `-` in gear. Rest of dash works 100%. | **ZERO** (Core dash unaffected) |
+| **Clutch Switch** | Supported | N/A (CVT Auto) | Inputs ignored; scooter uses rear brake switch interlock. | **ZERO** (Adapted for CVT) |
+| **All Core Subsystems** | **100% Supported** | **100% Supported** | Speed, RPM, Fuel, Trips, Animations, Remote Start, GPS work 100%. | **FULL FUNCTIONALITY** |
+
