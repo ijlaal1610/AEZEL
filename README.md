@@ -1,4 +1,4 @@
-# Project Phoenix — ESP32 Smart Motorcycle Cockpit
+# AEZEL — ESP32 Smart Motorcycle Cockpit
 
 Firmware for a modular smart dashboard, scoped for a 2015 Bajaj Avenger 150
 but wired so the electrical-noise handling, task architecture, and manager

@@ -1,4 +1,4 @@
-# Power Distribution — Project Phoenix
+# Power Distribution — AEZEL
 
 ```
 Battery (+12V nominal, 9-16V realistic swing, load-dump spikes to 40V+)

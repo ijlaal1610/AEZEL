@@ -1,4 +1,4 @@
-# Bill of Materials — Project Phoenix
+# Bill of Materials — AEZEL
 
 Prices are rough India-market street estimates (Aug 2026) for a single
 prototype unit; drop 30-40% at 50+ unit volumes.

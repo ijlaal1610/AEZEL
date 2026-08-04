@@ -1,4 +1,4 @@
-# Wiring — Project Phoenix
+# Wiring — AEZEL
 
 This describes the wiring diagram in words + a connection table, since a
 true schematic belongs in KiCad (see `docs/pcb.md` for the PCB

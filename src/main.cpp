@@ -1,5 +1,5 @@
 // ============================================================================
-//  Project Phoenix — ESP32 Smart Motorcycle Cockpit
+//  AEZEL — ESP32 Smart Motorcycle Cockpit
 //  main.cpp — boot sequence + FreeRTOS task graph
 //
 //  Boot budget target: < 1.5s from power-on to a visible, responsive
@@ -37,7 +37,7 @@ static void diagnosticsTask(void* pv) {
 
 void setup() {
     Serial.begin(115200);
-    Serial.println("\n=== Project Phoenix — Smart Motorcycle Cockpit ===");
+    Serial.println("\n=== AEZEL — Smart Motorcycle Cockpit ===");
 
     esp_task_wdt_init(8, true);   // 8s watchdog, panic (reboot) on starvation
     esp_task_wdt_add(NULL);

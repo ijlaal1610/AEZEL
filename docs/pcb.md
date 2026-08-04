@@ -1,4 +1,4 @@
-# PCB Design Recommendations — Project Phoenix
+# PCB Design Recommendations — AEZEL
 
 A hand-wired protoboard is fine for Phase 0/1 bench validation
 (`docs/roadmap.md`), but a real install should move to a custom PCB before

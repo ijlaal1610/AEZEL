@@ -1,4 +1,4 @@
-# Themes — Project Phoenix
+# Themes — AEZEL
 
 ## Current state (this repo)
 

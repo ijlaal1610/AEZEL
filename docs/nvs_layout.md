@@ -1,4 +1,4 @@
-# NVS Memory Layout — Project Phoenix
+# NVS Memory Layout — AEZEL
 
 `StorageManager` opens a single `Preferences` namespace, `"phoenix"`. Keys
 below 15 characters (ESP32 NVS key-length limit) — this table is the

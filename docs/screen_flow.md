@@ -1,4 +1,4 @@
-# Screen Flow — Project Phoenix
+# Screen Flow — AEZEL
 
 ## Current state (this repo)
 
