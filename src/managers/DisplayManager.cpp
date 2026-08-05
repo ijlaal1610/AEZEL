@@ -275,10 +275,20 @@ void DisplayManager::buildSettingsScreen() {
     _switchFocus = lv_switch_create(_screenSettings);
     lv_obj_align(_switchFocus, LV_ALIGN_TOP_RIGHT, -30, 115);
 
+    // Live Notification Overlay Toggle
+    lv_obj_t* lblNotifOverlay = lv_label_create(_screenSettings);
+    lv_label_set_text(lblNotifOverlay, "Live Notif Overlay On Main Display:");
+    lv_obj_set_style_text_color(lblNotifOverlay, lv_color_white(), 0);
+    lv_obj_align(lblNotifOverlay, LV_ALIGN_TOP_LEFT, 30, 170);
+
+    lv_obj_t* switchNotifOverlay = lv_switch_create(_screenSettings);
+    lv_obj_align(switchNotifOverlay, LV_ALIGN_TOP_RIGHT, -30, 165);
+    lv_obj_add_state(switchNotifOverlay, LV_STATE_CHECKED);
+
     // OTA Wi-Fi Button
     _btnOtaWifi = lv_btn_create(_screenSettings);
-    lv_obj_align(_btnOtaWifi, LV_ALIGN_BOTTOM_MID, 0, -30);
-    lv_obj_set_size(_btnOtaWifi, 220, 45);
+    lv_obj_align(_btnOtaWifi, LV_ALIGN_BOTTOM_MID, 0, -15);
+    lv_obj_set_size(_btnOtaWifi, 220, 40);
     lv_obj_t* btnLbl = lv_label_create(_btnOtaWifi);
     lv_label_set_text(btnLbl, "Start Wireless OTA AP");
     lv_obj_center(btnLbl);
@@ -367,9 +377,9 @@ void DisplayManager::refreshWidgetsFromState() {
     s.inNeutral          ? lv_obj_clear_flag(_iconNeutral, LV_OBJ_FLAG_HIDDEN)          : lv_obj_add_flag(_iconNeutral, LV_OBJ_FLAG_HIDDEN);
     s.inHighBeam          ? lv_obj_clear_flag(_iconHighBeam, LV_OBJ_FLAG_HIDDEN)          : lv_obj_add_flag(_iconHighBeam, LV_OBJ_FLAG_HIDDEN);
 
-    // Warning banner reflects NotificationManager's top unacknowledged item
+    // Warning / Phone Notification Banner (shown on main display if allowNotifOverlay is enabled)
     const Notification* n = NotificationManager::instance().current();
-    if (n) {
+    if (n && s.allowNotifOverlay && !s.focusMode) {
         lv_label_set_text(_labelWarningBanner, n->title.c_str());
         lv_obj_clear_flag(_labelWarningBanner, LV_OBJ_FLAG_HIDDEN);
     } else {

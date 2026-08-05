@@ -40,6 +40,7 @@ struct VehicleState {
     // --- Display Toggles & Customization ------------------------------
     bool     showSpeedometer   = true;  // Option to hide center numeric speedo
     bool     focusMode         = false; // Minimalist Pure Tachometer mode
+    bool     allowNotifOverlay = true;  // Popup live notifications on main display while riding
 
     // --- Core ride data -----------------------------------------------
     float    speedKmh          = 0;

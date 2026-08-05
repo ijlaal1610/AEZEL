@@ -583,6 +583,7 @@
                 <button class="action-btn" onclick="triggerPhoneNotif()" style="background: #ec4899; color: #fff; font-weight: 700;">🔔 Phone Notif Mirror</button>
                 <button class="action-btn" onclick="toggleSpeedoUI()" style="background: #6366f1; color: #fff; font-weight: 700;">⏱️ Toggle Speedometer</button>
                 <button class="action-btn" onclick="toggleFocusUI()" style="background: #8b5cf6; color: #fff; font-weight: 700;">🏎️ Minimal Focus Mode</button>
+                <button class="action-btn" onclick="toggleNotifOverlayUI()" style="background: #14b8a6; color: #fff; font-weight: 700;">💬 Live Notif Overlay</button>
             </div>
         </div>
 
@@ -812,6 +813,12 @@
             const isHidden = tripBar.style.display === 'none';
             tripBar.style.display = isHidden ? 'block' : 'none';
             alert(isHidden ? '🏎️ Focus Mode Deactivated (All Dashboard Widgets Restored)' : '🏎️ Minimalist Focus Mode Activated (Pure Tachometer & Gear Display)');
+        }
+
+        let isOverlayAllowed = true;
+        function toggleNotifOverlayUI() {
+            isOverlayAllowed = !isOverlayAllowed;
+            alert(isOverlayAllowed ? '💬 Live Notification Overlay ENABLED on Main Display while riding' : '💬 Live Notification Overlay DISABLED on Main Display (Alerts saved to Notifications Screen only)');
         }
     </script>
 </body>

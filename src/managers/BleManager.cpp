@@ -194,6 +194,11 @@ void BleManager::handleIncomingCommand(const String& json) {
             s.focusMode = !s.focusMode;
         });
     }
+    else if (strcmp(cmd, "toggle_notif_overlay") == 0) {
+        SharedState::instance().update([](VehicleState& s) {
+            s.allowNotifOverlay = !s.allowNotifOverlay;
+        });
+    }
     else if (strcmp(cmd, "phone_notif") == 0) {
         const char* appName = doc["app"] | "Phone";
         const char* title = doc["title"] | "";
