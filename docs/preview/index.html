@@ -444,9 +444,12 @@
                 <div class="deep-sleep-badge">[ DEEP SLEEP — WAKE ON IGNITION ]</div>
             </div>
 
-            <!-- GOODBYE LAYER -->
-            <div id="screen-goodbye" class="screen-layer">
-                <div class="goodbye-text">See you next ride</div>
+            <!-- LOCKSCREEN LAYER -->
+            <div id="screen-lock" class="screen-layer" style="padding: 30px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1f080c 0%, #07090e 100%);">
+                <div style="font-size: 3rem; color: var(--accent-red); margin-bottom: 10px;">🔐</div>
+                <div style="font-size: 1.5rem; font-weight: 900; color: #fff;">VEHICLE IMMOBILIZED</div>
+                <div style="font-size: 0.95rem; color: var(--text-muted); margin-top: 8px;">Enter 4-Digit Security PIN or Connect Smartphone</div>
+                <div style="font-size: 0.85rem; color: var(--accent-cyan); margin-top: 20px; background: rgba(0,212,255,0.1); padding: 6px 14px; border-radius: 12px; border: 1px solid rgba(0,212,255,0.3);">BLE Keyless Proximity Auto-Unlock Active</div>
             </div>
 
             <!-- DASHBOARD LAYER -->
@@ -552,10 +555,11 @@
         <div class="control-group" style="grid-column: span 2; background: rgba(255, 255, 255, 0.03); padding: 12px; border-radius: 12px;">
             <div class="control-label" style="color: #fff; font-weight: 700;">🖥️ Cockpit Display Screen Selector</div>
             <div class="btn-row" style="flex-wrap: wrap;">
+                <button class="action-btn" onclick="switchScreen('lock')" style="background: #ef4444; color: #fff; font-weight: 900;">🔐 Lockscreen</button>
                 <button class="action-btn" onclick="switchScreen('dashboard')" style="background: #00d4ff; color: #000; font-weight: 900;">📊 Main Dashboard</button>
                 <button class="action-btn" onclick="switchScreen('trip')" style="background: #10b981; color: #fff; font-weight: 700;">📈 Trip Analytics</button>
                 <button class="action-btn" onclick="switchScreen('nav')" style="background: #3b82f6; color: #fff; font-weight: 700;">🗺️ Turn Navigation</button>
-                <button class="action-btn" onclick="switchScreen('notif')" style="background: #ef4444; color: #fff; font-weight: 700;">🔔 Notifications</button>
+                <button class="action-btn" onclick="switchScreen('notif')" style="background: #f97316; color: #fff; font-weight: 700;">🔔 Notifications</button>
                 <button class="action-btn" onclick="switchScreen('settings')" style="background: #8b5cf6; color: #fff; font-weight: 700;">⚙️ Settings & Calib</button>
             </div>
         </div>
@@ -784,7 +788,7 @@
                 alert('🔑 Turn Ignition ON first to view Cockpit Display Screens!');
                 return;
             }
-            const screens = ['dashboard', 'trip', 'nav', 'notif', 'settings'];
+            const screens = ['lock', 'dashboard', 'trip', 'nav', 'notif', 'settings'];
             screens.forEach(s => {
                 const layer = document.getElementById('screen-' + s);
                 if (layer) layer.classList.remove('active');

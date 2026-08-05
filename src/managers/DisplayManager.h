@@ -13,7 +13,7 @@
 #include "DataModel.h"
 #include <lvgl.h>
 
-enum class Screen : uint8_t { MAIN_DASHBOARD, TRIP_INFO, NAVIGATION, NOTIFICATIONS, SETTINGS };
+enum class Screen : uint8_t { LOCKSCREEN, MAIN_DASHBOARD, TRIP_INFO, NAVIGATION, NOTIFICATIONS, SETTINGS };
 
 class DisplayManager {
 public:
@@ -29,6 +29,7 @@ public:
 private:
     DisplayManager() = default;
 
+    void buildLockScreen();
     void buildMainDashboard();
     void buildTripInfoScreen();
     void buildNavigationScreen();
@@ -77,6 +78,11 @@ private:
     lv_obj_t* _switchSpeedo = nullptr;
     lv_obj_t* _switchFocus = nullptr;
     lv_obj_t* _btnOtaWifi = nullptr;
+
+    // LVGL objects for Security Lockscreen
+    lv_obj_t* _screenLock = nullptr;
+    lv_obj_t* _labelLockPin = nullptr;
+    lv_obj_t* _labelLockStatus = nullptr;
 
     Screen _currentScreen = Screen::MAIN_DASHBOARD;
     uint32_t _lastRenderMs = 0;

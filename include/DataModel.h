@@ -37,6 +37,10 @@ enum class WarningFlag : uint32_t {
 inline WarningFlag operator|(WarningFlag a, WarningFlag b) { return WarningFlag(uint32_t(a) | uint32_t(b)); }
 
 struct VehicleState {
+    // --- Security & Lockscreen -----------------------------------------
+    bool     isLocked          = false; // Anti-Theft Lockscreen active
+    char     pinCode[5]        = "1234";
+
     // --- Display Toggles & Customization ------------------------------
     bool     showSpeedometer   = true;  // Option to hide center numeric speedo
     bool     focusMode         = false; // Minimalist Pure Tachometer mode

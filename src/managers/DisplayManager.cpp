@@ -50,6 +50,7 @@ void DisplayManager::begin() {
     indevDriver.read_cb = lvglTouchReadCb;
     lv_indev_drv_register(&indevDriver);
 
+    buildLockScreen();
     buildMainDashboard();
     buildTripInfoScreen();
     buildNavigationScreen();
@@ -57,6 +58,32 @@ void DisplayManager::begin() {
     buildSettingsScreen();
     applyTheme(ThemeMode::MODERN_DIGITAL);
     goToScreen(Screen::MAIN_DASHBOARD);
+}
+
+void DisplayManager::buildLockScreen() {
+    _screenLock = lv_obj_create(nullptr);
+    lv_obj_set_style_bg_color(_screenLock, lv_color_hex(0x07090E), 0);
+
+    lv_obj_t* icon = lv_label_create(_screenLock);
+    lv_label_set_text(icon, "[ IMMOBILIZED ]");
+    lv_obj_set_style_text_color(icon, lv_color_hex(0xFF1744), 0);
+    lv_obj_align(icon, LV_ALIGN_CENTER, 0, -80);
+
+    _labelLockStatus = lv_label_create(_screenLock);
+    lv_label_set_text(_labelLockStatus, "VEHICLE IMMOBILIZED");
+    lv_obj_set_style_text_font(_labelLockStatus, &lv_font_montserrat_28, 0);
+    lv_obj_set_style_text_color(_labelLockStatus, lv_color_white(), 0);
+    lv_obj_align(_labelLockStatus, LV_ALIGN_CENTER, 0, -20);
+
+    _labelLockPin = lv_label_create(_screenLock);
+    lv_label_set_text(_labelLockPin, "Enter 4-Digit Security PIN or Connect Smartphone");
+    lv_obj_set_style_text_color(_labelLockPin, lv_color_hex(0x8A93A8), 0);
+    lv_obj_align(_labelLockPin, LV_ALIGN_CENTER, 0, 30);
+
+    lv_obj_t* subText = lv_label_create(_screenLock);
+    lv_label_set_text(subText, "BLE Keyless Proximity Auto-Unlock Active");
+    lv_obj_set_style_text_color(subText, lv_color_hex(0x00D4FF), 0);
+    lv_obj_align(subText, LV_ALIGN_BOTTOM_MID, 0, -15);
 }
 
 void DisplayManager::taskEntry(void* pv) {
@@ -308,6 +335,9 @@ void DisplayManager::applyTheme(ThemeMode mode) {
 void DisplayManager::goToScreen(Screen s) {
     _currentScreen = s;
     switch (s) {
+        case Screen::LOCKSCREEN:
+            if (_screenLock) lv_scr_load_anim(_screenLock, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, false);
+            break;
         case Screen::MAIN_DASHBOARD:
             if (_screenMain) lv_scr_load_anim(_screenMain, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, false);
             break;
