@@ -51,6 +51,10 @@ void DisplayManager::begin() {
     lv_indev_drv_register(&indevDriver);
 
     buildMainDashboard();
+    buildTripInfoScreen();
+    buildNavigationScreen();
+    buildNotificationsScreen();
+    buildSettingsScreen();
     applyTheme(ThemeMode::MODERN_DIGITAL);
     goToScreen(Screen::MAIN_DASHBOARD);
 }
@@ -165,10 +169,122 @@ void DisplayManager::buildMainDashboard() {
     lv_obj_add_flag(_labelWarningBanner, LV_OBJ_FLAG_HIDDEN);
 }
 
+void DisplayManager::buildTripInfoScreen() {
+    _screenTrip = lv_obj_create(nullptr);
+    lv_obj_set_style_bg_color(_screenTrip, lv_color_hex(0x0A0E14), 0);
+
+    lv_obj_t* title = lv_label_create(_screenTrip);
+    lv_label_set_text(title, "TRIP INFO & ANALYTICS");
+    lv_obj_set_style_text_color(title, lv_color_hex(0x00D4FF), 0);
+    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 15);
+
+    _labelTripMaxSpeed = lv_label_create(_screenTrip);
+    lv_label_set_text(_labelTripMaxSpeed, "Max Speed: 0 km/h");
+    lv_obj_set_style_text_color(_labelTripMaxSpeed, lv_color_white(), 0);
+    lv_obj_align(_labelTripMaxSpeed, LV_ALIGN_TOP_LEFT, 20, 60);
+
+    _labelTripAvgSpeed = lv_label_create(_screenTrip);
+    lv_label_set_text(_labelTripAvgSpeed, "Avg Speed: 0 km/h");
+    lv_obj_set_style_text_color(_labelTripAvgSpeed, lv_color_white(), 0);
+    lv_obj_align(_labelTripAvgSpeed, LV_ALIGN_TOP_LEFT, 20, 100);
+
+    _labelTripRideTime = lv_label_create(_screenTrip);
+    lv_label_set_text(_labelTripRideTime, "Ride Time: 0m 0s");
+    lv_obj_set_style_text_color(_labelTripRideTime, lv_color_white(), 0);
+    lv_obj_align(_labelTripRideTime, LV_ALIGN_TOP_LEFT, 20, 140);
+
+    _labelTripFuelRange = lv_label_create(_screenTrip);
+    lv_label_set_text(_labelTripFuelRange, "Est Range: 0 km");
+    lv_obj_set_style_text_color(_labelTripFuelRange, lv_color_hex(0x00E676), 0);
+    lv_obj_align(_labelTripFuelRange, LV_ALIGN_TOP_LEFT, 20, 180);
+}
+
+void DisplayManager::buildNavigationScreen() {
+    _screenNav = lv_obj_create(nullptr);
+    lv_obj_set_style_bg_color(_screenNav, lv_color_hex(0x0A0E14), 0);
+
+    _labelNavTurnIcon = lv_label_create(_screenNav);
+    lv_label_set_text(_labelNavTurnIcon, LV_SYMBOL_UP);
+    lv_obj_set_style_text_font(_labelNavTurnIcon, &lv_font_montserrat_48, 0);
+    lv_obj_set_style_text_color(_labelNavTurnIcon, lv_color_hex(0x00D4FF), 0);
+    lv_obj_align(_labelNavTurnIcon, LV_ALIGN_CENTER, -100, -20);
+
+    _labelNavDistance = lv_label_create(_screenNav);
+    lv_label_set_text(_labelNavDistance, "-- m");
+    lv_obj_set_style_text_font(_labelNavDistance, &lv_font_montserrat_28, 0);
+    lv_obj_set_style_text_color(_labelNavDistance, lv_color_white(), 0);
+    lv_obj_align(_labelNavDistance, LV_ALIGN_CENTER, 30, -30);
+
+    _labelNavStreet = lv_label_create(_screenNav);
+    lv_label_set_text(_labelNavStreet, "Connect Phone GPS...");
+    lv_obj_set_style_text_color(_labelNavStreet, lv_color_hex(0x8A93A8), 0);
+    lv_obj_align(_labelNavStreet, LV_ALIGN_CENTER, 0, 30);
+
+    _labelNavEta = lv_label_create(_screenNav);
+    lv_label_set_text(_labelNavEta, "ETA: --");
+    lv_obj_set_style_text_color(_labelNavEta, lv_color_hex(0xFFC400), 0);
+    lv_obj_align(_labelNavEta, LV_ALIGN_BOTTOM_MID, 0, -20);
+}
+
+void DisplayManager::buildNotificationsScreen() {
+    _screenNotif = lv_obj_create(nullptr);
+    lv_obj_set_style_bg_color(_screenNotif, lv_color_hex(0x0A0E14), 0);
+
+    lv_obj_t* title = lv_label_create(_screenNotif);
+    lv_label_set_text(title, "ACTIVE WARNINGS & DIAGNOSTICS");
+    lv_obj_set_style_text_color(title, lv_color_hex(0xFF1744), 0);
+    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 15);
+
+    _labelNotifTitle = lv_label_create(_screenNotif);
+    lv_label_set_text(_labelNotifTitle, "System Nominal");
+    lv_obj_set_style_text_font(_labelNotifTitle, &lv_font_montserrat_28, 0);
+    lv_obj_set_style_text_color(_labelNotifTitle, lv_color_hex(0x00E676), 0);
+    lv_obj_align(_labelNotifTitle, LV_ALIGN_CENTER, 0, -20);
+
+    _labelNotifBody = lv_label_create(_screenNotif);
+    lv_label_set_text(_labelNotifBody, "All sensors operational.");
+    lv_obj_set_style_text_color(_labelNotifBody, lv_color_white(), 0);
+    lv_obj_align(_labelNotifBody, LV_ALIGN_CENTER, 0, 20);
+}
+
+void DisplayManager::buildSettingsScreen() {
+    _screenSettings = lv_obj_create(nullptr);
+    lv_obj_set_style_bg_color(_screenSettings, lv_color_hex(0x0A0E14), 0);
+
+    lv_obj_t* title = lv_label_create(_screenSettings);
+    lv_label_set_text(title, "SYSTEM SETTINGS & TOGGLES");
+    lv_obj_set_style_text_color(title, lv_color_hex(0x00D4FF), 0);
+    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 15);
+
+    // Speedometer Toggle
+    lv_obj_t* lblSpeedo = lv_label_create(_screenSettings);
+    lv_label_set_text(lblSpeedo, "Show Speedometer:");
+    lv_obj_set_style_text_color(lblSpeedo, lv_color_white(), 0);
+    lv_obj_align(lblSpeedo, LV_ALIGN_TOP_LEFT, 30, 70);
+
+    _switchSpeedo = lv_switch_create(_screenSettings);
+    lv_obj_align(_switchSpeedo, LV_ALIGN_TOP_RIGHT, -30, 65);
+    lv_obj_add_state(_switchSpeedo, LV_STATE_CHECKED);
+
+    // Focus Mode Toggle
+    lv_obj_t* lblFocus = lv_label_create(_screenSettings);
+    lv_label_set_text(lblFocus, "Minimalist Focus Mode:");
+    lv_obj_set_style_text_color(lblFocus, lv_color_white(), 0);
+    lv_obj_align(lblFocus, LV_ALIGN_TOP_LEFT, 30, 120);
+
+    _switchFocus = lv_switch_create(_screenSettings);
+    lv_obj_align(_switchFocus, LV_ALIGN_TOP_RIGHT, -30, 115);
+
+    // OTA Wi-Fi Button
+    _btnOtaWifi = lv_btn_create(_screenSettings);
+    lv_obj_align(_btnOtaWifi, LV_ALIGN_BOTTOM_MID, 0, -30);
+    lv_obj_set_size(_btnOtaWifi, 220, 45);
+    lv_obj_t* btnLbl = lv_label_create(_btnOtaWifi);
+    lv_label_set_text(btnLbl, "Start Wireless OTA AP");
+    lv_obj_center(btnLbl);
+}
+
 void DisplayManager::applyTheme(ThemeMode mode) {
-    // Full theme system swaps color tokens / fonts per docs/themes.md — kept
-    // to a single accent-color swap here to illustrate the hook point without
-    // duplicating ten near-identical theme tables in sample code.
     lv_color_t accent = lv_color_hex(0x00D4FF);
     switch (mode) {
         case ThemeMode::SPORT:  accent = lv_color_hex(0xFF1744); break;
@@ -176,16 +292,28 @@ void DisplayManager::applyTheme(ThemeMode mode) {
         case ThemeMode::RETRO:  accent = lv_color_hex(0xFF8A00); break;
         default: break;
     }
-    lv_obj_set_style_arc_color(_arcRpm, accent, LV_PART_INDICATOR);
+    if (_arcRpm) lv_obj_set_style_arc_color(_arcRpm, accent, LV_PART_INDICATOR);
 }
 
 void DisplayManager::goToScreen(Screen s) {
     _currentScreen = s;
-    if (s == Screen::MAIN_DASHBOARD) lv_scr_load_anim(_screenMain, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, false);
-    // TRIP_INFO / NAVIGATION / NOTIFICATIONS / SETTINGS screens follow the
-    // same buildXScreen() + lv_scr_load_anim() pattern — omitted here for
-    // brevity, see docs/screen_flow.md for the full state diagram and
-    // docs/roadmap.md Phase 2 for build order.
+    switch (s) {
+        case Screen::MAIN_DASHBOARD:
+            if (_screenMain) lv_scr_load_anim(_screenMain, LV_SCR_LOAD_ANIM_FADE_ON, 200, 0, false);
+            break;
+        case Screen::TRIP_INFO:
+            if (_screenTrip) lv_scr_load_anim(_screenTrip, LV_SCR_LOAD_ANIM_MOVE_LEFT, 200, 0, false);
+            break;
+        case Screen::NAVIGATION:
+            if (_screenNav) lv_scr_load_anim(_screenNav, LV_SCR_LOAD_ANIM_MOVE_LEFT, 200, 0, false);
+            break;
+        case Screen::NOTIFICATIONS:
+            if (_screenNotif) lv_scr_load_anim(_screenNotif, LV_SCR_LOAD_ANIM_MOVE_LEFT, 200, 0, false);
+            break;
+        case Screen::SETTINGS:
+            if (_screenSettings) lv_scr_load_anim(_screenSettings, LV_SCR_LOAD_ANIM_MOVE_LEFT, 200, 0, false);
+            break;
+    }
 }
 
 // ------------------------------------------------------- Per-frame refresh

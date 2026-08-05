@@ -32,7 +32,8 @@ private:
     void buildMainDashboard();
     void buildTripInfoScreen();
     void buildNavigationScreen();
-    void buildNotificationBanner();
+    void buildNotificationsScreen();
+    void buildSettingsScreen();
     void applyTheme(ThemeMode mode);
     void refreshWidgetsFromState();
 
@@ -52,12 +53,30 @@ private:
     lv_obj_t* _iconHighBeam = nullptr;
     lv_obj_t* _labelWarningBanner = nullptr;
 
+    // LVGL objects for Trip Info Screen
+    lv_obj_t* _screenTrip = nullptr;
+    lv_obj_t* _labelTripMaxSpeed = nullptr;
+    lv_obj_t* _labelTripAvgSpeed = nullptr;
+    lv_obj_t* _labelTripRideTime = nullptr;
+    lv_obj_t* _labelTripFuelRange = nullptr;
+
     // LVGL objects for Turn-by-Turn Navigation Screen
     lv_obj_t* _screenNav = nullptr;
     lv_obj_t* _labelNavTurnIcon = nullptr;
     lv_obj_t* _labelNavDistance = nullptr;
     lv_obj_t* _labelNavStreet = nullptr;
     lv_obj_t* _labelNavEta = nullptr;
+
+    // LVGL objects for Notifications Screen
+    lv_obj_t* _screenNotif = nullptr;
+    lv_obj_t* _labelNotifTitle = nullptr;
+    lv_obj_t* _labelNotifBody = nullptr;
+
+    // LVGL objects for Settings & Calibration Screen
+    lv_obj_t* _screenSettings = nullptr;
+    lv_obj_t* _switchSpeedo = nullptr;
+    lv_obj_t* _switchFocus = nullptr;
+    lv_obj_t* _btnOtaWifi = nullptr;
 
     Screen _currentScreen = Screen::MAIN_DASHBOARD;
     uint32_t _lastRenderMs = 0;
