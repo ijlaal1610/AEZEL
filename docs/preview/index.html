@@ -477,9 +477,7 @@
                 <!-- Center Gauge & Speed -->
                 <div class="dash-center">
                     <svg class="rpm-svg" viewBox="0 0 200 200">
-                        <!-- Arc background track -->
                         <path class="rpm-bg-track" d="M 30 150 A 80 80 0 1 1 170 150" />
-                        <!-- Value track -->
                         <path id="rpm-arc" class="rpm-val-track" d="M 30 150 A 80 80 0 1 1 170 150" />
                     </svg>
 
@@ -494,11 +492,74 @@
                 </div>
             </div>
 
+            <!-- TRIP INFO LAYER -->
+            <div id="screen-trip" class="screen-layer" style="padding: 20px; text-align: left;">
+                <div style="color: var(--accent-cyan); font-weight: 900; font-size: 1.1rem; margin-bottom: 15px; text-align: center;">📈 TRIP INFO & RIDE ANALYTICS</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.95rem;">
+                    <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🚀 <b>Max Speed:</b> <span style="color: var(--accent-cyan);">114 km/h</span></div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">📊 <b>Avg Speed:</b> <span style="color: var(--accent-cyan);">42 km/h</span></div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">⏱️ <b>Ride Time:</b> 42m 15s</div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">⛽ <b>Est Range:</b> <span style="color: var(--accent-green);">185 km</span></div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🛣️ <b>Trip A:</b> 68.4 km</div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">🗺️ <b>Trip B:</b> 312.0 km</div>
+                </div>
+            </div>
+
+            <!-- NAVIGATION LAYER -->
+            <div id="screen-nav" class="screen-layer" style="padding: 20px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                <div style="font-size: 3.5rem; color: var(--accent-cyan); margin-bottom: 5px;">◀</div>
+                <div style="font-size: 1.8rem; font-weight: 900; color: #fff;">150 m</div>
+                <div style="font-size: 1.1rem; color: var(--text-muted); margin-top: 5px;">Turn Left onto MG Road / NH-44</div>
+                <div style="font-size: 0.9rem; color: var(--accent-amber); margin-top: 15px; background: rgba(255,138,0,0.15); padding: 4px 12px; border-radius: 12px;">ETA: 12 Mins • Remaining: 4.2 km</div>
+            </div>
+
+            <!-- NOTIFICATIONS LAYER -->
+            <div id="screen-notif" class="screen-layer" style="padding: 20px; text-align: left;">
+                <div style="color: var(--accent-red); font-weight: 900; font-size: 1.1rem; margin-bottom: 12px; text-align: center;">🔔 ACTIVE WARNINGS & NOTIFICATIONS</div>
+                <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.9rem;">
+                    <div style="background: rgba(255,23,68,0.15); border-left: 4px solid var(--accent-red); padding: 8px; border-radius: 4px;">⚠️ <b>CHECK ENGINE:</b> Oxygen sensor voltage low</div>
+                    <div style="background: rgba(0,212,255,0.15); border-left: 4px solid var(--accent-cyan); padding: 8px; border-radius: 4px;">📱 <b>WhatsApp (Rahul):</b> "Heading out for the ride now!"</div>
+                    <div style="background: rgba(57,255,20,0.15); border-left: 4px solid var(--accent-green); padding: 8px; border-radius: 4px;">🔋 <b>BATTERY NOMINAL:</b> Charging voltage 14.2V</div>
+                </div>
+            </div>
+
+            <!-- SETTINGS & CALIBRATION LAYER -->
+            <div id="screen-settings" class="screen-layer" style="padding: 15px; text-align: left;">
+                <div style="color: var(--accent-cyan); font-weight: 900; font-size: 1.1rem; margin-bottom: 10px; text-align: center;">⚙️ COCKPIT SETTINGS & CALIBRATION</div>
+                <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.85rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px;">
+                        <span>Show SpeedometerDigits</span>
+                        <input type="checkbox" checked onchange="toggleSpeedoUI()">
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px;">
+                        <span>Minimalist Pure Tach Focus Mode</span>
+                        <input type="checkbox" onchange="toggleFocusUI()">
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px;">
+                        <span>Speed Unit</span>
+                        <select style="padding: 2px 6px; font-size: 0.8rem;"><option>km/h</option><option>mph</option></select>
+                    </div>
+                    <button class="action-btn" onclick="triggerOtaWeb()" style="background: #eab308; color: #000; font-weight: 700; width: 100%; margin-top: 5px;">🌐 Start Wireless OTA AP (http://192.168.4.1)</button>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <!-- Control Panel -->
     <div class="controls-panel">
+        <!-- Screen Selector Tabs -->
+        <div class="control-group" style="grid-column: span 2; background: rgba(255, 255, 255, 0.03); padding: 12px; border-radius: 12px;">
+            <div class="control-label" style="color: #fff; font-weight: 700;">🖥️ Cockpit Display Screen Selector</div>
+            <div class="btn-row" style="flex-wrap: wrap;">
+                <button class="action-btn" onclick="switchScreen('dashboard')" style="background: #00d4ff; color: #000; font-weight: 900;">📊 Main Dashboard</button>
+                <button class="action-btn" onclick="switchScreen('trip')" style="background: #10b981; color: #fff; font-weight: 700;">📈 Trip Analytics</button>
+                <button class="action-btn" onclick="switchScreen('nav')" style="background: #3b82f6; color: #fff; font-weight: 700;">🗺️ Turn Navigation</button>
+                <button class="action-btn" onclick="switchScreen('notif')" style="background: #ef4444; color: #fff; font-weight: 700;">🔔 Notifications</button>
+                <button class="action-btn" onclick="switchScreen('settings')" style="background: #8b5cf6; color: #fff; font-weight: 700;">⚙️ Settings & Calib</button>
+            </div>
+        </div>
+
         <!-- Ignition Control -->
         <div class="control-group">
             <div class="control-label">Physical Key Switch</div>
@@ -715,6 +776,20 @@
 
         function triggerNavSim() {
             alert('🗺️ TURN-BY-TURN NAVIGATION SIMULATION:\n\n◀ Turn Left in 150m onto MG Road\nETA: 12 Mins | Remaining: 4.2 km\n\n(Pushed via BLE GATT nav_update payload)');
+        }
+
+        function switchScreen(screenName) {
+            if (!isIgnitionOn) {
+                alert('🔑 Turn Ignition ON first to view Cockpit Display Screens!');
+                return;
+            }
+            const screens = ['dashboard', 'trip', 'nav', 'notif', 'settings'];
+            screens.forEach(s => {
+                const layer = document.getElementById('screen-' + s);
+                if (layer) layer.classList.remove('active');
+            });
+            const target = document.getElementById('screen-' + screenName);
+            if (target) target.classList.add('active');
         }
 
         function triggerOtaWeb() {
