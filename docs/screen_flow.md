@@ -2,80 +2,80 @@
 
 ## Current state (this repo)
 
-Only `MAIN_DASHBOARD` is built (`DisplayManager::buildMainDashboard()`).
-`DisplayManager::goToScreen()` has the switch statement structured to add
-the rest — each follows the identical pattern:
+All four screens in the cycle are built and wired: `MAIN_DASHBOARD`,
+`TRIP_INFO`, `NOTIFICATIONS`, `SETTINGS`. Navigation works via touch swipe
+(LVGL gesture detection), the physical MODE button (short press = next,
+long press = jump to Settings), and the rotary encoder's press (aliased to
+the OK button — see the note on quadrature decode below).
 
-```cpp
-void DisplayManager::buildTripInfoScreen() {
-    _screenTripInfo = lv_obj_create(nullptr);
-    // ... widgets ...
-}
-```
-then a case in `goToScreen()`:
-```cpp
-case Screen::TRIP_INFO:
-    lv_scr_load_anim(_screenTripInfo, LV_SCR_LOAD_ANIM_MOVE_LEFT, 200, 0, false);
-    break;
-```
+`NAVIGATION` (compass/heading/turn-by-turn) is intentionally **not** in the
+build or the cycle yet — it depends on the routing-engine decision flagged
+in `docs/roadmap.md` Phase 3, and there was no honest way to ship a fourth
+screen for it without either faking data or leaving it blank. Adding it
+later is the same `buildXScreen()` pattern as the other three, plus one
+more `case` in `goToScreen()`'s switch and one more step in the
+`nextScreen()`/`prevScreen()` cycle.
 
-## Intended state diagram
+## Implemented state diagram
 
 ```
-                    ┌───────────────────┐
-        swipe R ───►│  NOTIFICATIONS     │
-        ◄─ swipe L  │  (alert list,      │
-                    │   acknowledge)     │
-                    └─────────┬──────────┘
-                              │ swipe R / rotary
-                              ▼
-   ┌──────────────┐   ┌───────────────────┐   ┌──────────────┐
-   │  SETTINGS     │◄─►│  MAIN_DASHBOARD    │◄─►│  TRIP_INFO    │
-   │  (calibration,│   │  (speed/RPM/gear/  │   │  (trip A/B,   │
-   │   theme, ride │   │   fuel/temp/       │   │   avg/max,    │
-   │   mode, units)│   │   indicators)      │   │   ride timer) │
-   └──────────────┘   └─────────┬──────────┘   └──────────────┘
-        long-press               │ swipe L / rotary
-        MODE button               ▼
-                          ┌───────────────────┐
-                          │  NAVIGATION        │
-                          │  (compass/heading, │
-                          │   GPS speed, ETA   │
-                          │   once routing      │
-                          │   exists — Phase 3) │
-                          └───────────────────┘
+   ┌──────────────┐   ┌───────────────────┐   ┌──────────────┐   ┌────────────────┐
+   │ MAIN_DASHBOARD│──►│  TRIP_INFO         │──►│ NOTIFICATIONS │──►│  SETTINGS       │
+   │ (speed/RPM/   │◄──│  (trip A/B, odo,   │◄──│ (alert list,  │◄──│  (theme, ride   │
+   │  gear/fuel/   │   │   ride timer,      │   │  tap to       │   │   mode,         │
+   │  temp/        │   │   avg/max speed,   │   │  acknowledge) │   │   brightness,   │
+   │  indicators)  │   │   fuel range/eff., │   │               │   │   HW status)    │
+   │               │   │   reset A/B        │   │               │   │                 │
+   │               │   │   buttons)         │   │               │   │                 │
+   └───────┬───────┘   └────────────────────┘   └───────────────┘   └────────┬────────┘
+           │                                                                  │
+           └──────────────────────────  cycle wraps  ◄──────────────────────┘
 ```
 
-## Navigation input mapping
+Swipe left / MODE short-press moves right through this cycle; swipe right
+moves left. It wraps at both ends (Settings → swipe left → Main Dashboard,
+and Main Dashboard → swipe right → Settings).
+
+## Navigation input mapping (as implemented)
 
 | Input | Action |
 |---|---|
-| Swipe left / rotary CW | Next screen (Dashboard → Trip → Navigation → loop) |
-| Swipe right / rotary CCW | Previous screen |
-| Tap / rotary press | Select / acknowledge current notification |
-| Physical MODE button, short press | Same as swipe left (glove-friendly alternative) |
-| Physical MODE button, long press (>1s) | Jump directly to Settings from any screen |
-| Physical OK button | Confirm/select within Settings submenus |
+| Swipe left | Next screen (`DisplayManager::nextScreen()`) |
+| Swipe right | Previous screen (`DisplayManager::prevScreen()`) |
+| Physical MODE button, short press | Same as swipe left |
+| Physical MODE button, long press (>1s, `LONG_PRESS_MS`) | Jump directly to Settings from any screen |
+| Physical OK button / rotary press | On the Notifications screen: acknowledge the current (oldest unacknowledged) notification |
+| Touch tap | Buttons/sliders on Settings and Trip Info respond to direct taps as normal LVGL widgets; individual notification rows are tappable to acknowledge that specific one |
 
-## Transition rules
+**Not yet implemented:** turning the rotary encoder (quadrature decode on
+`PIN_ROTARY_A`/`PIN_ROTARY_B`) doesn't navigate yet — only its press
+(`PIN_ROTARY_SW`) does anything, and that's aliased to the OK button
+behavior above. Touch swipe and the MODE button already cover full
+navigation, so this isn't blocking; adding quadrature decode is the same
+ISR-pulse-counting pattern `SensorManager` already uses for speed/RPM.
+
+## Transition rules (implemented in `DisplayManager::tick()`/`nextScreen()`/`prevScreen()`)
 
 - A `CRITICAL` notification (see `NotificationManager`) force-switches to
-  `NOTIFICATIONS` regardless of current screen and current swipe input,
-  and blocks navigation away until acknowledged — the rider must not be
-  able to swipe past a crash-detected or engine-overtemp alert unnoticed.
-- `Screen::MAIN_DASHBOARD` is always the screen shown on wake from deep
-  sleep / ignition-on — never resume mid-navigation into Settings, which
-  would be disorienting and, for a moving vehicle, unsafe.
-- Screen transitions use `LV_SCR_LOAD_ANIM_MOVE_LEFT/RIGHT` to match swipe
-  direction (spatial consistency — swiping left should visually feel like
-  moving left), except the forced-notification jump, which uses a fade to
-  avoid implying a "swipe" happened that didn't.
+  `NOTIFICATIONS` the moment it appears, regardless of current screen, and
+  both `nextScreen()`/`prevScreen()` refuse to move away from it while any
+  `CRITICAL` notification remains unacknowledged — checked fresh on every
+  navigation attempt, not just once.
+- `Screen::MAIN_DASHBOARD` is always the screen shown on boot
+  (`DisplayManager::begin()` calls `goToScreen(Screen::MAIN_DASHBOARD)`
+  explicitly after building all four screens) — never resumes mid-navigation
+  into Settings.
+- Screen transitions animate via `LV_SCR_LOAD_ANIM_MOVE_LEFT/RIGHT`,
+  direction chosen by comparing the target screen's position in the cycle
+  to the current one (`goToScreen()`'s `forward` calculation) — spatially
+  consistent with whichever swipe direction (or MODE press) triggered it.
+  The very first screen load at boot skips animation entirely (there's
+  nothing to slide away from).
 
-## Build order (matches `docs/roadmap.md` Phase 2)
+## What's genuinely still open (see `docs/roadmap.md` for the fuller list)
 
-1. `TRIP_INFO` — reuses fields already in `VehicleState`, no new sensor work
-2. `NOTIFICATIONS` — reuses `NotificationManager::current()`/queue, mostly a
-   list-view widget
-3. `SETTINGS` — needs the Calibration Wizard sub-flow designed first (see
-   `docs/calibration.md`), so this is the more involved of the three
-4. `NAVIGATION` — deferred to Phase 3, depends on routing-engine decision
+- Rotary quadrature navigation (noted above)
+- Persisting the Settings screen's theme/ride-mode selection to NVS (the
+  `theme`/`ride_mode` keys are reserved in `docs/nvs_layout.md` but not yet
+  written by `DisplayManager` — selections currently reset on reboot)
+- The `NAVIGATION` screen itself, once Phase 3's routing-engine decision is made

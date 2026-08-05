@@ -13,7 +13,7 @@ prototype unit; drop 30-40% at 50+ unit volumes.
 | Ambient light | BH1750 | I2C, better dynamic range than LDR+ADC | 60 |
 | Temp (engine/ambient) | DS18B20 waterproof probe x2 | Stainless probe version for engine-bay mounting | 150 each |
 | Barometric | BMP280 | Altitude + pressure | 90 |
-| Speed sensor | Reed/Hall proximity sensor | Omron/Honeywell hall-effect, or reuse OEM ABS tone-ring pickup if fitted | 150–400 |
+| Speed sensor | Hall-effect sensor + 4 small magnets | Glue 4 magnets equally spaced around the wheel disc/rim (or reuse an existing ABS tone-ring pickup's tooth count if fitted) — a single magnet doesn't give enough pulses per second for a stable reading at normal riding speed, see `docs/calibration.md` | 150–400 |
 | RPM pickup | Opto-isolated coil-negative tap | PC817 optocoupler + RC filter (build, not buy) | 30 |
 | Fuel sender interface | Signal-conditioning board | Op-amp buffer + divider to condition OEM float-resistance sender to 0-3.3V | build |
 | SD card | Industrial-grade microSD, 32GB | SLC/pSLC-class (e.g. Transcend/Apacer industrial) — consumer cards fail fast under vibration+heat | 600 |

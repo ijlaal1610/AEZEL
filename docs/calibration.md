@@ -1,7 +1,11 @@
 # Calibration Procedures
 
 ## Wheel circumference (speed accuracy)
-1. Mark the tyre contact point and the ground with chalk.
+1. Confirm `HALL_PULSES_PER_REV` in `include/Config.h` matches how many
+   magnets you actually glued around the wheel (4 is the default/recommended
+   count — see `docs/bom.md`). This must be right before the distance
+   calibration below means anything.
+2. Mark the tyre contact point and the ground with chalk.
 2. Push the bike forward (engine off) for exactly 10 wheel revolutions,
    counting hall-sensor pulses via serial monitor (`SensorManager` logs
    raw pulse count if `CORE_DEBUG_LEVEL >= 4`).

@@ -1,6 +1,6 @@
 # NVS Memory Layout — AEZEL
 
-`StorageManager` opens a single `Preferences` namespace, `"phoenix"`. Keys
+`StorageManager` opens a single `Preferences` namespace, `"aezel"`. Keys
 below 15 characters (ESP32 NVS key-length limit) — this table is the
 authoritative list; add new keys here whenever `StorageManager` grows one so
 nobody duplicates a key by accident.
@@ -32,7 +32,7 @@ nobody duplicates a key by accident.
   sensor tick — that burns flash write-endurance for no benefit, since
   losing up to 10 seconds of trip distance on an abrupt power loss is an
   acceptable tradeoff already documented in the main README.
-- Namespace stays singular (`"phoenix"`) rather than one-namespace-per-
+- Namespace stays singular (`"aezel"`) rather than one-namespace-per-
   manager — simpler backup/restore/factory-reset story (wipe one namespace,
   not N), and NVS overhead per namespace isn't free on a resource-constrained
   MCU.

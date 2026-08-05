@@ -6,9 +6,17 @@
 #include <Arduino.h>
 
 // Compile-Time Subsystem Feature Flags
-#define ENABLE_CAN_BUS       1
-#define ENABLE_OTA_WIFI      1
-#define ENABLE_NAVIGATION    1
+#define ENABLE_CAN_BUS           1
+#define ENABLE_OTA_WIFI          1
+#define ENABLE_NAVIGATION        1
+#define ENABLE_GPS               1
+#define ENABLE_IMU               1
+#define ENABLE_BAROMETER         1
+#define ENABLE_SD_CARD           1
+#define ENABLE_BLE               1
+#define ENABLE_TOUCHSCREEN       1
+#define ENABLE_REMOTE_STARTER    1
+#define ENABLE_REMOTE_HORN       1
 
 // ---------------------------------------------------------------- Display --
 // Parallel/SPI TFT wired per TFT_eSPI User_Setup.h (kept in sync with these).
@@ -64,6 +72,7 @@
 #define PIN_OUT_IGNITION_RELAY  20   // Relays 12V to ignition circuit / ECU
 #define PIN_OUT_RGB_ACCENT_DATA 26   // WS2812B accent strip (welcome/goodbye/theme)
 #define PIN_OUT_BUZZER          27
+#define PIN_OUT_HORN_RELAY      27   // Horn relay / buzzer output pin
 
 // ------------------------------------------------------------- Storage ---
 #define PIN_SD_CS            5   // shares SPI bus with TFT (separate CS)

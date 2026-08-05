@@ -22,14 +22,20 @@
       / connector choices
 
 ## Phase 2 — Full dashboard UI
-- [ ] Build TripInfo, Notifications, Settings screens (same
+- [x] Build TripInfo, Notifications, Settings screens (same
       `buildXScreen()` pattern as MainDashboard)
-- [ ] Screen-flow state machine + swipe/rotary navigation wiring
-      (`docs/screen_flow.md` — write once Phase 1 confirms the input HW)
+- [x] Screen-flow state machine + swipe/button navigation wiring
+      (`docs/screen_flow.md`) — rotary quadrature turn-to-navigate still open
 - [ ] Ride-mode presets (Eco/City/Touring/Sport/Rain) mapped to concrete
-      theme/brightness/warning-threshold table — currently only the enum
-      exists in `DataModel.h`
-- [ ] Calibration Wizard UI (fuel curve, wheel size, IMU zero-point)
+      theme/brightness/warning-threshold table — Settings screen currently
+      lets you cycle and select a mode (stored in `VehicleState`), but no
+      manager yet reacts to it by changing thresholds/behavior
+- [ ] Calibration Wizard UI (fuel curve, wheel size, IMU zero-point) — the
+      procedures exist in `docs/calibration.md` but are manual/off-device;
+      an on-dash Settings sub-flow to walk through them is still open
+- [ ] Persist Settings screen selections (theme, ride mode) to NVS — the
+      keys are reserved in `docs/nvs_layout.md` but not yet written on
+      selection, so they reset on reboot
 
 ## Phase 3 — Analytics & navigation
 - [ ] Gear-position inference (RPM/speed-ratio heuristic) if no aftermarket
