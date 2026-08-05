@@ -456,11 +456,25 @@
             <div id="screen-dashboard" class="screen-layer">
                 <!-- Top Indicator Bar -->
                 <div class="indicator-bar">
+                    <button class="nav-drawer-btn" onclick="toggleNavDrawer()" style="background: rgba(0,212,255,0.2); border: 1px solid var(--accent-cyan); color: #fff; border-radius: 4px; padding: 2px 8px; font-weight: 900; font-size: 0.8rem; cursor: pointer;">☰ MENU</button>
                     <div class="ind-icon" id="ind-left">◀</div>
                     <div class="ind-icon active-neutral" id="ind-neutral">N</div>
                     <div class="ind-icon" id="ind-highbeam">👁</div>
                     <div class="ind-icon" id="ind-right">▶</div>
                     <div class="clock-display" id="clock-txt">12:45</div>
+                </div>
+
+                <!-- SLIDE-OUT QUICK NAV DRAWER OVERLAY -->
+                <div id="nav-drawer" style="display: none; position: absolute; top: 0; left: 0; width: 220px; height: 100%; background: rgba(10, 14, 20, 0.95); backdrop-filter: blur(10px); border-right: 2px solid var(--accent-cyan); z-index: 100; padding: 15px; box-sizing: border-box; flex-direction: column; gap: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+                        <span style="color: var(--accent-cyan); font-weight: 900; font-size: 0.9rem;">AEZEL COCKPIT MENU</span>
+                        <button onclick="toggleNavDrawer()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
+                    </div>
+                    <div onclick="selectDrawerItem('dashboard')" style="padding: 10px; background: rgba(0,212,255,0.1); border-radius: 6px; color: #fff; font-weight: 700; cursor: pointer;">📊 Main Dashboard</div>
+                    <div onclick="selectDrawerItem('trip')" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px; color: #fff; font-weight: 700; cursor: pointer;">📈 Trip Analytics</div>
+                    <div onclick="selectDrawerItem('nav')" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px; color: #fff; font-weight: 700; cursor: pointer;">🗺️ Turn Navigation</div>
+                    <div onclick="selectDrawerItem('notif')" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px; color: #fff; font-weight: 700; cursor: pointer;">🔔 Notifications</div>
+                    <div onclick="selectDrawerItem('settings')" style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 6px; color: #fff; font-weight: 700; cursor: pointer;">⚙️ Settings & Calib</div>
                 </div>
 
                 <!-- Side Gauges -->
@@ -833,6 +847,19 @@
         function toggleEnableLockscreenUI() {
             isLockscreenEnabled = !isLockscreenEnabled;
             alert(isLockscreenEnabled ? '🔐 Anti-Theft Security Lockscreen ENABLED' : '🔐 Anti-Theft Security Lockscreen DISABLED (Vehicle boots straight to Main Dashboard)');
+        }
+
+        function toggleNavDrawer() {
+            const drawer = document.getElementById('nav-drawer');
+            if (drawer) {
+                const isHidden = drawer.style.display === 'none';
+                drawer.style.display = isHidden ? 'flex' : 'none';
+            }
+        }
+
+        function selectDrawerItem(screenName) {
+            switchScreen(screenName);
+            toggleNavDrawer();
         }
     </script>
 </body>
