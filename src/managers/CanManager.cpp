@@ -2,10 +2,6 @@
 #include <driver/twai.h>
 #include "Config.h"
 
-// ESP32-S3 TWAI CAN Bus configuration
-#define CAN_TX_PIN GPIO_NUM_4
-#define CAN_RX_PIN GPIO_NUM_5
-
 void CanManager::begin() {
     twai_general_config_t g_config = TWAI_GENERAL_CONFIG_DEFAULT(CAN_TX_PIN, CAN_RX_PIN, TWAI_MODE_NORMAL);
     twai_timing_config_t t_config = TWAI_TIMING_CONFIG_500KBITS(); // Standard 500kbps CAN bus baud rate

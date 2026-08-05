@@ -22,6 +22,12 @@
 #include "managers/GpsManager.h"
 #include "managers/BleManager.h"
 #include "managers/DisplayManager.h"
+#if ENABLE_OTA_WIFI
+#include "managers/OtaManager.h"
+#endif
+#if ENABLE_CAN_BUS
+#include "managers/CanManager.h"
+#endif
 
 // Task handles kept for diagnostics (stack high-water-mark reporting, etc.)
 static TaskHandle_t hDisplay, hSensor, hRide, hPower, hStorage, hLighting, hNotif, hGps, hBle, hDiag;
@@ -75,6 +81,15 @@ void setup() {
     xTaskCreatePinnedToCore(GpsManager::taskEntry,      "GPS",     4096, nullptr, PRIO_GPS,          &hGps,     CORE_CONNECTIVITY);
     xTaskCreatePinnedToCore(BleManager::taskEntry,      "BLE",     6144, nullptr, PRIO_BLE,          &hBle,     CORE_CONNECTIVITY);
     xTaskCreatePinnedToCore(diagnosticsTask,             "Diag",    2048, nullptr, PRIO_DIAGNOSTICS,  &hDiag,    CORE_CONNECTIVITY);
+
+#if ENABLE_CAN_BUS
+    static TaskHandle_t hCan;
+    xTaskCreatePinnedToCore(CanManager::taskEntry,      "CAN",     4096, nullptr, PRIO_SENSOR,       &hCan,     CORE_CONNECTIVITY);
+#endif
+#if ENABLE_OTA_WIFI
+    static TaskHandle_t hOta;
+    xTaskCreatePinnedToCore(OtaManager::taskEntry,      "OTA",     4096, nullptr, PRIO_STORAGE,      &hOta,     CORE_CONNECTIVITY);
+#endif
 
     Serial.println("All tasks started. Boot complete.");
 }

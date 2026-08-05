@@ -192,7 +192,30 @@ void DisplayManager::goToScreen(Screen s) {
 void DisplayManager::refreshWidgetsFromState() {
     VehicleState s = SharedState::instance().snapshot();
 
-    lv_label_set_text_fmt(_labelSpeed, "%d", (int)s.speedKmh);
+    // Speedometer Toggle (hide numeric speed if rider has an OEM speedometer)
+    if (!s.showSpeedometer || s.focusMode) {
+        lv_obj_add_flag(_labelSpeed, LV_OBJ_FLAG_HIDDEN);
+        if (_labelSpeedUnit) lv_obj_add_flag(_labelSpeedUnit, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_clear_flag(_labelSpeed, LV_OBJ_FLAG_HIDDEN);
+        if (_labelSpeedUnit) lv_obj_clear_flag(_labelSpeedUnit, LV_OBJ_FLAG_HIDDEN);
+        lv_label_set_text_fmt(_labelSpeed, "%d", (int)s.speedKmh);
+    }
+
+    // Pure Tachometer Focus Mode (strips all distractions except giant Tach Arc & Gear)
+    if (s.focusMode) {
+        lv_obj_add_flag(_labelTrip, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(_barFuel, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(_labelEngineTemp, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(_labelClock, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_add_flag(_labelWarningBanner, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_clear_flag(_labelTrip, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(_barFuel, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(_labelEngineTemp, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_clear_flag(_labelClock, LV_OBJ_FLAG_HIDDEN);
+    }
+
     lv_arc_set_value(_arcRpm, s.rpm);
 
     const char* gearStr = "N";

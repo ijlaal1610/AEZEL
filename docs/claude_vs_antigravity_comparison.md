@@ -11,7 +11,7 @@ It also documents the synthesis strategy used to merge the best modular patterns
 ## 📑 Table of Contents
 
 - [1. Executive Subsystem Comparison Matrix](#1-executive-subsystem-comparison-matrix)
-- [2. Deep Dive: Key Differences](#2-deep-dive-key-differences)
+- [2. Deep Dive: Key Diagyfferences](#2-deep-dive-key-differences)
   - [2.1 Actuator Safety Interlocks & Remote Control](#21-actuator-safety-interlocks--remote-control)
   - [2.2 Signal Processing & Vehicle Math Library](#22-signal-processing--vehicle-math-library)
   - [2.3 3-Phase OEM Boot Animation & UI Engine](#23-3-phase-oem-boot-animation--ui-engine)

@@ -184,6 +184,16 @@ void BleManager::handleIncomingCommand(const String& json) {
             s.navEtaMinutes = eta;
         });
     }
+    else if (strcmp(cmd, "toggle_speedo") == 0) {
+        SharedState::instance().update([](VehicleState& s) {
+            s.showSpeedometer = !s.showSpeedometer;
+        });
+    }
+    else if (strcmp(cmd, "toggle_focus") == 0) {
+        SharedState::instance().update([](VehicleState& s) {
+            s.focusMode = !s.focusMode;
+        });
+    }
     else if (strcmp(cmd, "remote_ota_wifi") == 0) {
         // Triggers Wi-Fi AP + Web Server for wireless firmware uploads
         OtaManager::instance().enableWifiAp();

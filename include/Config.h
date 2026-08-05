@@ -5,6 +5,11 @@
 // ============================================================================
 #include <Arduino.h>
 
+// Compile-Time Subsystem Feature Flags
+#define ENABLE_CAN_BUS       1
+#define ENABLE_OTA_WIFI      1
+#define ENABLE_NAVIGATION    1
+
 // ---------------------------------------------------------------- Display --
 // Parallel/SPI TFT wired per TFT_eSPI User_Setup.h (kept in sync with these).
 #define PIN_TFT_BL          9      // backlight PWM (also drives auto-brightness)
@@ -16,10 +21,14 @@
 
 // ------------------------------------------------------------- Input HW ---
 #define PIN_ROTARY_A        4
-#define PIN_ROTARY_B        5
+#define PIN_ROTARY_B        25
 #define PIN_ROTARY_SW       6
 #define PIN_BTN_MODE        7      // physical mode/back button
 #define PIN_BTN_OK          8
+
+// ----------------------------------------------------------------- CAN ---
+#define CAN_TX_PIN          GPIO_NUM_43
+#define CAN_RX_PIN          GPIO_NUM_44
 
 // -------------------------------------------------------------- Sensors ---
 #define PIN_SPEED_HALL       18    // wheel-speed hall sensor (interrupt, pull-up)
