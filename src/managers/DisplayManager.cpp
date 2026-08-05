@@ -510,6 +510,27 @@ void DisplayManager::refreshWidgetsFromState() {
     }
 }
 
+void DisplayManager::showRideSummaryScreen() {
+    VehicleState s = SharedState::instance().snapshot();
+    lv_obj_t* summary = lv_obj_create(nullptr);
+    lv_obj_set_style_bg_color(summary, lv_color_hex(0x0A0E14), 0);
+
+    lv_obj_t* title = lv_label_create(summary);
+    lv_label_set_text(title, "TRIP COMPLETED - RIDE SUMMARY");
+    lv_obj_set_style_text_color(title, lv_color_hex(0x00D4FF), 0);
+    lv_obj_align(title, LV_ALIGN_TOP_MID, 0, 20);
+
+    lv_obj_t* stats = lv_label_create(summary);
+    lv_label_set_text_fmt(stats, "Distance: %.1f km\nMax Speed: %.0f km/h\nAvg Speed: %.0f km/h\nRide Time: %dm %ds",
+                          s.tripA_km, s.maxSpeedKmh, s.avgSpeedKmh, s.rideTimerSec / 60, s.rideTimerSec % 60);
+    lv_obj_set_style_text_color(stats, lv_color_white(), 0);
+    lv_obj_align(stats, LV_ALIGN_CENTER, 0, 0);
+
+    lv_scr_load(summary);
+    lv_timer_handler();
+    delay(2000);   // Show summary for 2 seconds before goodbye screen
+}
+
 void DisplayManager::showGoodbyeScreen() {
     lv_obj_t* goodbye = lv_obj_create(nullptr);
     lv_obj_set_style_bg_color(goodbye, lv_color_black(), 0);

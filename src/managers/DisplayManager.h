@@ -25,6 +25,7 @@ public:
 
     void goToScreen(Screen s);
     void showGoodbyeScreen();   // called synchronously by PowerManager before sleep
+    void showRideSummaryScreen(); // called on ignition off before sleep
 
     void toggleMenuDrawer();
 

@@ -51,15 +51,17 @@ void PowerManager::handleIgnitionEdge(bool ignitionOn) {
     }
 }
 
+#include "DisplayManager.h"
+
 void PowerManager::requestSafeShutdown() {
     _state = PowerState::SHUTTING_DOWN;
 
     // 1) Flush ride data / settings so nothing is lost mid-write.
     StorageManager::instance().flushAll();
 
-    // 2) Let other tasks see SHUTTING_DOWN and quiesce (DisplayManager should
-    //    show a "goodbye" screen synchronously here if desired — kept out of
-    //    this module to preserve manager independence).
+    // 2) Display Post-Ride Summary card & Goodbye animation on TFT display
+    DisplayManager::instance().showRideSummaryScreen();
+    DisplayManager::instance().showGoodbyeScreen();
 
     enterDeepSleep();
 }
