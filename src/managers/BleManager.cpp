@@ -194,6 +194,13 @@ void BleManager::handleIncomingCommand(const String& json) {
             s.focusMode = !s.focusMode;
         });
     }
+    else if (strcmp(cmd, "phone_notif") == 0) {
+        const char* appName = doc["app"] | "Phone";
+        const char* title = doc["title"] | "";
+        const char* body = doc["body"] | "";
+        String notifTitle = String(appName) + ": " + String(title);
+        NotificationManager::instance().push(notifTitle, String(body), NotifPriority::INFO);
+    }
     else if (strcmp(cmd, "remote_ota_wifi") == 0) {
         // Triggers Wi-Fi AP + Web Server for wireless firmware uploads
         OtaManager::instance().enableWifiAp();

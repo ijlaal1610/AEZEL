@@ -509,7 +509,7 @@
 
         <!-- Smartphone App Controls -->
         <div class="control-group" style="grid-column: span 2; background: rgba(0, 212, 255, 0.05); padding: 12px; border-radius: 12px; border: 1px solid rgba(0, 212, 255, 0.2);">
-            <div class="control-label" style="color: var(--accent-cyan);">📱 Smartphone Remote & Navigation API (BLE / Wi-Fi OTA)</div>
+            <div class="control-label" style="color: var(--accent-cyan);">📱 Smartphone Remote & Navigation API (BLE / Wi-Fi OTA / Notif Sync)</div>
             <div class="btn-row" style="flex-wrap: wrap;">
                 <button class="action-btn" onclick="triggerRemoteStart()" style="background: linear-gradient(135deg, #10b981, #059669); color: #fff; font-weight: 900;">🚀 REMOTE START ENGINE</button>
                 <button class="action-btn" onclick="toggleIgnition()" style="background: #0284c7; font-weight: 700;">⚡ Keyless Ignition</button>
@@ -519,6 +519,9 @@
                 <button class="action-btn" onclick="triggerSeatRelease()" style="background: #059669;">🔓 Seat Lock</button>
                 <button class="action-btn" onclick="triggerNavSim()" style="background: #00d4ff; color: #000; font-weight: 700;">🗺️ Turn Navigation</button>
                 <button class="action-btn" onclick="triggerOtaWeb()" style="background: #eab308; color: #000; font-weight: 700;">🌐 Wi-Fi OTA Update</button>
+                <button class="action-btn" onclick="triggerPhoneNotif()" style="background: #ec4899; color: #fff; font-weight: 700;">🔔 Phone Notif Mirror</button>
+                <button class="action-btn" onclick="toggleSpeedoUI()" style="background: #6366f1; color: #fff; font-weight: 700;">⏱️ Toggle Speedometer</button>
+                <button class="action-btn" onclick="toggleFocusUI()" style="background: #8b5cf6; color: #fff; font-weight: 700;">🏎️ Minimal Focus Mode</button>
             </div>
         </div>
 
@@ -716,6 +719,24 @@
 
         function triggerOtaWeb() {
             alert('🌐 WI-FI OTA FIRMWARE SERVER:\n\nAccess Point Active: "AEZEL-VCU-AP"\nIP Address: 192.168.4.1\n\nOpen browser to http://192.168.4.1 to upload firmware (.bin)');
+        }
+
+        function triggerPhoneNotif() {
+            alert('🔔 PHONE NOTIFICATION MIRRORED TO COCKPIT:\n\nWhatsApp: Rahul\n"Heading out for the ride now!"\n\n(Sent via Smartphone NotificationListenerService over BLE GATT payload)');
+        }
+
+        function toggleSpeedoUI() {
+            const speedTxt = document.getElementById('speed-txt');
+            const isHidden = speedTxt.style.display === 'none';
+            speedTxt.style.display = isHidden ? 'block' : 'none';
+            alert(isHidden ? '⏱️ Speedometer Display Enabled' : '⏱️ Speedometer Hidden (Using OEM Bike Speedo)');
+        }
+
+        function toggleFocusUI() {
+            const tripBar = document.querySelector('.trip-bar');
+            const isHidden = tripBar.style.display === 'none';
+            tripBar.style.display = isHidden ? 'block' : 'none';
+            alert(isHidden ? '🏎️ Focus Mode Deactivated (All Dashboard Widgets Restored)' : '🏎️ Minimalist Focus Mode Activated (Pure Tachometer & Gear Display)');
         }
     </script>
 </body>
