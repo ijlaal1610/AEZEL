@@ -1,6 +1,7 @@
 name: AEZEL Android App CI/CD Build
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - android-app
