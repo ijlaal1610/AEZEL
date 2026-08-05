@@ -41,6 +41,10 @@ public:
     float loadTripA();
     float loadTripB();
 
+    // User Settings & Theme NVS Persistence
+    void loadUserSettings();
+    void saveUserSettings();
+
     // Maintenance reminders (service/tyre/chain/insurance/PUC intervals)
     void saveMaintenanceRecord(const char* key, uint32_t dueOdometerKm, uint32_t dueEpochSec);
 

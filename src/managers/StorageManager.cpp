@@ -19,6 +19,7 @@ void StorageManager::begin() {
     }
 
     SharedState::instance().update([&](VehicleState& s) { s.sdCardOk = _sdOk; });
+    loadUserSettings();
     _lastFlushMs = millis();
 }
 
@@ -121,8 +122,41 @@ void StorageManager::appendCrashLog(const char* reason) {
     f.close();
 }
 
+void StorageManager::loadUserSettings() {
+    uint8_t mode = _prefs.getUChar("ride_mode", (uint8_t)RideMode::CITY);
+    uint8_t theme = _prefs.getUChar("theme_mode", (uint8_t)ThemeMode::MODERN_DIGITAL);
+    bool showSpeedo = _prefs.getBool("show_speedo", true);
+    bool focusMode = _prefs.getBool("focus_mode", false);
+    bool notifOverlay = _prefs.getBool("notif_ovl", true);
+    bool lockscreenEn = _prefs.getBool("lock_en", true);
+    String pin = _prefs.getString("pin_code", "1234");
+
+    SharedState::instance().update([&](VehicleState& s) {
+        s.rideMode = (RideMode)mode;
+        s.theme = (ThemeMode)theme;
+        s.showSpeedometer = showSpeedo;
+        s.focusMode = focusMode;
+        s.allowNotifOverlay = notifOverlay;
+        s.enableLockscreen = lockscreenEn;
+        strncpy(s.pinCode, pin.c_str(), 4);
+        s.pinCode[4] = '\0';
+    });
+}
+
+void StorageManager::saveUserSettings() {
+    VehicleState s = SharedState::instance().snapshot();
+    _prefs.putUChar("ride_mode", (uint8_t)s.rideMode);
+    _prefs.putUChar("theme_mode", (uint8_t)s.theme);
+    _prefs.putBool("show_speedo", s.showSpeedometer);
+    _prefs.putBool("focus_mode", s.focusMode);
+    _prefs.putBool("notif_ovl", s.allowNotifOverlay);
+    _prefs.putBool("lock_en", s.enableLockscreen);
+    _prefs.putString("pin_code", s.pinCode);
+}
+
 void StorageManager::flushAll() {
     if (_pendingOdometer >= 0) { _prefs.putFloat("odo_km", _pendingOdometer); _pendingOdometer = -1; }
     if (_pendingTripA >= 0)    { _prefs.putFloat("tripA_km", _pendingTripA); _pendingTripA = -1; }
     if (_pendingTripB >= 0)    { _prefs.putFloat("tripB_km", _pendingTripB); _pendingTripB = -1; }
+    saveUserSettings();
 }
