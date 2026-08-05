@@ -199,6 +199,18 @@ void BleManager::handleIncomingCommand(const String& json) {
             s.allowNotifOverlay = !s.allowNotifOverlay;
         });
     }
+    else if (strcmp(cmd, "toggle_lockscreen") == 0) {
+        SharedState::instance().update([](VehicleState& s) {
+            s.enableLockscreen = !s.enableLockscreen;
+        });
+    }
+    else if (strcmp(cmd, "set_pin") == 0) {
+        const char* pin = doc["pin"] | "1234";
+        SharedState::instance().update([pin](VehicleState& s) {
+            strncpy(s.pinCode, pin, 4);
+            s.pinCode[4] = '\0';
+        });
+    }
     else if (strcmp(cmd, "phone_notif") == 0) {
         const char* appName = doc["app"] | "Phone";
         const char* title = doc["title"] | "";

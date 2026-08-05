@@ -539,6 +539,10 @@
                         <input type="checkbox" onchange="toggleFocusUI()">
                     </div>
                     <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px;">
+                        <span>Enable Anti-Theft Security Lockscreen</span>
+                        <input type="checkbox" checked onchange="toggleEnableLockscreenUI()">
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px;">
                         <span>Speed Unit</span>
                         <select style="padding: 2px 6px; font-size: 0.8rem;"><option>km/h</option><option>mph</option></select>
                     </div>
@@ -823,6 +827,12 @@
         function toggleNotifOverlayUI() {
             isOverlayAllowed = !isOverlayAllowed;
             alert(isOverlayAllowed ? '💬 Live Notification Overlay ENABLED on Main Display while riding' : '💬 Live Notification Overlay DISABLED on Main Display (Alerts saved to Notifications Screen only)');
+        }
+
+        let isLockscreenEnabled = true;
+        function toggleEnableLockscreenUI() {
+            isLockscreenEnabled = !isLockscreenEnabled;
+            alert(isLockscreenEnabled ? '🔐 Anti-Theft Security Lockscreen ENABLED' : '🔐 Anti-Theft Security Lockscreen DISABLED (Vehicle boots straight to Main Dashboard)');
         }
     </script>
 </body>

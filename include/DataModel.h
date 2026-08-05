@@ -38,7 +38,8 @@ inline WarningFlag operator|(WarningFlag a, WarningFlag b) { return WarningFlag(
 
 struct VehicleState {
     // --- Security & Lockscreen -----------------------------------------
-    bool     isLocked          = false; // Anti-Theft Lockscreen active
+    bool     enableLockscreen  = true;  // Enable/Disable Anti-Theft Lockscreen in Settings
+    bool     isLocked          = false; // Anti-Theft Lockscreen currently active
     char     pinCode[5]        = "1234";
 
     // --- Display Toggles & Customization ------------------------------

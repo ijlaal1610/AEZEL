@@ -312,10 +312,20 @@ void DisplayManager::buildSettingsScreen() {
     lv_obj_align(switchNotifOverlay, LV_ALIGN_TOP_RIGHT, -30, 165);
     lv_obj_add_state(switchNotifOverlay, LV_STATE_CHECKED);
 
+    // Security Lockscreen Toggle
+    lv_obj_t* lblLockscreen = lv_label_create(_screenSettings);
+    lv_label_set_text(lblLockscreen, "Enable Anti-Theft Security Lockscreen:");
+    lv_obj_set_style_text_color(lblLockscreen, lv_color_white(), 0);
+    lv_obj_align(lblLockscreen, LV_ALIGN_TOP_LEFT, 30, 220);
+
+    lv_obj_t* switchLockscreen = lv_switch_create(_screenSettings);
+    lv_obj_align(switchLockscreen, LV_ALIGN_TOP_RIGHT, -30, 215);
+    lv_obj_add_state(switchLockscreen, LV_STATE_CHECKED);
+
     // OTA Wi-Fi Button
     _btnOtaWifi = lv_btn_create(_screenSettings);
-    lv_obj_align(_btnOtaWifi, LV_ALIGN_BOTTOM_MID, 0, -15);
-    lv_obj_set_size(_btnOtaWifi, 220, 40);
+    lv_obj_align(_btnOtaWifi, LV_ALIGN_BOTTOM_MID, 0, -10);
+    lv_obj_set_size(_btnOtaWifi, 220, 36);
     lv_obj_t* btnLbl = lv_label_create(_btnOtaWifi);
     lv_label_set_text(btnLbl, "Start Wireless OTA AP");
     lv_obj_center(btnLbl);
