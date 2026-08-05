@@ -11,6 +11,9 @@ import com.google.gson.JsonObject
  */
 class AezelNotificationListenerService : NotificationListenerService() {
 
+    private var lastNotifHash: Int = 0
+    private var lastNotifTime: Long = 0
+
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         super.onNotificationPosted(sbn)
         if (sbn == null) return
@@ -24,13 +27,20 @@ class AezelNotificationListenerService : NotificationListenerService() {
         // Filter system noise / persistent ongoing notifications
         if (title.isBlank() || sbn.isOngoing) return
 
+        // Throttle duplicate notifications within 2 seconds
+        val currentHash = (packageName + title + text).hashCode()
+        val currentTime = System.currentTimeMillis()
+        if (currentHash == lastNotifHash && (currentTime - lastNotifTime) < 2000) return
+        lastNotifHash = currentHash
+        lastNotifTime = currentTime
+
         val appLabel = when {
             packageName.contains("whatsapp") -> "WhatsApp"
-            packageName.contains("telecom") || packageName.contains("dialer") -> "Incoming Call"
-            packageName.contains("messaging") || packageName.contains("mms") -> "SMS"
+            packageName.contains("telecom") || packageName.contains("dialer") || packageName.contains("incall") -> "Incoming Call"
+            packageName.contains("messaging") || packageName.contains("mms") || packageName.contains("sms") -> "SMS"
             packageName.contains("instagram") -> "Instagram"
             packageName.contains("maps") -> "Google Maps"
-            else -> packageName.substringAfterLast('.')
+            else -> packageName.substringAfterLast('.').capitalize()
         }
 
         // Construct GATT JSON Payload
@@ -38,11 +48,15 @@ class AezelNotificationListenerService : NotificationListenerService() {
             addProperty("cmd", "phone_notif")
             addProperty("app", appLabel)
             addProperty("title", title)
-            addProperty("body", text)
+            addProperty("body", text.take(64)) // Truncate long bodies to save BLE bandwidth
         }.toString()
 
         // Send to AEZEL Cockpit via BLE
-        AezelBleManager.instance.sendCommand(payload)
+        try {
+            AezelBleManager.instance.sendCommand(payload)
+        } catch (e: Exception) {
+            // BLE not initialized / disconnected
+        }
     }
 
     override fun onNotificationRemoved(sbn: StatusBarNotification?) {
