@@ -55,21 +55,14 @@ void NotificationManager::push(const String& title, const String& body, NotifPri
         // a fresh alert — CRITICAL/WARNING items are never evicted.
         for (size_t i = 0; i < _count; i++) {
             if (_queue[i].priority == NotifPriority::INFO) {
-                for (size_t j = i; j < _count - 1; j++) {
-                    _queue[j] = _queue[j + 1];
-                }
+                memmove(&_queue[i], &_queue[i + 1], (_count - i - 1) * sizeof(Notification));
                 _count--;
                 break;
             }
         }
         if (_count >= MAX_QUEUE) return;   // still full of criticals — genuinely drop
     }
-    _queue[_count].title = title;
-    _queue[_count].body = body;
-    _queue[_count].priority = p;
-    _queue[_count].createdMs = millis();
-    _queue[_count].acknowledged = false;
-    _count++;
+    _queue[_count++] = { title, body, p, millis(), false };
 }
 
 const Notification* NotificationManager::current() const {
@@ -86,6 +79,10 @@ void NotificationManager::acknowledgeCurrent() {
     for (size_t i = 0; i < _count; i++) {
         if (!_queue[i].acknowledged) { _queue[i].acknowledged = true; return; }
     }
+}
+
+void NotificationManager::acknowledgeAt(size_t index) {
+    if (index < _count) _queue[index].acknowledged = true;
 }
 
 void NotificationManager::soundBuzzerFor(NotifPriority p) {

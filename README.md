@@ -34,6 +34,13 @@ real UI):
   welcome/goodbye animation and brake-flash
 - FreeRTOS task graph, dual-core pinned (UI/sensors on core 1,
   connectivity/storage on core 0), 8s watchdog
+- **Full 4-screen dashboard UI**: Main Dashboard, Trip Info (trip A/B,
+  odometer, ride timer, avg/max speed, fuel range/efficiency, reset
+  buttons), Notifications (tap-to-acknowledge list), Settings (theme +
+  ride-mode cycling, brightness slider, SD/GPS/BLE status) — with touch
+  swipe, physical MODE-button, and OK-button navigation, plus a
+  CRITICAL-notification override that force-switches to Notifications and
+  blocks navigating away until acknowledged
 - **Phone remote control** (horn, hazard/indicator flash, lock/unlock,
   optional remote engine start) with interlocks enforced server-side in
   `RemoteControlManager` — see `docs/remote_control.md` before enabling
@@ -49,12 +56,11 @@ real UI):
 
 **Architected with a clear extension point but not fully built out** (each
 has a manager stub or a documented hook — see `docs/roadmap.md`):
-- Turn-by-turn navigation / offline maps / speed-camera alerts
+- Turn-by-turn navigation / offline maps / speed-camera alerts / the
+  `NAVIGATION` screen itself (depends on the routing-engine decision in
+  `docs/roadmap.md` Phase 3)
 - CAN bus (future expansion — spec below)
 - RFID/NFC/fingerprint unlock, geofence
-- Full multi-screen UI (Trip/Navigation/Notifications/Settings screens —
-  Main Dashboard is fully built; others follow the identical
-  `buildXScreen()` pattern)
 - Cloud backup, REST API, MQTT
 - Companion mobile app (BLE contract is defined and stable; app itself is a
   separate codebase)

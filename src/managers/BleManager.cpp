@@ -21,10 +21,10 @@ class CommandCallbacks : public NimBLECharacteristicCallbacks {
 };
 
 class ServerCallbacks : public NimBLEServerCallbacks {
-    void onConnect(NimBLEServer* pServer) override {
+    void onConnect(NimBLEServer*, NimBLEConnInfo&) override {
         SharedState::instance().update([](VehicleState& s) { s.bleConnected = true; });
     }
-    void onDisconnect(NimBLEServer* pServer) override {
+    void onDisconnect(NimBLEServer*, NimBLEConnInfo&, int) override {
         SharedState::instance().update([](VehicleState& s) { s.bleConnected = false; });
         NimBLEDevice::startAdvertising();
     }

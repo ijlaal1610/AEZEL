@@ -20,11 +20,11 @@ public:
     void begin();
     static void taskEntry(void* pv);
     void tick();
-    void handleIncomingCommand(const String& json);
 
 private:
     BleManager() = default;
     void publishTelemetry();
+    void handleIncomingCommand(const String& json);
 
     bool _started = false;
 };
