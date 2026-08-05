@@ -56,8 +56,60 @@ void DisplayManager::begin() {
     buildNavigationScreen();
     buildNotificationsScreen();
     buildSettingsScreen();
+    buildMenuDrawer();
     applyTheme(ThemeMode::MODERN_DIGITAL);
     goToScreen(Screen::MAIN_DASHBOARD);
+}
+
+static void drawerItemClickCb(lv_event_t* e) {
+    Screen targetScreen = (Screen)(uintptr_t)lv_event_get_user_data(e);
+    DisplayManager::instance().goToScreen(targetScreen);
+    DisplayManager::instance().toggleMenuDrawer();
+}
+
+void DisplayManager::buildMenuDrawer() {
+    _drawerContainer = lv_obj_create(lv_layer_top());
+    lv_obj_set_size(_drawerContainer, 200, 320);
+    lv_obj_align(_drawerContainer, LV_ALIGN_TOP_LEFT, 0, 0);
+    lv_obj_set_style_bg_color(_drawerContainer, lv_color_hex(0x0A0E14), 0);
+    lv_obj_set_style_bg_opa(_drawerContainer, LV_OPA_90, 0);
+    lv_obj_set_style_border_color(_drawerContainer, lv_color_hex(0x00D4FF), 0);
+    lv_obj_set_style_border_width(_drawerContainer, 2, 0);
+    lv_obj_set_flex_flow(_drawerContainer, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_flex_align(_drawerContainer, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_CENTER, LV_FLEX_ALIGN_CENTER);
+
+    lv_obj_t* title = lv_label_create(_drawerContainer);
+    lv_label_set_text(title, "COCKPIT MENU");
+    lv_obj_set_style_text_color(title, lv_color_hex(0x00D4FF), 0);
+
+    struct MenuItem { const char* name; Screen screen; };
+    MenuItem items[] = {
+        {"Main Dashboard", Screen::MAIN_DASHBOARD},
+        {"Trip Analytics", Screen::TRIP_INFO},
+        {"Turn Navigation", Screen::NAVIGATION},
+        {"Notifications", Screen::NOTIFICATIONS},
+        {"Settings & Calib", Screen::SETTINGS}
+    };
+
+    for (int i = 0; i < 5; i++) {
+        lv_obj_t* btn = lv_btn_create(_drawerContainer);
+        lv_obj_set_size(btn, 170, 38);
+        lv_obj_add_event_cb(btn, drawerItemClickCb, LV_EVENT_CLICKED, (void*)(uintptr_t)items[i].screen);
+        lv_obj_t* lbl = lv_label_create(btn);
+        lv_label_set_text(lbl, items[i].name);
+        lv_obj_center(lbl);
+    }
+
+    lv_obj_add_flag(_drawerContainer, LV_OBJ_FLAG_HIDDEN);
+}
+
+void DisplayManager::toggleMenuDrawer() {
+    _isDrawerOpen = !_isDrawerOpen;
+    if (_isDrawerOpen) {
+        lv_obj_clear_flag(_drawerContainer, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_add_flag(_drawerContainer, LV_OBJ_FLAG_HIDDEN);
+    }
 }
 
 void DisplayManager::buildLockScreen() {

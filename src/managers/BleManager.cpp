@@ -4,6 +4,7 @@
 #include "RideManager.h"
 #include "NotificationManager.h"
 #include "OtaManager.h"
+#include "DisplayManager.h"
 
 // Custom 128-bit UUIDs — regenerate for your own build to avoid clashing
 // with anyone reusing this firmware on the same channel during development.
@@ -210,6 +211,9 @@ void BleManager::handleIncomingCommand(const String& json) {
             strncpy(s.pinCode, pin, 4);
             s.pinCode[4] = '\0';
         });
+    }
+    else if (strcmp(cmd, "open_drawer") == 0) {
+        DisplayManager::instance().toggleMenuDrawer();
     }
     else if (strcmp(cmd, "phone_notif") == 0) {
         const char* appName = doc["app"] | "Phone";

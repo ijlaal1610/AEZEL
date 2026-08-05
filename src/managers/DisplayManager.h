@@ -26,6 +26,8 @@ public:
     void goToScreen(Screen s);
     void showGoodbyeScreen();   // called synchronously by PowerManager before sleep
 
+    void toggleMenuDrawer();
+
 private:
     DisplayManager() = default;
 
@@ -35,6 +37,7 @@ private:
     void buildNavigationScreen();
     void buildNotificationsScreen();
     void buildSettingsScreen();
+    void buildMenuDrawer();
     void applyTheme(ThemeMode mode);
     void refreshWidgetsFromState();
 
@@ -83,6 +86,10 @@ private:
     lv_obj_t* _screenLock = nullptr;
     lv_obj_t* _labelLockPin = nullptr;
     lv_obj_t* _labelLockStatus = nullptr;
+
+    // LVGL objects for Slide-Out Navigation Drawer Overlay
+    lv_obj_t* _drawerContainer = nullptr;
+    bool      _isDrawerOpen = false;
 
     Screen _currentScreen = Screen::MAIN_DASHBOARD;
     uint32_t _lastRenderMs = 0;
