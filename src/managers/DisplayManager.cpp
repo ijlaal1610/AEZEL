@@ -59,6 +59,23 @@ void DisplayManager::begin() {
     buildMenuDrawer();
     applyTheme(ThemeMode::MODERN_DIGITAL);
     goToScreen(Screen::MAIN_DASHBOARD);
+    playStartupSweepAnimation();
+}
+
+void DisplayManager::playStartupSweepAnimation() {
+    if (!_arcRpm) return;
+    // Motorcycle Gauge Sweep: 0 -> 12,000 RPM (Redline limit) -> 0 RPM
+    for (int rpm = 0; rpm <= 12000; rpm += 400) {
+        lv_arc_set_value(_arcRpm, rpm);
+        lv_timer_handler();
+        delay(15);
+    }
+    delay(100); // Redline pause
+    for (int rpm = 12000; rpm >= 0; rpm -= 400) {
+        lv_arc_set_value(_arcRpm, rpm);
+        lv_timer_handler();
+        delay(15);
+    }
 }
 
 static void drawerItemClickCb(lv_event_t* e) {

@@ -673,6 +673,8 @@
                 // 3. LVGL Boot Screen Fade-In
                 setTimeout(() => {
                     layerDash.classList.add('active');
+                    // --- Tachometer Redline Sweep Animation (0 -> 12,000 -> Idle 1,200 RPM) ---
+                    playRpmSweep();
                 }, 400);
 
             } else {
@@ -680,20 +682,48 @@
                 btn.innerHTML = '🔑 TURN IGNITION ON';
                 speedSlider.disabled = true;
                 speedSlider.value = 0;
+
+                // 1. Post-Ride Summary Card Overlay (2 seconds)
+                alert('🏁 TRIP COMPLETED - RIDE SUMMARY:\n\nDistance: 14.2 km\nMax Speed: 114 km/h\nAvg Speed: 42 km/h\nRide Time: 18m 45s\n\n(Saving ride log to SD Card & NVS Memory...)');
                 updateThrottle(0);
 
-                // 1. Enter Goodbye Screen
+                // 2. Enter Goodbye Screen Animation
                 layerDash.classList.remove('active');
                 layerGoodbye.classList.add('active');
                 ring.className = 'neopixel-ring goodbye';
 
-                // 2. Linger & Goodbye animation duration (1.2s) -> Deep Sleep
+                // 3. Linger & Goodbye animation duration (1.2s) -> Deep Sleep
                 setTimeout(() => {
                     layerGoodbye.classList.remove('active');
                     layerOff.classList.add('active');
                     ring.className = 'neopixel-ring';
                 }, 1400);
             }
+        }
+
+        function playRpmSweep() {
+            const arc = document.getElementById('rpm-arc');
+            let sweepRpm = 0;
+            let step = 600;
+            let upward = true;
+
+            const sweepInterval = setInterval(() => {
+                if (upward) {
+                    sweepRpm += step;
+                    if (sweepRpm >= 12000) {
+                        sweepRpm = 12000;
+                        upward = false;
+                    }
+                } else {
+                    sweepRpm -= step;
+                    if (sweepRpm <= 1200) {
+                        sweepRpm = 1200;
+                        clearInterval(sweepInterval);
+                    }
+                }
+                const offset = 440 - (sweepRpm / 12000) * 440;
+                arc.style.strokeDashoffset = offset;
+            }, 20);
         }
 
         function updateThrottle(val) {

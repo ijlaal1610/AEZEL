@@ -24,6 +24,7 @@ public:
     void tick();
 
     void goToScreen(Screen s);
+    void playStartupSweepAnimation(); // Gauge sweep 0 -> 12k -> 0 RPM on ignition startup
     void showGoodbyeScreen();   // called synchronously by PowerManager before sleep
     void showRideSummaryScreen(); // called on ignition off before sleep
 
