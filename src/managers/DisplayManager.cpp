@@ -153,10 +153,18 @@ void DisplayManager::tick() {
     refreshWidgetsFromState();   // push latest VehicleState into widgets
 }
 
+static void screenGestureCb(lv_event_t* e) {
+    lv_dir_t dir = lv_indev_get_gesture_dir(lv_indev_get_act());
+    if (dir == LV_DIR_LEFT) {
+        DisplayManager::instance().toggleMenuDrawer();
+    }
+}
+
 // ------------------------------------------------------------ Screen build
 void DisplayManager::buildMainDashboard() {
     _screenMain = lv_obj_create(nullptr);
     lv_obj_set_style_bg_color(_screenMain, lv_color_hex(0x0A0E14), 0);
+    lv_obj_add_event_cb(_screenMain, screenGestureCb, LV_EVENT_GESTURE, nullptr);
 
     // --- Speed (large, center) ---
     _labelSpeed = lv_label_create(_screenMain);

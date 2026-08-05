@@ -456,7 +456,6 @@
             <div id="screen-dashboard" class="screen-layer">
                 <!-- Top Indicator Bar -->
                 <div class="indicator-bar">
-                    <button class="nav-drawer-btn" onclick="toggleNavDrawer()" style="background: rgba(0,212,255,0.2); border: 1px solid var(--accent-cyan); color: #fff; border-radius: 4px; padding: 2px 8px; font-weight: 900; font-size: 0.8rem; cursor: pointer;">☰ MENU</button>
                     <div class="ind-icon" id="ind-left">◀</div>
                     <div class="ind-icon active-neutral" id="ind-neutral">N</div>
                     <div class="ind-icon" id="ind-highbeam">👁</div>
@@ -860,6 +859,47 @@
         function selectDrawerItem(screenName) {
             switchScreen(screenName);
             toggleNavDrawer();
+        }
+
+        // --- Swipe Left Gesture Listener for Cockpit TFT Screen ---
+        let touchStartX = 0;
+        let touchEndX = 0;
+        const tftScreen = document.querySelector('.tft-screen');
+
+        tftScreen.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        tftScreen.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipeGesture();
+        });
+
+        tftScreen.addEventListener('mousedown', e => {
+            touchStartX = e.clientX;
+        });
+
+        tftScreen.addEventListener('mouseup', e => {
+            touchEndX = e.clientX;
+            handleSwipeGesture();
+        });
+
+        function handleSwipeGesture() {
+            const diffX = touchEndX - touchStartX;
+            // Swipe Left (drag left > 40px) opens the Navigation Drawer
+            if (diffX < -40) {
+                const drawer = document.getElementById('nav-drawer');
+                if (drawer && drawer.style.display === 'none') {
+                    toggleNavDrawer();
+                }
+            }
+            // Swipe Right (drag right > 40px) closes the Navigation Drawer
+            else if (diffX > 40) {
+                const drawer = document.getElementById('nav-drawer');
+                if (drawer && drawer.style.display === 'flex') {
+                    toggleNavDrawer();
+                }
+            }
         }
     </script>
 </body>
