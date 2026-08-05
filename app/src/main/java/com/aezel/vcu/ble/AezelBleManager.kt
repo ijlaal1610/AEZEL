@@ -28,6 +28,8 @@ class AezelBleManager private constructor(private val context: Context) {
         @Volatile
         private var INSTANCE: AezelBleManager? = null
 
+        val instance: AezelBleManager get() = INSTANCE ?: throw IllegalStateException("AezelBleManager not initialized")
+
         fun getInstance(context: Context): AezelBleManager {
             return INSTANCE ?: synchronized(this) {
                 INSTANCE ?: AezelBleManager(context.applicationContext).also { INSTANCE = it }
