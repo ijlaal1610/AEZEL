@@ -430,6 +430,10 @@ void DisplayManager::goToScreen(Screen s) {
 void DisplayManager::refreshWidgetsFromState() {
     VehicleState s = SharedState::instance().snapshot();
 
+    static int lastSpeed = -1;
+    static int lastRpm = -1;
+    static GearState lastGear = GearState::UNKNOWN;
+
     // Speedometer Toggle (hide numeric speed if rider has an OEM speedometer)
     if (!s.showSpeedometer || s.focusMode) {
         lv_obj_add_flag(_labelSpeed, LV_OBJ_FLAG_HIDDEN);
@@ -437,7 +441,11 @@ void DisplayManager::refreshWidgetsFromState() {
     } else {
         lv_obj_clear_flag(_labelSpeed, LV_OBJ_FLAG_HIDDEN);
         if (_labelSpeedUnit) lv_obj_clear_flag(_labelSpeedUnit, LV_OBJ_FLAG_HIDDEN);
-        lv_label_set_text_fmt(_labelSpeed, "%d", (int)s.speedKmh);
+        int speedInt = (int)s.speedKmh;
+        if (speedInt != lastSpeed) {
+            lastSpeed = speedInt;
+            lv_label_set_text_fmt(_labelSpeed, "%d", speedInt);
+        }
     }
 
     // Pure Tachometer Focus Mode (strips all distractions except giant Tach Arc & Gear)
@@ -454,19 +462,25 @@ void DisplayManager::refreshWidgetsFromState() {
         lv_obj_clear_flag(_labelClock, LV_OBJ_FLAG_HIDDEN);
     }
 
-    lv_arc_set_value(_arcRpm, s.rpm);
-
-    const char* gearStr = "N";
-    switch (s.gear) {
-        case GearState::GEAR_1: gearStr = "1"; break;
-        case GearState::GEAR_2: gearStr = "2"; break;
-        case GearState::GEAR_3: gearStr = "3"; break;
-        case GearState::GEAR_4: gearStr = "4"; break;
-        case GearState::GEAR_5: gearStr = "5"; break;
-        case GearState::NEUTRAL: gearStr = "N"; break;
-        default: gearStr = "-"; break;
+    if ((int)s.rpm != lastRpm) {
+        lastRpm = (int)s.rpm;
+        lv_arc_set_value(_arcRpm, s.rpm);
     }
-    lv_label_set_text(_labelGear, gearStr);
+
+    if (s.gear != lastGear) {
+        lastGear = s.gear;
+        const char* gearStr = "N";
+        switch (s.gear) {
+            case GearState::GEAR_1: gearStr = "1"; break;
+            case GearState::GEAR_2: gearStr = "2"; break;
+            case GearState::GEAR_3: gearStr = "3"; break;
+            case GearState::GEAR_4: gearStr = "4"; break;
+            case GearState::GEAR_5: gearStr = "5"; break;
+            case GearState::NEUTRAL: gearStr = "N"; break;
+            default: gearStr = "-"; break;
+        }
+        lv_label_set_text(_labelGear, gearStr);
+    }
 
     lv_label_set_text_fmt(_labelTrip, "A %.1f km  |  ODO %.0f km", s.tripA_km, s.odometer_km);
     lv_bar_set_value(_barFuel, (int)s.fuelLevelPct, LV_ANIM_ON);
@@ -486,13 +500,12 @@ void DisplayManager::refreshWidgetsFromState() {
         lv_obj_add_flag(_labelWarningBanner, LV_OBJ_FLAG_HIDDEN);
     }
 
-    // Clock — cheap to update every frame since it's just a label; real
-    // build should throttle this to 1x/sec via a static last-second check.
-    static int lastSec = -1;
+    // Clock — throttled to update only when minute changes (saves CPU cycles per frame)
+    static int lastMin = -1;
     time_t now = time(nullptr);
     struct tm* tmv = localtime(&now);
-    if (tmv->tm_sec != lastSec) {
-        lastSec = tmv->tm_sec;
+    if (tmv && tmv->tm_min != lastMin) {
+        lastMin = tmv->tm_min;
         lv_label_set_text_fmt(_labelClock, "%02d:%02d", tmv->tm_hour, tmv->tm_min);
     }
 }
