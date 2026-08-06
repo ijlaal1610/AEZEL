@@ -69,16 +69,40 @@ void BleManager::publishTelemetry() {
     VehicleState s = SharedState::instance().snapshot();
     if (!s.bleConnected) return;
 
-    StaticJsonDocument<384> doc;
+    JsonDocument doc;
     doc["spd"] = (int)s.speedKmh;
     doc["rpm"] = s.rpm;
     doc["fuel"] = (int)s.fuelLevelPct;
+    doc["fuel_rng"] = (int)s.fuelRangeKm;
     doc["batt"] = s.batteryVoltage;
-    doc["eng_t"] = s.engineTempC;
+    doc["eng_t"] = (int)s.engineTempC;
     doc["odo"] = s.odometer_km;
+    doc["tripA"] = s.tripA_km;
+    doc["tripB"] = s.tripB_km;
+    doc["max_spd"] = (int)s.maxSpeedKmh;
+    doc["avg_spd"] = (int)s.avgSpeedKmh;
+    doc["lean"] = s.leanAngleDeg;
     doc["warn"] = s.activeWarnings;
     doc["lat"] = s.latitude;
     doc["lon"] = s.longitude;
+    doc["ign"] = s.inIgnitionOn;
+
+    const char* gearStr = "N";
+    switch (s.gear) {
+        case GearState::GEAR_1: gearStr = "1"; break;
+        case GearState::GEAR_2: gearStr = "2"; break;
+        case GearState::GEAR_3: gearStr = "3"; break;
+        case GearState::GEAR_4: gearStr = "4"; break;
+        case GearState::GEAR_5: gearStr = "5"; break;
+        case GearState::NEUTRAL: gearStr = "N"; break;
+        default: gearStr = "-"; break;
+    }
+    doc["gear"] = gearStr;
+    doc["show_spd"] = s.showSpeedometer;
+    doc["focus"] = s.focusMode;
+    doc["notif_ovl"] = s.allowNotifOverlay;
+    doc["lock_en"] = s.enableLockscreen;
+    doc["locked"] = s.isLocked;
 
     String payload;
     serializeJson(doc, payload);
