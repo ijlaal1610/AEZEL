@@ -132,24 +132,48 @@ class AezelBleManager private constructor(private val context: Context) {
             val spd = obj.get("spd")?.asInt ?: 0
             val rpm = obj.get("rpm")?.asInt ?: 0
             val fuel = obj.get("fuel")?.asInt ?: 100
+            val fuelRng = obj.get("fuel_rng")?.asInt ?: 185
             val batt = obj.get("batt")?.asFloat ?: 12.6f
             val engT = obj.get("eng_t")?.asInt ?: 45
             val odo = obj.get("odo")?.asFloat ?: 0.0f
+            val tripA = obj.get("tripA")?.asFloat ?: 0.0f
+            val tripB = obj.get("tripB")?.asFloat ?: 0.0f
+            val maxSpd = obj.get("max_spd")?.asInt ?: 0
+            val avgSpd = obj.get("avg_spd")?.asInt ?: 0
+            val lean = obj.get("lean")?.asFloat ?: 0.0f
             val warn = obj.get("warn")?.asInt ?: 0
             val lat = obj.get("lat")?.asDouble ?: 0.0
             val lon = obj.get("lon")?.asDouble ?: 0.0
+            val ign = obj.get("ign")?.asBoolean ?: false
+            val gear = obj.get("gear")?.asString ?: "N"
+            val showSpd = obj.get("show_spd")?.asBoolean ?: true
+            val focus = obj.get("focus")?.asBoolean ?: false
+            val notifOvl = obj.get("notif_ovl")?.asBoolean ?: true
+            val lockEn = obj.get("lock_en")?.asBoolean ?: true
 
             CoroutineScope(Dispatchers.Main).launch {
                 _telemetry.value = _telemetry.value.copy(
                     speedKmh = spd,
                     rpm = rpm,
                     fuelPct = fuel,
+                    fuelRangeKm = fuelRng,
                     batteryVolts = batt,
                     engineTemp = engT,
                     odometer = odo,
+                    tripA = tripA,
+                    tripB = tripB,
+                    maxSpeedKmh = maxSpd,
+                    avgSpeedKmh = avgSpd,
+                    leanAngleDeg = lean,
                     warningsMask = warn,
                     latitude = lat,
                     longitude = lon,
+                    ignitionOn = ign,
+                    gear = gear,
+                    showSpeedo = showSpd,
+                    focusMode = focus,
+                    allowNotifOverlay = notifOvl,
+                    enableLockscreen = lockEn,
                     bleConnected = true
                 )
             }
