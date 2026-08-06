@@ -219,6 +219,26 @@ class AezelBleManager private constructor(private val context: Context) {
         sendCommand("{\"cmd\":\"reset_trip_a\"}")
     }
 
+    fun toggleSpeedo() {
+        sendCommand("{\"cmd\":\"toggle_speedo\"}")
+    }
+
+    fun toggleFocus() {
+        sendCommand("{\"cmd\":\"toggle_focus\"}")
+    }
+
+    fun toggleNotifOverlay() {
+        sendCommand("{\"cmd\":\"toggle_notif_overlay\"}")
+    }
+
+    fun toggleLockscreen() {
+        sendCommand("{\"cmd\":\"toggle_lockscreen\"}")
+    }
+
+    fun setPin(pin: String) {
+        sendCommand("{\"cmd\":\"set_pin\",\"pin\":\"$pin\"}")
+    }
+
     fun resetTripB() {
         sendCommand("{\"cmd\":\"reset_trip_b\"}")
     }
