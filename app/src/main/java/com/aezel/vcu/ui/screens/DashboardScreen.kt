@@ -1,12 +1,10 @@
 package com.aezel.vcu.ui.screens
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -35,24 +33,27 @@ import com.aezel.vcu.model.decodeWarningFlags
 import com.aezel.vcu.ui.theme.*
 
 /**
- * AEZEL Detachable Cockpit Dashboard Screen
- * Allows using your smartphone as a full 60fps digital instrument cluster
- * when the physical screen is detached or not installed!
+ * AEZEL Handlebar Cockpit Dashboard Screen
+ * Renders a 100% Isolated Full-Screen Standalone Instrument Cluster when physical screen is detached!
  */
 @Composable
-fun DashboardScreen(telemetry: VehicleTelemetry) {
+fun DashboardScreen(
+    telemetry: VehicleTelemetry,
+    isCockpitMode: Boolean,
+    onToggleCockpitMode: () -> Unit
+) {
     val scrollState = rememberScrollState()
-    var isHandlebarCockpitMode by remember { mutableStateOf(false) }
+    val bleManager = AezelBleManager.getInstance(LocalContext.current)
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(BackgroundDark)
-            .padding(16.dp)
+            .padding(if (isCockpitMode) 12.dp else 16.dp)
             .verticalScroll(scrollState),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // --- Header Status Bar & Mode Switcher ---
+        // --- Header / Mode Bar ---
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -60,7 +61,7 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
         ) {
             Column {
                 Text(
-                    text = if (isHandlebarCockpitMode) "🏍️ HANDLEBAR COCKPIT" else "AEZEL DIGITAL VCU",
+                    text = if (isCockpitMode) "🏍️ COCKPIT DISPLAY" else "AEZEL DIGITAL VCU",
                     style = MaterialTheme.typography.titleLarge,
                     color = AccentCyan,
                     fontWeight = FontWeight.Bold
@@ -73,18 +74,18 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
-                // Detachable Cockpit Mode Toggle Button
+                // Enter / Exit 100% Fullscreen Cockpit Kiosk Mode Button
                 IconButton(
-                    onClick = { isHandlebarCockpitMode = !isHandlebarCockpitMode },
+                    onClick = onToggleCockpitMode,
                     modifier = Modifier
                         .clip(CircleShape)
-                        .background(if (isHandlebarCockpitMode) AccentCyan.copy(alpha = 0.2f) else CardSurfaceDark)
-                        .border(1.dp, if (isHandlebarCockpitMode) AccentCyan else CardBorderDark, CircleShape)
+                        .background(if (isCockpitMode) AccentCyan.copy(alpha = 0.25f) else CardSurfaceDark)
+                        .border(1.5.dp, if (isCockpitMode) AccentCyan else CardBorderDark, CircleShape)
                 ) {
                     Icon(
-                        imageVector = if (isHandlebarCockpitMode) Icons.Default.Smartphone else Icons.Default.DirectionsBike,
-                        contentDescription = "Toggle Cockpit Mode",
-                        tint = if (isHandlebarCockpitMode) AccentCyan else TextPrimary
+                        imageVector = if (isCockpitMode) Icons.Default.CloseFullscreen else Icons.Default.OpenInFull,
+                        contentDescription = "Toggle Cockpit Kiosk Mode",
+                        tint = if (isCockpitMode) AccentCyan else TextPrimary
                     )
                 }
 
@@ -109,13 +110,13 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        // --- Main Circular Speedometer & 270° Tachometer Gauge ---
+        // --- Main Circular Speedometer & 270° Tachometer Arc ---
         Box(
             modifier = Modifier
-                .size(if (isHandlebarCockpitMode) 280.dp else 240.dp)
-                .padding(8.dp),
+                .size(if (isCockpitMode) 290.dp else 240.dp)
+                .padding(4.dp),
             contentAlignment = Alignment.Center
         ) {
             val speedAnim by animateFloatAsState(
@@ -128,15 +129,15 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
             )
 
             Canvas(modifier = Modifier.fillMaxSize()) {
-                // Background Track
+                // Background Gauge Track
                 drawArc(
                     color = CardBorderDark,
                     startAngle = 135f,
                     sweepAngle = 270f,
                     useCenter = false,
-                    style = Stroke(width = 18.dp.toPx(), cap = StrokeCap.Round)
+                    style = Stroke(width = 20.dp.toPx(), cap = StrokeCap.Round)
                 )
-                // Tachometer Sweep Arc (Redline shift light threshold > 9500 RPM)
+                // Live Tachometer Sweep Arc (Redline Shift Light > 9500 RPM)
                 val isRedline = rpmAnim > 9500f
                 drawArc(
                     brush = Brush.sweepGradient(
@@ -146,14 +147,14 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
                     startAngle = 135f,
                     sweepAngle = (rpmAnim / 12000f) * 270f,
                     useCenter = false,
-                    style = Stroke(width = 18.dp.toPx(), cap = StrokeCap.Round)
+                    style = Stroke(width = 20.dp.toPx(), cap = StrokeCap.Round)
                 )
             }
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = "${telemetry.speedKmh}",
-                    fontSize = if (isHandlebarCockpitMode) 64.sp else 54.sp,
+                    fontSize = if (isCockpitMode) 68.sp else 54.sp,
                     fontWeight = FontWeight.Black,
                     color = TextPrimary
                 )
@@ -173,7 +174,7 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
             }
         }
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         // --- Active Warnings Carousel ---
         val warnings = decodeWarningFlags(telemetry.warningsMask)
@@ -212,10 +213,10 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
             Spacer(modifier = Modifier.height(16.dp))
         }
 
-        // --- Telemetry Cards Grid ---
+        // --- Telemetry Data Cards Grid ---
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             MetricCard(
                 title = "BATTERY",
@@ -225,17 +226,17 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
             )
             MetricCard(
                 title = "FUEL LEVEL",
-                value = "${telemetry.fuelPct}% (${telemetry.fuelRangeKm} km)",
+                value = "${telemetry.fuelPct}% (${telemetry.fuelRangeKm}km)",
                 color = if (telemetry.fuelPct < 20) AccentAmber else AccentCyan,
                 modifier = Modifier.weight(1f)
             )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             MetricCard(
                 title = "ENGINE TEMP",
@@ -251,11 +252,11 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
             )
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             MetricCard(
                 title = "TRIP A",
@@ -271,26 +272,23 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(20.dp))
 
-        // --- Full Handlebar Controls Grid ("Control Everything & More than Display") ---
+        // --- Full Handlebar Controls Grid ---
         Text(
-            text = "📱 HANDLEBAR REMOTE CONTROLS",
+            text = "⚡ HANDLEBAR QUICK CONTROLS",
             style = MaterialTheme.typography.titleMedium,
             color = TextPrimary,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.align(Alignment.Start)
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        val bleManager = AezelBleManager.getInstance(LocalContext.current)
+        Spacer(modifier = Modifier.height(10.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Remote Start Button
             Button(
                 onClick = { bleManager.remoteEngineStart() },
                 colors = ButtonDefaults.buttonColors(containerColor = AccentLime),
@@ -302,7 +300,6 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
                 Text("START ENGINE", color = Color.Black, fontWeight = FontWeight.Black, fontSize = 12.sp)
             }
 
-            // Keyless Ignition Toggle Button
             Button(
                 onClick = { bleManager.toggleIgnition() },
                 colors = ButtonDefaults.buttonColors(containerColor = AccentCyan),
@@ -321,7 +318,6 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            // Horn Beep
             OutlinedButton(
                 onClick = { bleManager.pulseHorn() },
                 border = androidx.compose.foundation.BorderStroke(1.dp, AccentRed),
@@ -331,7 +327,6 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
                 Text("📣 HORN", color = AccentRed, fontWeight = FontWeight.Bold, fontSize = 12.sp)
             }
 
-            // Hazards Toggle
             OutlinedButton(
                 onClick = { bleManager.toggleHazard() },
                 border = androidx.compose.foundation.BorderStroke(1.dp, AccentAmber),
@@ -341,7 +336,6 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
                 Text("🚨 HAZARDS", color = AccentAmber, fontWeight = FontWeight.Bold, fontSize = 12.sp)
             }
 
-            // Seat Lock Release
             OutlinedButton(
                 onClick = { bleManager.triggerSeatRelease() },
                 border = androidx.compose.foundation.BorderStroke(1.dp, AccentCyan),
@@ -350,40 +344,6 @@ fun DashboardScreen(telemetry: VehicleTelemetry) {
             ) {
                 Text("🔓 SEAT LOCK", color = AccentCyan, fontWeight = FontWeight.Bold, fontSize = 12.sp)
             }
-        }
-    }
-}
-
-@Composable
-fun MetricCard(
-    title: String,
-    value: String,
-    color: Color,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier,
-        color = CardSurfaceDark,
-        border = androidx.compose.foundation.BorderStroke(1.dp, CardBorderDark),
-        shape = RoundedCornerShape(16.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(14.dp),
-            horizontalAlignment = Alignment.Start
-        ) {
-            Text(
-                text = title,
-                fontSize = 10.sp,
-                color = TextSecondary,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = value,
-                fontSize = 18.sp,
-                color = color,
-                fontWeight = FontWeight.Black
-            )
         }
     }
 }
