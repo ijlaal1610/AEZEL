@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aezel.vcu.model.VehicleTelemetry
+import com.aezel.vcu.ui.components.MetricCard
 import com.aezel.vcu.ui.theme.*
 
 @Composable
