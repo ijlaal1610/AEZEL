@@ -20,6 +20,12 @@ android {
         }
     }
 
+    signingConfigs {
+        getByName("debug") {
+            // Uses standard Android debug keystore
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
