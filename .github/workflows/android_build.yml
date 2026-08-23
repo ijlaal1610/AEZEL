@@ -5,10 +5,12 @@ on:
   push:
     branches:
       - android-app
+      - gemini-android-app
       - main
   pull_request:
     branches:
       - android-app
+      - gemini-android-app
       - main
 
 jobs:
