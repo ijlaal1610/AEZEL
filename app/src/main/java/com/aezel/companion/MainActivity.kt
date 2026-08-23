@@ -9,7 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build as BuildIcon
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Settings
@@ -215,6 +215,6 @@ private fun iconFor(dest: AezelDestination) = when (dest) {
     AezelDestination.Dashboard -> Icons.Filled.Home
     AezelDestination.Remote -> Icons.Filled.Warning
     AezelDestination.Security -> Icons.Filled.Lock
-    AezelDestination.Maintenance -> BuildIcon
+    AezelDestination.Maintenance -> Icons.Default.Build
     AezelDestination.Device -> Icons.Filled.Settings
 }
