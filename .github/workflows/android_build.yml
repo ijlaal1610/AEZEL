@@ -17,7 +17,7 @@ on:
 
 jobs:
   build-android-app:
-    name: Build AEZEL Android APK
+    name: Build AEZEL Android APKs (Debug & Release)
     runs-on: ubuntu-latest
 
     steps:
@@ -42,9 +42,9 @@ jobs:
           chmod +x ./gradlew
           ./gradlew assembleDebug assembleRelease --stacktrace
 
-      - name: Upload Debug APK Artifact
+      - name: Upload Debug & Release APK Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: aezel-android-app-debug
-          path: app/build/outputs/apk/debug/*.apk
+          name: aezel-android-app-apks
+          path: app/build/outputs/apk/**/*.apk
           if-no-files-found: error
