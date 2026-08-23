@@ -1,0 +1,14 @@
+*.iml
+.gradle/
+/local.properties
+.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# Note: gradle/wrapper/gradle-wrapper.jar IS committed and IS a real,
+# verified binary (fetched directly from gradle/gradle's own GitHub repo,
+# not hand-produced) — see README.md for how/why. Don't gitignore it.

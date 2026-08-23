@@ -10,8 +10,10 @@ nobody duplicates a key by accident.
 | `odo_km` | float | `StorageManager::flushAll()` | Lifetime odometer, km |
 | `tripA_km` | float | `StorageManager::flushAll()` | Trip A distance, km |
 | `tripB_km` | float | `StorageManager::flushAll()` | Trip B distance, km |
-| `<key>_km` | uint32 | `saveMaintenanceRecord()` | Odometer value at which a maintenance item is due (key = e.g. `svc`, `tyre`, `chain`) |
-| `<key>_ts` | uint32 | `saveMaintenanceRecord()` | Epoch timestamp at which a maintenance item is due (for date-based reminders like insurance/PUC) |
+| `<key>_km` | uint32 | `saveMaintenanceRecord()` | Odometer value at which a maintenance item is due (key = `svc`, `chain`, `tyre` — see `docs/maintenance.md`) |
+| `<key>_ts` | uint32 | `saveMaintenanceRecord()` | Epoch timestamp at which a maintenance item is due (key = `ins`, `puc`) |
+| `theme` | uint8 | `DisplayManager::onThemeButtonClicked()` / `applyRideModeProfile()` | Persisted `ThemeMode` selection, restored on boot by `DisplayManager::begin()` |
+| `ride_mode` | uint8 | `DisplayManager::applyRideModeProfile()` (only on a real change, not a boot restore) | Persisted `RideMode` selection, restored on boot |
 
 ## Reserved keys (Phase 2+, not yet written by code)
 
@@ -19,8 +21,6 @@ nobody duplicates a key by accident.
 |---|---|---|
 | `wheel_circ` | float | Runtime-calibrated wheel circumference (replaces the `Config.h` compile-time constant once the Calibration Wizard exists) |
 | `fuel_curve` | blob (JSON) | Fuel-sender lookup table points from `docs/calibration.md` procedure |
-| `theme` | uint8 | Persisted `ThemeMode` selection across reboots |
-| `ride_mode` | uint8 | Persisted `RideMode` selection |
 | `ble_bond_*` | managed by NimBLE internally, not this namespace | BLE pairing bond storage (NimBLE uses its own NVS namespace) |
 
 ## Design rules
@@ -39,3 +39,10 @@ nobody duplicates a key by accident.
 - Maintenance-record keys are prefixed by a short mnemonic (`svc`, `tyre`,
   `chain`, `ins`, `puc`) chosen by the caller — keep these under ~10 chars
   so `"<key>_km"`/`"<key>_ts"` stay within the 15-char NVS key limit.
+- `theme` and `ride_mode` are written immediately on selection (not batched
+  through `flushAll()`) since Settings changes are rare, deliberate taps —
+  unlike odometer/trip, there's no meaningful write-endurance cost to
+  saving them the instant they change. See `docs/themes.md` for how the two
+  keys interact (a ride-mode change overwrites `theme` with that mode's
+  default; manually cycling Theme afterward overwrites `theme` again on its
+  own, independent of `ride_mode`, until the next mode change resets it).

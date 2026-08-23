@@ -6,35 +6,17 @@
 //  accessors below. This avoids the "everyone pokes everyone else's globals"
 //  trap and keeps the architecture swappable (e.g. mock this whole struct in
 //  unit tests without touching real hardware).
+//
+//  The enums used below (GearState/RideMode/ThemeMode/WarningFlag) live in
+//  VehicleEnums.h, which has no hardware dependency — only the
+//  VehicleState/SharedState machinery in THIS file needs Arduino/FreeRTOS,
+//  for the mutex. Pure logic modules that just need the enums (e.g.
+//  RideModeProfile.h) include VehicleEnums.h directly instead of this file.
 // ============================================================================
 #include <Arduino.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/semphr.h>
-
-enum class GearState : uint8_t { NEUTRAL, GEAR_1, GEAR_2, GEAR_3, GEAR_4, GEAR_5, UNKNOWN };
-enum class RideMode  : uint8_t { ECO, CITY, TOURING, SPORT, RAIN, CUSTOM };
-enum class ThemeMode : uint8_t { LIGHT, DARK, CLASSIC_ANALOG, MODERN_DIGITAL, MINIMAL, SPORT, RETRO, NEON, CYBERPUNK, CUSTOM };
-
-enum class WarningFlag : uint32_t {
-    NONE                = 0,
-    CHECK_ENGINE        = 1 << 0,
-    OIL_PRESSURE        = 1 << 1,
-    ENGINE_OVERTEMP     = 1 << 2,
-    BATTERY_LOW         = 1 << 3,
-    CHARGING_FAULT      = 1 << 4,
-    FUEL_LOW            = 1 << 5,
-    ABS_FAULT           = 1 << 6,
-    SERVICE_DUE         = 1 << 7,
-    TYRE_DUE            = 1 << 8,
-    CHAIN_LUBE_DUE      = 1 << 9,
-    INSURANCE_EXPIRING  = 1 << 10,
-    PUC_EXPIRING        = 1 << 11,
-    CRASH_DETECTED      = 1 << 12,
-    UNAUTHORIZED_MOVE   = 1 << 13,
-    GPS_LOST            = 1 << 14,
-    SD_CARD_FAULT       = 1 << 15,
-};
-inline WarningFlag operator|(WarningFlag a, WarningFlag b) { return WarningFlag(uint32_t(a) | uint32_t(b)); }
+#include "VehicleEnums.h"
 
 struct VehicleState {
     // --- Core ride data -----------------------------------------------
@@ -90,12 +72,6 @@ struct VehicleState {
     RideMode  rideMode  = RideMode::CITY;
     ThemeMode theme     = ThemeMode::MODERN_DIGITAL;
     uint32_t  activeWarnings = 0;   // bitmask of WarningFlag
-    bool      showSpeedometer = true;
-    bool      focusMode = false;
-    bool      allowNotifOverlay = true;
-    bool      enableLockscreen = true;
-    bool      isLocked = false;
-    char      pinCode[5] = "1234";
 
     // --- Diagnostics -----------------------------------------------------
     uint32_t freeHeapBytes = 0;

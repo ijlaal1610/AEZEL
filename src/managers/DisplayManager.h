@@ -53,9 +53,20 @@ private:
     static void onResetTripAClicked(lv_event_t* e);
     static void onResetTripBClicked(lv_event_t* e);
     static void onNotificationRowClicked(lv_event_t* e);
+    static void onMarkServicedClicked(lv_event_t* e);
+    static void onMarkChainLubedClicked(lv_event_t* e);
+    static void onCallAcceptClicked(lv_event_t* e);
+    static void onCallRejectClicked(lv_event_t* e);
+    static void onMusicPlayPauseClicked(lv_event_t* e);
+    static void onMusicNextClicked(lv_event_t* e);
 
     void refreshNotificationsList();
     void refreshSettingsLabels();
+    void applyRideModeProfile(RideMode mode, bool persist);
+    void buildCallModal();
+    void buildMusicWidget();
+    void buildNavBanner();
+    void refreshPhoneLinkWidgets();
 
     // --- Main Dashboard widgets ---
     lv_obj_t* _screenMain = nullptr;
@@ -72,6 +83,20 @@ private:
     lv_obj_t* _iconNeutral = nullptr;
     lv_obj_t* _iconHighBeam = nullptr;
     lv_obj_t* _labelWarningBanner = nullptr;
+
+    // --- Phone-link widgets (call modal is a top-layer overlay, visible
+    // regardless of current screen; music widget + nav banner live on Main
+    // Dashboard only — see docs/phone_link.md) ---
+    lv_obj_t* _callModal = nullptr;
+    lv_obj_t* _labelCallerName = nullptr;
+    bool _callModalShown = false;
+
+    lv_obj_t* _musicWidget = nullptr;
+    lv_obj_t* _labelMusicTrack = nullptr;
+    lv_obj_t* _btnMusicPlayPause = nullptr;
+
+    lv_obj_t* _navBanner = nullptr;
+    lv_obj_t* _labelNavInstruction = nullptr;
 
     // --- Trip Info screen widgets ---
     lv_obj_t* _screenTripInfo = nullptr;
@@ -96,6 +121,8 @@ private:
     lv_obj_t* _labelSdStatus = nullptr;
     lv_obj_t* _labelGpsStatus = nullptr;
     lv_obj_t* _labelBleStatus = nullptr;
+    lv_obj_t* _labelServiceStatus = nullptr;
+    lv_obj_t* _labelChainStatus = nullptr;
     lv_obj_t* _sliderBrightness = nullptr;
 
     Screen _currentScreen = Screen::MAIN_DASHBOARD;

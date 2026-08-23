@@ -123,6 +123,49 @@ constexpr float WHEEL_CIRCUMFERENCE_M   = 1.518f;
 constexpr uint8_t HALL_PULSES_PER_REV   = 4;
 constexpr uint8_t RPM_PICKUP_PULSES_PER_REV = 1;   // single-cylinder, 1 pulse/rev on coil-negative
 
+// --------------------------------------------------------- Maintenance ---
+// Service/chain-lube are odometer-based and self-schedule (first due =
+// current odometer + interval, computed once at first boot). Tyre wear
+// and insurance/PUC expiry can't be guessed from firmware — they stay
+// unconfigured (warnings never fire) until set via a BLE command from the
+// companion app. See docs/maintenance.md.
+constexpr uint32_t SERVICE_INTERVAL_KM     = 3000;   // typical for an air-cooled 150cc single
+constexpr uint32_t CHAIN_LUBE_INTERVAL_KM  = 500;
+constexpr float    SERVICE_WARN_WINDOW_KM   = 300.0f;   // start warning this many km before due
+constexpr float    CHAIN_WARN_WINDOW_KM     = 100.0f;
+constexpr float    TYRE_WARN_WINDOW_KM      = 500.0f;
+constexpr uint32_t DATE_WARN_WINDOW_SEC     = 14UL * 24 * 3600;   // 14 days, for insurance/PUC
+constexpr uint32_t MAINTENANCE_CHECK_INTERVAL_MS = 30000;   // how often MaintenanceManager re-evaluates
+
+// -------------------------------------------------------------- Security --
+// Anti-theft motion/tilt/tow detection. Deliberately layered so it works
+// with only Tier 1 hardware (the wheel speed sensor already required for
+// the speedometer) and gets progressively better as IMU/GPS are added —
+// see docs/security.md.
+#define ENABLE_SECURITY_ALARM 1   // needs only the buzzer (always present) + wheel sensor — no extra parts
+constexpr float    SECURITY_WHEEL_TRIGGER_KMH  = 0.5f;    // any sustained wheel rotation while armed
+constexpr float    SECURITY_LEAN_TRIGGER_DEG   = 8.0f;    // requires ENABLE_IMU
+constexpr float    SECURITY_GPS_DRIFT_TRIGGER_M = 15.0f;  // requires ENABLE_GPS
+constexpr uint32_t SECURITY_CHECK_INTERVAL_MS   = 200;    // 5 Hz while armed
+constexpr uint32_t SECURITY_ALARM_DURATION_MS   = 30000;  // audible/visual alarm auto-stops after this; the CRITICAL warning itself stays until disarmed
+constexpr uint32_t SECURITY_ALARM_PULSE_MS      = 350;    // horn-chirp/hazard-blink cadence (car-alarm style) once triggered — also the buzzer fallback's toggle rate
+
+// -------------------------------------------------------- Riding ease UX -
+// Quiet mode: non-critical (INFO/WARNING) banners stay queued in
+// Notifications but don't pop up on the Main Dashboard above this speed —
+// CRITICAL warnings always show regardless, this is about reducing clutter
+// mid-ride, never about hiding something that matters. See DisplayPolicyMath.h.
+constexpr float    QUIET_MODE_SPEED_THRESHOLD_KMH = 20.0f;
+
+// Phone-link (call/message/music/nav-relay) widgets hide themselves if the
+// companion app stops sending updates for this long — prevents a stale
+// "Turn right in 200m" banner lingering after the phone disconnects mid-ride.
+constexpr uint32_t PHONE_LINK_STALE_MS = 15000;
+// Calls get a longer safety window than music/nav — if call_ended is ever
+// lost/dropped over BLE, an incoming-call modal should still clear itself
+// eventually rather than sit on screen indefinitely.
+constexpr uint32_t CALL_STALE_MS = 90000;
+
 // Voltage-divider ratios (must match your resistor values on the board)
 constexpr float BATTERY_DIVIDER_RATIO   = 5.0f;    // e.g. 40k/10k -> Vbat = Vadc * 5
 constexpr float CHARGE_DIVIDER_RATIO    = 5.0f;

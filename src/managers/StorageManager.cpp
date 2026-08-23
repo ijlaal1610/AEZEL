@@ -60,6 +60,23 @@ void StorageManager::saveMaintenanceRecord(const char* key, uint32_t dueOdometer
     _prefs.putUInt(kTime, dueEpochSec);
 }
 
+uint32_t StorageManager::loadMaintenanceKm(const char* key, uint32_t defaultValue) {
+    char k[24];
+    snprintf(k, sizeof(k), "%s_km", key);
+    return _prefs.getUInt(k, defaultValue);
+}
+
+uint32_t StorageManager::loadMaintenanceTs(const char* key, uint32_t defaultValue) {
+    char k[24];
+    snprintf(k, sizeof(k), "%s_ts", key);
+    return _prefs.getUInt(k, defaultValue);
+}
+
+void StorageManager::saveTheme(uint8_t themeValue) { _prefs.putUChar("theme", themeValue); }
+uint8_t StorageManager::loadTheme(uint8_t defaultValue) { return _prefs.getUChar("theme", defaultValue); }
+void StorageManager::saveRideMode(uint8_t rideModeValue) { _prefs.putUChar("ride_mode", rideModeValue); }
+uint8_t StorageManager::loadRideMode(uint8_t defaultValue) { return _prefs.getUChar("ride_mode", defaultValue); }
+
 void StorageManager::logRidePoint(const RideLogPoint& pt) {
     if (!_sdOk) return;
 #if ENABLE_SD_CARD

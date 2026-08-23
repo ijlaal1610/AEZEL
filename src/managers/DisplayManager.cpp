@@ -2,6 +2,11 @@
 #include "Config.h"
 #include "NotificationManager.h"
 #include "RideManager.h"
+#include "StorageManager.h"
+#include "RideModeProfile.h"
+#include "MaintenanceManager.h"
+#include "PhoneLinkManager.h"
+#include "DisplayPolicyMath.h"
 #include <TFT_eSPI.h>
 
 static TFT_eSPI tft = TFT_eSPI();
@@ -21,8 +26,8 @@ static void lvglFlushCb(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* 
 }
 
 static void lvglTouchReadCb(lv_indev_drv_t* drv, lv_indev_data_t* data) {
-    uint16_t tx = 0, ty = 0;
-    bool touched = false;
+    uint16_t tx, ty;
+    bool touched = tft.getTouch(&tx, &ty);
     data->state = touched ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
     if (touched) { data->point.x = tx; data->point.y = ty; }
 }
@@ -65,7 +70,19 @@ void DisplayManager::begin() {
     buildTripInfoScreen();
     buildNotificationsScreen();
     buildSettingsScreen();
-    applyTheme(ThemeMode::MODERN_DIGITAL);
+    buildMusicWidget();
+    buildNavBanner();
+    buildCallModal();   // built last — it's a top-layer overlay, independent of the screen stack below it
+
+    // Restore last-saved theme/ride-mode rather than always booting into
+    // the hardcoded defaults — see docs/nvs_layout.md for the `theme`/
+    // `ride_mode` keys this reads.
+    _selectedTheme = (ThemeMode)StorageManager::instance().loadTheme((uint8_t)ThemeMode::MODERN_DIGITAL);
+    RideMode savedMode = (RideMode)StorageManager::instance().loadRideMode((uint8_t)RideMode::CITY);
+    applyTheme(_selectedTheme);   // restored theme takes priority over the mode's default on boot
+    applyRideModeProfile(savedMode, /*persist=*/false);   // brightness cap + VehicleState, no re-save/no advisory
+    refreshSettingsLabels();
+
     goToScreen(Screen::MAIN_DASHBOARD);
 }
 
@@ -82,13 +99,16 @@ void DisplayManager::taskEntry(void* pv) {
 void DisplayManager::tick() {
     lv_timer_handler();          // let LVGL process animations/input
     refreshWidgetsFromState();   // push latest VehicleState into widgets
+    refreshPhoneLinkWidgets();   // call modal / music widget / nav banner
     handlePhysicalInputs();
 
     // A CRITICAL notification force-switches to the Notifications screen
     // and stays there, regardless of what screen the rider was on — see
     // docs/screen_flow.md "Transition rules". nextScreen()/prevScreen()
     // independently refuse to navigate away while this holds, so touch
-    // swipes can't escape it either.
+    // swipes can't escape it either. An incoming call takes priority over
+    // even that — it's drawn on lv_layer_top() so it's visible regardless
+    // of which screen is active underneath, no screen switch needed.
     const Notification* n = NotificationManager::instance().current();
     if (n && n->priority == NotifPriority::CRITICAL && _currentScreen != Screen::NOTIFICATIONS) {
         goToScreen(Screen::NOTIFICATIONS);
@@ -169,7 +189,7 @@ void DisplayManager::buildMainDashboard() {
 
     // --- Speed (large, center) ---
     _labelSpeed = lv_label_create(_screenMain);
-    lv_obj_set_style_text_font(_labelSpeed, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_font(_labelSpeed, &lv_font_montserrat_48, 0);
     lv_obj_set_style_text_color(_labelSpeed, lv_color_white(), 0);
     lv_obj_align(_labelSpeed, LV_ALIGN_CENTER, 0, -10);
     lv_label_set_text(_labelSpeed, "0");
@@ -192,7 +212,7 @@ void DisplayManager::buildMainDashboard() {
 
     // --- Gear indicator ---
     _labelGear = lv_label_create(_screenMain);
-    lv_obj_set_style_text_font(_labelGear, &lv_font_montserrat_14, 0);
+    lv_obj_set_style_text_font(_labelGear, &lv_font_montserrat_28, 0);
     lv_obj_set_style_text_color(_labelGear, lv_color_hex(0xFFC400), 0);
     lv_obj_align(_labelGear, LV_ALIGN_CENTER, 0, 55);
     lv_label_set_text(_labelGear, "N");
@@ -255,6 +275,131 @@ void DisplayManager::buildMainDashboard() {
     lv_obj_set_style_pad_all(_labelWarningBanner, 6, 0);
     lv_obj_align(_labelWarningBanner, LV_ALIGN_TOP_MID, 0, 40);
     lv_obj_add_flag(_labelWarningBanner, LV_OBJ_FLAG_HIDDEN);
+}
+
+void DisplayManager::buildMusicWidget() {
+    // Lives on the Main Dashboard only, bottom-left — small enough not to
+    // compete with speed/RPM, hidden by default until PhoneLinkManager has
+    // fresh music data (see refreshPhoneLinkWidgets()).
+    _musicWidget = lv_obj_create(_screenMain);
+    lv_obj_set_size(_musicWidget, 180, 44);
+    lv_obj_align(_musicWidget, LV_ALIGN_BOTTOM_LEFT, 8, -36);
+    lv_obj_set_style_bg_color(_musicWidget, lv_color_hex(0x1A2130), 0);
+    lv_obj_set_style_bg_opa(_musicWidget, LV_OPA_70, 0);
+    lv_obj_set_style_border_width(_musicWidget, 0, 0);
+    lv_obj_set_style_pad_all(_musicWidget, 4, 0);
+    lv_obj_clear_flag(_musicWidget, LV_OBJ_FLAG_SCROLLABLE);
+
+    _labelMusicTrack = lv_label_create(_musicWidget);
+    lv_obj_set_style_text_color(_labelMusicTrack, lv_color_white(), 0);
+    lv_obj_set_style_text_font(_labelMusicTrack, &lv_font_montserrat_12, 0);
+    lv_obj_set_width(_labelMusicTrack, 108);
+    lv_label_set_long_mode(_labelMusicTrack, LV_LABEL_LONG_SCROLL_CIRCULAR);   // marquee for long titles
+    lv_obj_align(_labelMusicTrack, LV_ALIGN_LEFT_MID, 0, 0);
+    lv_label_set_text(_labelMusicTrack, "");
+
+    _btnMusicPlayPause = lv_btn_create(_musicWidget);
+    lv_obj_set_size(_btnMusicPlayPause, 32, 32);
+    lv_obj_align(_btnMusicPlayPause, LV_ALIGN_RIGHT_MID, -36, 0);
+    lv_obj_add_event_cb(_btnMusicPlayPause, onMusicPlayPauseClicked, LV_EVENT_CLICKED, this);
+    lv_obj_t* lblPlayPause = lv_label_create(_btnMusicPlayPause);
+    lv_label_set_text(lblPlayPause, LV_SYMBOL_PLAY "/" LV_SYMBOL_PAUSE);
+    lv_obj_set_style_text_font(lblPlayPause, &lv_font_montserrat_12, 0);
+    lv_obj_center(lblPlayPause);
+
+    lv_obj_t* btnNext = lv_btn_create(_musicWidget);
+    lv_obj_set_size(btnNext, 32, 32);
+    lv_obj_align(btnNext, LV_ALIGN_RIGHT_MID, 0, 0);
+    lv_obj_add_event_cb(btnNext, onMusicNextClicked, LV_EVENT_CLICKED, this);
+    lv_obj_t* lblNext = lv_label_create(btnNext);
+    lv_label_set_text(lblNext, LV_SYMBOL_NEXT);
+    lv_obj_center(lblNext);
+
+    // Deliberately no "previous track" button — three small touch targets
+    // in 180px is already tight on a gloved hand; skip/play-pause covers
+    // the actual "change what's playing without grabbing the phone" need.
+    // requestMusicPrev() exists in PhoneLinkManager for a companion app
+    // that wants to offer it in its own UI even though the dash doesn't.
+
+    lv_obj_add_flag(_musicWidget, LV_OBJ_FLAG_HIDDEN);   // shown once fresh data arrives
+}
+
+void DisplayManager::buildNavBanner() {
+    // Compact bar just under the top edge of Main Dashboard — a next-turn
+    // relay from the phone's own nav app, not on-device routing. Hidden by
+    // default; see refreshPhoneLinkWidgets() for the staleness-gated show/hide.
+    _navBanner = lv_obj_create(_screenMain);
+    lv_obj_set_size(_navBanner, 260, 32);
+    lv_obj_align(_navBanner, LV_ALIGN_TOP_MID, 0, 8);
+    lv_obj_set_style_bg_color(_navBanner, lv_color_hex(0x0D3B66), 0);
+    lv_obj_set_style_bg_opa(_navBanner, LV_OPA_80, 0);
+    lv_obj_set_style_border_width(_navBanner, 0, 0);
+    lv_obj_set_style_pad_all(_navBanner, 4, 0);
+    lv_obj_clear_flag(_navBanner, LV_OBJ_FLAG_SCROLLABLE);
+
+    _labelNavInstruction = lv_label_create(_navBanner);
+    lv_obj_set_style_text_color(_labelNavInstruction, lv_color_white(), 0);
+    lv_obj_center(_labelNavInstruction);
+    lv_label_set_text(_labelNavInstruction, "");
+
+    lv_obj_add_flag(_navBanner, LV_OBJ_FLAG_HIDDEN);
+
+    // Note: this sits at the same TOP_MID anchor the warning banner uses
+    // (offset differently, y=8 vs y=40) — a CRITICAL warning and an active
+    // nav hint can both be visible at once without overlapping. Two
+    // non-critical banners competing for attention at once (nav + a
+    // quiet-mode-suppressed notification) doesn't happen by construction:
+    // quiet mode only suppresses the warning banner above
+    // QUIET_MODE_SPEED_THRESHOLD_KMH, exactly when you'd also most want
+    // the nav banner uncluttered.
+}
+
+void DisplayManager::buildCallModal() {
+    // Top-layer overlay (lv_layer_top()) so it appears above whichever
+    // screen is currently active without needing every screen to know
+    // about it — the same reason LVGL's own system keyboard/message-box
+    // widgets use this layer.
+    _callModal = lv_obj_create(lv_layer_top());
+    lv_obj_set_size(_callModal, SCREEN_W, SCREEN_H);
+    lv_obj_set_style_bg_color(_callModal, lv_color_black(), 0);
+    lv_obj_set_style_bg_opa(_callModal, LV_OPA_90, 0);
+    lv_obj_center(_callModal);
+    lv_obj_clear_flag(_callModal, LV_OBJ_FLAG_SCROLLABLE);
+
+    lv_obj_t* lblIncoming = lv_label_create(_callModal);
+    lv_label_set_text(lblIncoming, "Incoming Call");
+    lv_obj_set_style_text_color(lblIncoming, lv_color_hex(0x8A93A8), 0);
+    lv_obj_align(lblIncoming, LV_ALIGN_TOP_MID, 0, 60);
+
+    _labelCallerName = lv_label_create(_callModal);
+    lv_obj_set_style_text_font(_labelCallerName, &lv_font_montserrat_28, 0);
+    lv_obj_set_style_text_color(_labelCallerName, lv_color_white(), 0);
+    lv_obj_align(_labelCallerName, LV_ALIGN_CENTER, 0, -20);
+    lv_label_set_text(_labelCallerName, "");
+
+    lv_obj_t* btnReject = lv_btn_create(_callModal);
+    lv_obj_set_size(btnReject, 100, 50);
+    lv_obj_align(btnReject, LV_ALIGN_BOTTOM_MID, -70, -50);
+    lv_obj_set_style_bg_color(btnReject, lv_color_hex(0xFF1744), 0);
+    lv_obj_add_event_cb(btnReject, onCallRejectClicked, LV_EVENT_CLICKED, this);
+    lv_obj_t* lblReject = lv_label_create(btnReject);
+    lv_label_set_text(lblReject, LV_SYMBOL_CLOSE " Reject");
+    lv_obj_center(lblReject);
+
+    lv_obj_t* btnAccept = lv_btn_create(_callModal);
+    lv_obj_set_size(btnAccept, 100, 50);
+    lv_obj_align(btnAccept, LV_ALIGN_BOTTOM_MID, 70, -50);
+    lv_obj_set_style_bg_color(btnAccept, lv_color_hex(0x00E676), 0);
+    lv_obj_add_event_cb(btnAccept, onCallAcceptClicked, LV_EVENT_CLICKED, this);
+    lv_obj_t* lblAccept = lv_label_create(btnAccept);
+    lv_label_set_text(lblAccept, LV_SYMBOL_CALL " Accept");
+    lv_obj_center(lblAccept);
+
+    lv_obj_add_flag(_callModal, LV_OBJ_FLAG_HIDDEN);
+    // Deliberately NOT wired into the swipe/MODE-button navigation cycle —
+    // an incoming call isn't a "screen" you navigate to, it's an interrupt
+    // that appears over whatever you were doing and goes away on
+    // accept/reject/timeout. See docs/phone_link.md.
 }
 
 void DisplayManager::buildTripInfoScreen() {
@@ -379,6 +524,42 @@ void DisplayManager::buildSettingsScreen() {
         ledcWrite(0, lv_slider_get_value(slider));
     }, LV_EVENT_VALUE_CHANGED, nullptr);
 
+    // --- Maintenance (right column) — closes the loop on SERVICE_DUE /
+    // CHAIN_LUBE_DUE warnings actually meaning something. Tyre/insurance/
+    // PUC aren't editable here (no on-screen date/number entry widget yet
+    // — see docs/maintenance.md) and are configured via BLE from the
+    // companion app instead. ---
+    lv_obj_t* lblMaintTitle = lv_label_create(_screenSettings);
+    lv_label_set_text(lblMaintTitle, "Maintenance");
+    lv_obj_set_style_text_color(lblMaintTitle, lv_color_hex(0x8A93A8), 0);
+    lv_obj_align(lblMaintTitle, LV_ALIGN_TOP_LEFT, 260, 50);
+
+    _labelServiceStatus = lv_label_create(_screenSettings);
+    lv_obj_set_style_text_color(_labelServiceStatus, lv_color_white(), 0);
+    lv_obj_align(_labelServiceStatus, LV_ALIGN_TOP_LEFT, 260, 76);
+    lv_label_set_text(_labelServiceStatus, "Service: --");
+
+    lv_obj_t* btnMarkServiced = lv_btn_create(_screenSettings);
+    lv_obj_set_size(btnMarkServiced, 190, 36);
+    lv_obj_align(btnMarkServiced, LV_ALIGN_TOP_LEFT, 260, 100);
+    lv_obj_add_event_cb(btnMarkServiced, onMarkServicedClicked, LV_EVENT_CLICKED, this);
+    lv_obj_t* lblMarkServiced = lv_label_create(btnMarkServiced);
+    lv_label_set_text(lblMarkServiced, "Mark Serviced");
+    lv_obj_center(lblMarkServiced);
+
+    _labelChainStatus = lv_label_create(_screenSettings);
+    lv_obj_set_style_text_color(_labelChainStatus, lv_color_white(), 0);
+    lv_obj_align(_labelChainStatus, LV_ALIGN_TOP_LEFT, 260, 150);
+    lv_label_set_text(_labelChainStatus, "Chain: --");
+
+    lv_obj_t* btnMarkChain = lv_btn_create(_screenSettings);
+    lv_obj_set_size(btnMarkChain, 190, 36);
+    lv_obj_align(btnMarkChain, LV_ALIGN_TOP_LEFT, 260, 174);
+    lv_obj_add_event_cb(btnMarkChain, onMarkChainLubedClicked, LV_EVENT_CLICKED, this);
+    lv_obj_t* lblMarkChain = lv_label_create(btnMarkChain);
+    lv_label_set_text(lblMarkChain, "Mark Chain Lubed");
+    lv_obj_center(lblMarkChain);
+
     // --- Hardware status readout (diagnostic, read-only) ---
     _labelSdStatus = lv_label_create(_screenSettings);
     lv_obj_set_style_text_color(_labelSdStatus, lv_color_hex(0x8A93A8), 0);
@@ -471,8 +652,18 @@ void DisplayManager::refreshWidgetsFromState() {
     s.inHighBeam          ? lv_obj_clear_flag(_iconHighBeam, LV_OBJ_FLAG_HIDDEN)          : lv_obj_add_flag(_iconHighBeam, LV_OBJ_FLAG_HIDDEN);
 
     // Warning banner reflects NotificationManager's top unacknowledged item
+    // — suppressed while riding above QUIET_MODE_SPEED_THRESHOLD_KMH unless
+    // it's CRITICAL (DisplayPolicyMath::shouldSuppressBanner guarantees
+    // CRITICAL is never suppressed, so this can never hide something that
+    // actually matters — it's purely about not popping up "Chain Lube Due"
+    // while you're doing 60 on the highway). The notification itself is
+    // never removed from the queue by this — it's still sitting there and
+    // still shows on the Notifications screen; this only hides the
+    // Main-Dashboard banner.
     const Notification* n = NotificationManager::instance().current();
-    if (n) {
+    bool suppress = n && DisplayPolicyMath::shouldSuppressBanner(
+        n->priority == NotifPriority::CRITICAL, s.speedKmh, QUIET_MODE_SPEED_THRESHOLD_KMH);
+    if (n && !suppress) {
         lv_label_set_text(_labelWarningBanner, n->title.c_str());
         lv_obj_clear_flag(_labelWarningBanner, LV_OBJ_FLAG_HIDDEN);
     } else {
@@ -506,6 +697,19 @@ void DisplayManager::refreshWidgetsFromState() {
     lv_label_set_text_fmt(_labelSdStatus, "SD: %s", s.sdCardOk ? "OK" : "Not detected");
     lv_label_set_text_fmt(_labelGpsStatus, "GPS: %s", s.gpsFixValid ? "Fix" : (s.gpsModuleOk ? "Searching" : "Not detected"));
     lv_label_set_text_fmt(_labelBleStatus, "BLE: %s", s.bleConnected ? "Connected" : "Waiting");
+
+    // Service/chain status — reads directly from MaintenanceManager rather
+    // than duplicating the due-km values in VehicleState, since these
+    // change rarely (only on "mark done") and don't need to ride through
+    // the shared-state snapshot every frame like live sensor data does.
+    auto& maint = MaintenanceManager::instance();
+    float remainingSvc = maint.serviceDueKm() - s.odometer_km;
+    if (remainingSvc >= 0) lv_label_set_text_fmt(_labelServiceStatus, "Service: %.0f km left", remainingSvc);
+    else lv_label_set_text_fmt(_labelServiceStatus, "Service: OVERDUE by %.0f km", -remainingSvc);
+
+    float remainingChain = maint.chainDueKm() - s.odometer_km;
+    if (remainingChain >= 0) lv_label_set_text_fmt(_labelChainStatus, "Chain: %.0f km left", remainingChain);
+    else lv_label_set_text_fmt(_labelChainStatus, "Chain: OVERDUE by %.0f km", -remainingChain);
 }
 
 void DisplayManager::refreshNotificationsList() {
@@ -541,26 +745,100 @@ void DisplayManager::refreshSettingsLabels() {
     lv_label_set_text(_labelRideModeValue, rideModeNames[(uint8_t)_selectedRideMode]);
 }
 
+void DisplayManager::refreshPhoneLinkWidgets() {
+    PhoneLinkState link = PhoneLinkManager::instance().snapshot();
+    uint32_t now = millis();
+
+    // --- Incoming call modal ---
+    bool callFresh = DisplayPolicyMath::isDataFresh(link.callUpdatedMs, now, CALL_STALE_MS);
+    bool shouldShowCall = link.callActive && callFresh;
+    if (shouldShowCall && !_callModalShown) {
+        lv_label_set_text(_labelCallerName, link.callerName.c_str());
+        lv_obj_clear_flag(_callModal, LV_OBJ_FLAG_HIDDEN);
+        lv_obj_move_foreground(_callModal);
+        _callModalShown = true;
+    } else if (!shouldShowCall && _callModalShown) {
+        lv_obj_add_flag(_callModal, LV_OBJ_FLAG_HIDDEN);
+        _callModalShown = false;
+    }
+
+    // --- Music widget (Main Dashboard only) ---
+    if (DisplayPolicyMath::isDataFresh(link.musicUpdatedMs, now, PHONE_LINK_STALE_MS)) {
+        char trackText[96];
+        if (link.musicArtist.length() > 0) {
+            snprintf(trackText, sizeof(trackText), "%s - %s", link.musicTitle.c_str(), link.musicArtist.c_str());
+        } else {
+            snprintf(trackText, sizeof(trackText), "%s", link.musicTitle.c_str());
+        }
+        lv_label_set_text(_labelMusicTrack, trackText);
+        lv_obj_clear_flag(_musicWidget, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_add_flag(_musicWidget, LV_OBJ_FLAG_HIDDEN);
+    }
+
+    // --- Navigation banner (Main Dashboard only) ---
+    if (DisplayPolicyMath::isDataFresh(link.navUpdatedMs, now, PHONE_LINK_STALE_MS)) {
+        lv_label_set_text_fmt(_labelNavInstruction, "%s - %.0fm", link.navInstruction.c_str(), link.navDistanceM);
+        lv_obj_clear_flag(_navBanner, LV_OBJ_FLAG_HIDDEN);
+    } else {
+        lv_obj_add_flag(_navBanner, LV_OBJ_FLAG_HIDDEN);
+    }
+}
+
 // --------------------------------------------------------- Button callbacks
+void DisplayManager::applyRideModeProfile(RideMode mode, bool persist) {
+    const RideModeProfile& profile = RideModeProfiles::get(mode);
+    bool enteringRain = persist && (mode == RideMode::RAIN) && (_selectedRideMode != RideMode::RAIN);
+
+    _selectedRideMode = mode;
+    SharedState::instance().update([&](VehicleState& s) { s.rideMode = mode; });
+
+    if (persist) {
+        // A real mode change (not a boot-time restore) applies the mode's
+        // default theme, per the spec's "each mode modifies display theme."
+        // A manual Theme-button pick made earlier is intentionally
+        // overwritten here — see docs/themes.md for the documented
+        // interaction: mode change resets theme, manual cycling afterward
+        // is a temporary override good until the next mode change.
+        _selectedTheme = profile.theme;
+        applyTheme(_selectedTheme);
+        StorageManager::instance().saveTheme((uint8_t)_selectedTheme);
+        StorageManager::instance().saveRideMode((uint8_t)mode);
+    }
+
+    // Brightness cap always applies, restore or real change — clamp
+    // whatever the slider currently shows down to the new mode's ceiling
+    // rather than forcing a specific value, so a user's finer-grained
+    // choice within that ceiling (e.g. 180 out of a 220 Touring cap)
+    // survives a mode switch that doesn't lower the cap below it.
+    lv_slider_set_range(_sliderBrightness, 20, profile.maxBrightness);
+    uint8_t current = (uint8_t)lv_slider_get_value(_sliderBrightness);
+    uint8_t clamped = current < profile.maxBrightness ? current : profile.maxBrightness;
+    lv_slider_set_value(_sliderBrightness, clamped, LV_ANIM_ON);
+    ledcWrite(0, clamped);
+
+    if (enteringRain) {
+        NotificationManager::instance().push(
+            "Rain Mode", "Reduced traction advisory - ride cautiously", NotifPriority::INFO);
+    }
+}
+
 void DisplayManager::onThemeButtonClicked(lv_event_t* e) {
     DisplayManager* self = (DisplayManager*)lv_event_get_user_data(e);
     uint8_t next = ((uint8_t)self->_selectedTheme + 1) % ((uint8_t)ThemeMode::CUSTOM + 1);
     self->_selectedTheme = (ThemeMode)next;
     self->applyTheme(self->_selectedTheme);
+    StorageManager::instance().saveTheme((uint8_t)self->_selectedTheme);
     self->refreshSettingsLabels();
-    // Persisting this to NVS uses the `theme` key reserved in
-    // docs/nvs_layout.md — not yet wired to StorageManager in this build.
+    // Manual theme choice persists on its own — see applyRideModeProfile's
+    // comment for how this interacts with the next ride-mode change.
 }
 
 void DisplayManager::onRideModeButtonClicked(lv_event_t* e) {
     DisplayManager* self = (DisplayManager*)lv_event_get_user_data(e);
     uint8_t next = ((uint8_t)self->_selectedRideMode + 1) % ((uint8_t)RideMode::CUSTOM + 1);
-    self->_selectedRideMode = (RideMode)next;
-    SharedState::instance().update([&](VehicleState& s) { s.rideMode = self->_selectedRideMode; });
+    self->applyRideModeProfile((RideMode)next, /*persist=*/true);
     self->refreshSettingsLabels();
-    // Per-mode brightness/warning-threshold/logging behavior table is a
-    // Phase 2 item (docs/roadmap.md) — selecting a mode currently just
-    // records it in VehicleState for other managers to read later.
 }
 
 void DisplayManager::onResetTripAClicked(lv_event_t* e) {
@@ -571,6 +849,47 @@ void DisplayManager::onResetTripAClicked(lv_event_t* e) {
 void DisplayManager::onResetTripBClicked(lv_event_t* e) {
     (void)e;
     RideManager::instance().resetTripB();
+}
+
+void DisplayManager::onMarkServicedClicked(lv_event_t* e) {
+    (void)e;
+    MaintenanceManager::instance().markServiced();
+}
+
+void DisplayManager::onMarkChainLubedClicked(lv_event_t* e) {
+    (void)e;
+    MaintenanceManager::instance().markChainLubed();
+}
+
+void DisplayManager::onCallAcceptClicked(lv_event_t* e) {
+    DisplayManager* self = (DisplayManager*)lv_event_get_user_data(e);
+    PhoneLinkManager::instance().requestCallAccept();
+    lv_obj_add_flag(self->_callModal, LV_OBJ_FLAG_HIDDEN);
+    self->_callModalShown = false;
+    // Doesn't call PhoneLinkManager::endCall() here — the phone is the
+    // source of truth for whether the call actually ended; this only
+    // dismisses the LOCAL modal so it's not still covering the screen
+    // while the actual call happens on the phone (typically over a
+    // Bluetooth headset). The phone app should follow up with
+    // {"cmd":"call_ended"} once the call genuinely ends.
+}
+
+void DisplayManager::onCallRejectClicked(lv_event_t* e) {
+    DisplayManager* self = (DisplayManager*)lv_event_get_user_data(e);
+    PhoneLinkManager::instance().requestCallReject();
+    lv_obj_add_flag(self->_callModal, LV_OBJ_FLAG_HIDDEN);
+    self->_callModalShown = false;
+    PhoneLinkManager::instance().endCall();   // rejecting is locally final — no need to wait for the phone to confirm
+}
+
+void DisplayManager::onMusicPlayPauseClicked(lv_event_t* e) {
+    (void)e;
+    PhoneLinkManager::instance().requestMusicPlayPause();
+}
+
+void DisplayManager::onMusicNextClicked(lv_event_t* e) {
+    (void)e;
+    PhoneLinkManager::instance().requestMusicNext();
 }
 
 void DisplayManager::onNotificationRowClicked(lv_event_t* e) {

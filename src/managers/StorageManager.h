@@ -43,6 +43,15 @@ public:
 
     // Maintenance reminders (service/tyre/chain/insurance/PUC intervals)
     void saveMaintenanceRecord(const char* key, uint32_t dueOdometerKm, uint32_t dueEpochSec);
+    uint32_t loadMaintenanceKm(const char* key, uint32_t defaultValue);
+    uint32_t loadMaintenanceTs(const char* key, uint32_t defaultValue);
+
+    // Settings screen persistence — theme/ride-mode selections survive reboot.
+    // Stored as the raw enum uint8_t; DisplayManager owns interpreting it.
+    void saveTheme(uint8_t themeValue);
+    uint8_t loadTheme(uint8_t defaultValue);
+    void saveRideMode(uint8_t rideModeValue);
+    uint8_t loadRideMode(uint8_t defaultValue);
 
     // SD-card bulk logging
     bool sdAvailable() const { return _sdOk; }

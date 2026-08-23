@@ -37,10 +37,28 @@ real UI):
 - **Full 4-screen dashboard UI**: Main Dashboard, Trip Info (trip A/B,
   odometer, ride timer, avg/max speed, fuel range/efficiency, reset
   buttons), Notifications (tap-to-acknowledge list), Settings (theme +
-  ride-mode cycling, brightness slider, SD/GPS/BLE status) — with touch
-  swipe, physical MODE-button, and OK-button navigation, plus a
-  CRITICAL-notification override that force-switches to Notifications and
-  blocks navigating away until acknowledged
+  ride-mode cycling, brightness slider, maintenance status/actions,
+  SD/GPS/BLE status) — with touch swipe, physical MODE-button, and
+  OK-button navigation, plus a CRITICAL-notification override that
+  force-switches to Notifications and blocks navigating away until
+  acknowledged
+- **Maintenance reminders** (`MaintenanceManager`) — service and chain-lube
+  self-schedule from the odometer with on-dash "mark done" buttons; tyre
+  wear and insurance/PUC expiry are configured via BLE and raise the
+  existing warning/notification pipeline once due — see
+  `docs/maintenance.md`
+- **Anti-theft motion/tilt/tow alarm** (`SecurityManager`) — arm/disarm
+  from your phone (bonded BLE only), works with just the Tier 1 wheel
+  sensor and gets more capable as IMU/GPS are added, sustained
+  buzzer+horn+hazard deterrent on trigger — see `docs/security.md`
+- **Phone-mirrored calls/messages/music + nav relay + quiet mode**
+  (`PhoneLinkManager`) — incoming-call modal with accept/reject, message
+  previews routed into the existing notification queue, a music
+  play/pause/skip widget, a next-turn banner relayed from your phone's own
+  nav app, and speed-aware suppression of non-critical banners while
+  riding. Needs a companion app to actually forward this data — the
+  firmware side and the exact JSON contract that app must speak are both
+  in `docs/phone_link.md`
 - **Phone remote control** (horn, hazard/indicator flash, lock/unlock,
   optional remote engine start) with interlocks enforced server-side in
   `RemoteControlManager` — see `docs/remote_control.md` before enabling
@@ -50,9 +68,15 @@ real UI):
   runs correctly with only a subset of the BOM installed — see
   `docs/incremental_build.md`
 - **Hardware-free test suite** (`test/native/`) — the speed/RPM/fuel math
-  is pulled out into `VehicleMath`, a pure C++ module with zero Arduino
-  dependency, so it's unit-tested on a plain desktop compiler before it
-  ever touches a real wheel
+  and the per-ride-mode behavior table are both pure C++ with zero Arduino
+  dependency (`VehicleMath.h`, `RideModeProfile.h`), unit-tested on a plain
+  desktop compiler before they ever touch a real wheel or warning
+  threshold. This caught two real bugs during development: a speed-sensor
+  design that would've quantized to zero at normal riding speed (fixed by
+  widening the calculation window and specifying a multi-magnet sensor —
+  see `docs/calibration.md`), and a pure-logic header that had accidentally
+  pulled in the entire Arduino/FreeRTOS toolchain through a shared enum
+  file (fixed by extracting `include/VehicleEnums.h`).
 
 **Architected with a clear extension point but not fully built out** (each
 has a manager stub or a documented hook — see `docs/roadmap.md`):
@@ -74,10 +98,19 @@ extensible MVP core, not a simulated "everything included" facade.
 include/
   Config.h          All pin assignments, hardware constants & ENABLE_* feature flags
   DataModel.h        SharedState — the single, mutex-guarded source of truth
-  VehicleMath.h        Pure math (speed/RPM/fuel calcs) — zero hardware dependency
+  VehicleEnums.h       GearState/RideMode/ThemeMode/WarningFlag — zero hardware dependency
+  VehicleMath.h          Pure math (speed/RPM/fuel calcs) — zero hardware dependency
+  RideModeProfile.h        Per-ride-mode theme/brightness/warning/logging table — zero hardware dependency
+  MaintenanceMath.h          Pure due/overdue logic for service/tyre/chain/insurance/PUC — zero hardware dependency
+  SecurityMath.h                Pure GPS-drift/lean-angle detection logic — zero hardware dependency
+  DisplayPolicyMath.h              Pure quiet-mode + phone-link staleness logic — zero hardware dependency
 src/
   main.cpp            Boot sequence + FreeRTOS task graph
   VehicleMath.cpp       Implementation of the pure math above
+  RideModeProfile.cpp     Implementation of the ride-mode table above
+  MaintenanceMath.cpp       Implementation of the maintenance logic above
+  SecurityMath.cpp             Implementation of the security detection logic above
+  DisplayPolicyMath.cpp           Implementation of the quiet-mode/staleness logic above
   managers/           One file pair per subsystem, each independently testable
     SensorManager      Raw sensor acquisition (speed, RPM, fuel, temp, IMU, env)
     RideManager         Distance/time integration, trip/odometer, fuel range
@@ -88,8 +121,11 @@ src/
     GpsManager                NMEA parsing, RTC discipline
     BleManager                  Companion-app telemetry + command service
     RemoteControlManager          Phone-command actuation + safety interlocks
-    DisplayManager                LVGL UI, 60fps render loop, theming
-test/native/          Hardware-free unit tests for VehicleMath (plain g++, no ESP32 needed)
+    MaintenanceManager              Service/tyre/chain/insurance/PUC reminders
+    SecurityManager                    Arm/disarm + motion/tilt/tow theft alarm
+    PhoneLinkManager                      Call/message/music/nav data mirrored from the phone
+    DisplayManager                          LVGL UI (4 screens + call modal), 60fps render loop, theming
+test/native/          Hardware-free unit tests for VehicleMath, RideModeProfile, MaintenanceMath, SecurityMath, DisplayPolicyMath (plain g++, no ESP32 needed)
 data/                 (LittleFS assets: fonts, icons — add as needed)
 docs/                 Wiring, BOM, power distribution, roadmap, calibration, remote control
 ```
@@ -161,6 +197,14 @@ brownout corruption during cranking.
   purchase tiers mapped to `Config.h` feature flags
 - `docs/remote_control.md` — **read before enabling any `ENABLE_REMOTE_*`
   flag** — what phone commands do, and the safety interlocks behind each one
+- `docs/maintenance.md` — service/tyre/chain/insurance/PUC reminder system:
+  what self-schedules, what needs configuring via BLE, and why
+- `docs/security.md` — the anti-theft alarm: how arm/disarm works, what
+  each trigger needs, and what this honestly is and isn't (not a
+  cellular tracker)
+- `docs/phone_link.md` — calls/messages/music/nav-relay/quiet-mode: the
+  exact BLE JSON contract a companion app needs to speak, and what's
+  firmware versus what still needs that (unbuilt) app
 
 ## Build
 

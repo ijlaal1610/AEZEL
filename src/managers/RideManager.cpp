@@ -1,6 +1,7 @@
 #include "RideManager.h"
 #include "StorageManager.h"
 #include "VehicleMath.h"
+#include "RideModeProfile.h"
 #include <time.h>
 
 void RideManager::begin() {
@@ -115,11 +116,13 @@ void RideManager::updateFuelEstimate() {
 }
 
 void RideManager::maybeLogPoint() {
+    VehicleState s = SharedState::instance().snapshot();
+    uint32_t interval = RideModeProfiles::get(s.rideMode).rideLogIntervalMs;
+
     uint32_t now = millis();
-    if (now - _lastLogMs < LOG_INTERVAL_MS) return;
+    if (now - _lastLogMs < interval) return;
     _lastLogMs = now;
 
-    VehicleState s = SharedState::instance().snapshot();
     if (!s.gpsFixValid) return;   // no point logging without position
 
     RideLogPoint pt{};

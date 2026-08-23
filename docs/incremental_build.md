@@ -52,6 +52,12 @@ wired).
 neutral/brake/kill-switch readouts, ignition-triggered power lifecycle.
 This is the point where the dashboard is genuinely "on the bike and
 working," even though temp/fuel/battery still read placeholder values.
+**It's also the point where the anti-theft alarm becomes useful** — the
+wheel-motion trigger in `SecurityManager` (`docs/security.md`) needs
+nothing beyond this tier's speed sensor to arm and detect the bike being
+pushed or rolled away. Without Tier 1.5's horn/indicator relays yet, the
+alarm falls back to pulsing the onboard buzzer — audible, but nowhere
+near as effective a deterrent as the real thing.
 
 ## Tier 1.5 — Cheap phone-control wins (~₹200-400 incremental)
 
@@ -62,6 +68,10 @@ working," even though temp/fuel/battery still read placeholder values.
 **What works:** horn-honk and hazard-flash from the phone app ("find my
 bike"). See `docs/remote_control.md` — these are the lowest-risk remote
 commands, worth doing early since they're cheap and immediately useful.
+**Also upgrades the Tier 1 alarm from a buzzer chirp to a proper
+car-style horn+hazard alarm** — `SecurityManager` automatically switches
+to this once the relays are present, no flag or setting needed beyond
+these two.
 
 ## Tier 2 — Environment & electrical (~₹700-1,000 incremental)
 
@@ -83,7 +93,10 @@ auto-brightness instead of fixed. Run the fuel-sender calibration
 
 **What works:** GPS speed cross-check, position/heading/altitude, RTC
 auto-sync, ride-log GPS points (feeds the CSV/GPX export that's already
-implemented and waiting for real coordinates).
+implemented and waiting for real coordinates), date-based maintenance
+warnings (insurance/PUC — these need a real clock, see
+`docs/maintenance.md`), and the alarm's GPS-drift trigger (catches a
+flatbed tow, which the Tier 1 wheel-motion trigger alone can't).
 
 ## Tier 4 — Dynamics, cosmetics, security (~₹1,000-2,500 incremental)
 
@@ -94,7 +107,9 @@ implemented and waiting for real coordinates).
 
 **What works:** lean angle, crash heuristic (calibrate thresholds first —
 see `docs/calibration.md`), altitude/pressure, welcome/goodbye lighting
-animation, brake-flash, and remote lock/unlock from the phone.
+animation, brake-flash, remote lock/unlock from the phone, and the
+alarm's lean-angle trigger (catches the bike being tilted/lifted without
+necessarily rolling or being towed).
 
 ## Tier 5 — Remote start (~₹150 incremental, but read the doc first)
 

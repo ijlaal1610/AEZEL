@@ -39,5 +39,8 @@ private:
     float _kmPerPercent = 0.35f;    // seeded estimate; refines as the tank empties
 
     static constexpr float TANK_CAPACITY_L = 9.0f;   // Avenger 150 stock tank
-    static constexpr uint32_t LOG_INTERVAL_MS = 3000; // one GPS/ride point every 3s
+    // Ride-log write frequency now comes from the active RideMode's profile
+    // (RideModeProfile.h) instead of a fixed constant — Sport mode logs
+    // every 1s for detailed post-ride analytics, Eco every 8s to reduce SD
+    // writes. See maybeLogPoint().
 };

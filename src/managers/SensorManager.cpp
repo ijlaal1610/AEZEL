@@ -1,6 +1,7 @@
 #include "SensorManager.h"
 #include "Config.h"
 #include "VehicleMath.h"
+#include "RideModeProfile.h"
 #include <Wire.h>
 #if ENABLE_ONEWIRE_TEMP
 #include <OneWire.h>
@@ -253,6 +254,7 @@ void SensorManager::updateIndicatorInputs() {
 void SensorManager::evaluateWarnings() {
     auto& ss = SharedState::instance();
     VehicleState s = ss.snapshot();
+    const RideModeProfile& profile = RideModeProfiles::get(s.rideMode);
 
     (s.batteryVoltage > 0 && s.batteryVoltage < 11.8f && s.inEngineRunning)
         ? ss.raiseWarning(WarningFlag::BATTERY_LOW) : ss.clearWarning(WarningFlag::BATTERY_LOW);
@@ -260,11 +262,13 @@ void SensorManager::evaluateWarnings() {
     (s.inEngineRunning && s.chargingVoltage < 13.0f)
         ? ss.raiseWarning(WarningFlag::CHARGING_FAULT) : ss.clearWarning(WarningFlag::CHARGING_FAULT);
 
-    (s.engineTempC > 110.0f)
+    // Threshold comes from the active ride mode's profile — Sport tightens
+    // this to 100C, others sit at 108-110C. See RideModeProfile.cpp for why.
+    (s.engineTempC > profile.engineOvertempThresholdC)
         ? ss.raiseWarning(WarningFlag::ENGINE_OVERTEMP) : ss.clearWarning(WarningFlag::ENGINE_OVERTEMP);
 
 #if ENABLE_FUEL_SENDER
-    (s.fuelLevelPct < 15.0f)
+    (s.fuelLevelPct < profile.fuelLowThresholdPct)
         ? ss.raiseWarning(WarningFlag::FUEL_LOW) : ss.clearWarning(WarningFlag::FUEL_LOW);
 #endif
 

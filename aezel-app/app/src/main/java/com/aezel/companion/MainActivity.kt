@@ -6,10 +6,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Build
+import androidx.compose.material.icons.filled.Build as BuildIcon
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Settings
@@ -19,11 +18,11 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -63,7 +62,7 @@ class MainActivity : ComponentActivity() {
 
     private val requestPermissionsLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) { /* results observed via ContextCompat.checkSelfPermission where needed */ }
+    ) { /* results observed via ContextCompat.checkSelfPermission where needed — see DeviceScreen */ }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,25 +71,19 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             AezelTheme {
-                AezelApp(
-                    repository = repository,
-                    onOpenNotificationAccessSettings = ::openNotificationAccessSettings,
-                    onToggleImmersiveKiosk = ::toggleImmersiveKiosk
-                )
+                AezelApp(repository = repository, onOpenNotificationAccessSettings = ::openNotificationAccessSettings)
             }
         }
     }
 
-    private fun toggleImmersiveKiosk(enable: Boolean) {
-        val controller = WindowCompat.getInsetsController(window, window.decorView)
-        if (enable) {
-            controller.hide(WindowInsetsCompat.Type.systemBars())
-            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-        } else {
-            controller.show(WindowInsetsCompat.Type.systemBars())
-        }
-    }
-
+    /**
+     * Requests everything that CAN be requested via a normal runtime
+     * permission dialog. Notification access (needed for call/message
+     * mirroring, see NotificationForwardingService) is deliberately NOT
+     * here — Android requires that specific grant to happen through
+     * Settings, see openNotificationAccessSettings() below, surfaced as a
+     * button on the Device screen rather than an automatic prompt.
+     */
     private fun requestRuntimePermissions() {
         val permissions = mutableListOf<String>()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -112,27 +105,24 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun AezelApp(
-    repository: AezelRepository,
-    onOpenNotificationAccessSettings: () -> Unit,
-    onToggleImmersiveKiosk: (Boolean) -> Unit
-) {
+fun AezelApp(repository: AezelRepository, onOpenNotificationAccessSettings: () -> Unit) {
     val navController = rememberNavController()
     val vehicleState by repository.lastKnownState.collectAsState()
     val connectionState by repository.connectionState.collectAsState()
     val context = androidx.compose.ui.platform.LocalContext.current
-    var isHandlebarCockpitMode by remember { mutableStateOf(false) }
 
-    LaunchedEffect(isHandlebarCockpitMode) {
-        onToggleImmersiveKiosk(isHandlebarCockpitMode)
-    }
-
+    // Dispatches phone_action values (call_accept, music_play_pause, etc.)
+    // the moment they show up in telemetry — see PhoneActionHandler and
+    // docs/phone_link.md's "What the dashboard sends BACK to the phone".
     LaunchedEffect(vehicleState.phoneAction) {
         vehicleState.phoneAction?.let { action ->
             PhoneActionHandler.handle(context, action)
         }
     }
 
+    // Keeps the BLE connection (and phone-link forwarding) alive in the
+    // background for as long as we're actually connected — see
+    // AezelForegroundService's doc comment for why this matters mid-ride.
     LaunchedEffect(connectionState) {
         val intent = Intent(context, AezelForegroundService::class.java)
         if (connectionState is BleConnectionState.Connected) {
@@ -143,69 +133,52 @@ fun AezelApp(
         }
     }
 
-    if (isHandlebarCockpitMode) {
-        // --- 100% ISOLATED FULL-SCREEN IMMERSIVE COCKPIT DISPLAY FOR GEMINI VCU ---
-        DashboardScreen(
-            vehicleState = vehicleState,
-            connectionState = connectionState,
-            bleManager = repository.bleManager,
-            isCockpitMode = true,
-            onToggleCockpitMode = { isHandlebarCockpitMode = false }
-        )
-    } else {
-        Scaffold(
-            bottomBar = {
-                val navBackStackEntry by navController.currentBackStackEntryAsState()
-                val currentDestination = navBackStackEntry?.destination
-                NavigationBar {
-                    bottomNavDestinations.forEach { dest ->
-                        val selected = currentDestination?.hierarchy?.any { it.route == dest.route } == true
-                        NavigationBarItem(
-                            selected = selected,
-                            onClick = {
-                                navController.navigate(dest.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = { Icon(iconFor(dest), contentDescription = dest.label) },
-                            label = { Text(dest.label) },
-                        )
-                    }
-                }
-            },
-        ) { innerPadding ->
-            NavHost(
-                navController = navController,
-                startDestination = AezelDestination.Dashboard.route,
-                modifier = Modifier.padding(innerPadding),
-            ) {
-                composable(AezelDestination.Dashboard.route) {
-                    DashboardScreen(
-                        vehicleState = vehicleState,
-                        connectionState = connectionState,
-                        bleManager = repository.bleManager,
-                        isCockpitMode = false,
-                        onToggleCockpitMode = { isHandlebarCockpitMode = true }
+    Scaffold(
+        bottomBar = {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
+            NavigationBar {
+                bottomNavDestinations.forEach { dest ->
+                    val selected = currentDestination?.hierarchy?.any { it.route == dest.route } == true
+                    NavigationBarItem(
+                        selected = selected,
+                        onClick = {
+                            navController.navigate(dest.route) {
+                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        icon = { Icon(iconFor(dest), contentDescription = dest.label) },
+                        label = { Text(dest.label) },
                     )
                 }
-                composable(AezelDestination.Remote.route) {
-                    RemoteScreen(repository = repository, vehicleState = vehicleState)
-                }
-                composable(AezelDestination.Security.route) {
-                    SecurityScreen(repository = repository, vehicleState = vehicleState)
-                }
-                composable(AezelDestination.Maintenance.route) {
-                    MaintenanceScreen(repository = repository, vehicleState = vehicleState)
-                }
-                composable(AezelDestination.Device.route) {
-                    DeviceScreen(
-                        repository = repository,
-                        connectionState = connectionState,
-                        onOpenNotificationAccessSettings = onOpenNotificationAccessSettings,
-                    )
-                }
+            }
+        },
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = AezelDestination.Dashboard.route,
+            modifier = Modifier.padding(innerPadding),
+        ) {
+            composable(AezelDestination.Dashboard.route) {
+                DashboardScreen(vehicleState = vehicleState, connectionState = connectionState)
+            }
+            composable(AezelDestination.Remote.route) {
+                RemoteScreen(repository = repository, vehicleState = vehicleState)
+            }
+            composable(AezelDestination.Security.route) {
+                SecurityScreen(repository = repository, vehicleState = vehicleState)
+            }
+            composable(AezelDestination.Maintenance.route) {
+                MaintenanceScreen(repository = repository, vehicleState = vehicleState)
+            }
+            composable(AezelDestination.Device.route) {
+                DeviceScreen(
+                    repository = repository,
+                    connectionState = connectionState,
+                    onOpenNotificationAccessSettings = onOpenNotificationAccessSettings,
+                )
             }
         }
     }
@@ -213,8 +186,8 @@ fun AezelApp(
 
 private fun iconFor(dest: AezelDestination) = when (dest) {
     AezelDestination.Dashboard -> Icons.Filled.Home
-    AezelDestination.Remote -> Icons.Filled.Warning
+    AezelDestination.Remote -> Icons.Filled.Warning   // horn/lights — closest stock icon; swap for a real horn glyph later
     AezelDestination.Security -> Icons.Filled.Lock
-    AezelDestination.Maintenance -> Icons.Default.Build
+    AezelDestination.Maintenance -> BuildIcon
     AezelDestination.Device -> Icons.Filled.Settings
 }

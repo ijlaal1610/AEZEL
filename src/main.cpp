@@ -22,10 +22,12 @@
 #include "managers/GpsManager.h"
 #include "managers/BleManager.h"
 #include "managers/RemoteControlManager.h"
+#include "managers/MaintenanceManager.h"
+#include "managers/SecurityManager.h"
 #include "managers/DisplayManager.h"
 
 // Task handles kept for diagnostics (stack high-water-mark reporting, etc.)
-static TaskHandle_t hDisplay, hSensor, hRide, hPower, hStorage, hLighting, hNotif, hGps, hBle, hDiag, hRemote;
+static TaskHandle_t hDisplay, hSensor, hRide, hPower, hStorage, hLighting, hNotif, hGps, hBle, hDiag, hRemote, hMaint, hSecurity;
 
 static void diagnosticsTask(void* pv) {
     for (;;) {
@@ -48,9 +50,11 @@ void setup() {
     PowerManager::instance().begin();
     SensorManager::instance().begin();
     RideManager::instance().begin();        // loads odometer/trip from NVS
+    MaintenanceManager::instance().begin(); // needs odometer above for self-scheduling service/chain
     LightingManager::instance().begin();
     NotificationManager::instance().begin();
     RemoteControlManager::instance().begin();
+    SecurityManager::instance().begin();
     DisplayManager::instance().begin();     // dashboard visible from here on
 
     // --- Phase 2: background subsystems (can lock/connect asynchronously) --
@@ -71,6 +75,7 @@ void setup() {
     xTaskCreatePinnedToCore(LightingManager::taskEntry,     "Lighting", 3072, nullptr, PRIO_SENSOR,      &hLighting, CORE_REALTIME);
     xTaskCreatePinnedToCore(NotificationManager::taskEntry, "Notif",    3072, nullptr, PRIO_SENSOR,      &hNotif,    CORE_REALTIME);
     xTaskCreatePinnedToCore(RemoteControlManager::taskEntry,"Remote",   3072, nullptr, PRIO_SAFETY_MONITOR, &hRemote, CORE_REALTIME);
+    xTaskCreatePinnedToCore(SecurityManager::taskEntry,     "Security", 3072, nullptr, PRIO_SAFETY_MONITOR, &hSecurity, CORE_REALTIME);
     xTaskCreatePinnedToCore(DisplayManager::taskEntry,      "Display",  8192, nullptr, PRIO_DISPLAY,     &hDisplay,  CORE_REALTIME);
 
     // Connectivity core (0): GPS parsing, BLE, SD-heavy storage flush,
@@ -86,6 +91,7 @@ void setup() {
     xTaskCreatePinnedToCore(BleManager::taskEntry,      "BLE",     6144, nullptr, PRIO_BLE,          &hBle,     CORE_CONNECTIVITY);
 #endif
     xTaskCreatePinnedToCore(diagnosticsTask,             "Diag",    2048, nullptr, PRIO_DIAGNOSTICS,  &hDiag,    CORE_CONNECTIVITY);
+    xTaskCreatePinnedToCore(MaintenanceManager::taskEntry, "Maint",  3072, nullptr, PRIO_DIAGNOSTICS,  &hMaint,   CORE_CONNECTIVITY);
 
     Serial.println("All tasks started. Boot complete.");
 }
