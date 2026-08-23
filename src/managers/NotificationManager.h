@@ -30,6 +30,11 @@ public:
     const Notification* current() const;   // top unacknowledged notification, or nullptr
     void acknowledgeCurrent();
 
+    // Read access for the Notifications screen's list view.
+    size_t count() const { return _count; }
+    const Notification& at(size_t index) const { return _queue[index]; }
+    void acknowledgeAt(size_t index);
+
 private:
     NotificationManager() = default;
     void scanWarningFlags();

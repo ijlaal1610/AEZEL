@@ -1,5 +1,6 @@
 #include "RideManager.h"
 #include "StorageManager.h"
+#include "VehicleMath.h"
 #include <time.h>
 
 void RideManager::begin() {
@@ -45,7 +46,7 @@ void RideManager::tick() {
 
 void RideManager::integrateDistance(float dtSec) {
     VehicleState s = SharedState::instance().snapshot();
-    float meters = (s.speedKmh / 3.6f) * dtSec;
+    float meters = VehicleMath::speedToMeters(s.speedKmh, dtSec);
     _distanceAccumM += meters;
 
     if (_distanceAccumM >= 1.0f) {
@@ -99,19 +100,17 @@ void RideManager::updateFuelEstimate() {
     // avoids using stale seed value forever, converges as tank empties.
     if (fuelDropPct >= 2.0f) {
         float kmCovered = _odometerKm - _kmAtLastCheckpoint;
-        float sample = kmCovered / fuelDropPct;
-        _kmPerPercent = _kmPerPercent * 0.7f + sample * 0.3f;   // smoothed update
+        _kmPerPercent = VehicleMath::recalibrateKmPerPercent(_kmPerPercent, kmCovered, fuelDropPct, 0.3f);
         _fuelPctAtLastCheckpoint = s.fuelLevelPct;
         _kmAtLastCheckpoint = _odometerKm;
     }
 
-    float rangeKm = s.fuelLevelPct * _kmPerPercent;
-    float litersUsedPerKm = (TANK_CAPACITY_L / 100.0f) / max(_kmPerPercent, 0.01f);
-    float kmPerLiter = litersUsedPerKm > 0 ? 1.0f / litersUsedPerKm : 0;
+    float rangeKm = VehicleMath::fuelRangeKm(s.fuelLevelPct, _kmPerPercent);
+    float kmPerLiterVal = VehicleMath::kmPerLiter(_kmPerPercent, TANK_CAPACITY_L);
 
     SharedState::instance().update([&](VehicleState& st) {
         st.fuelRangeKm = rangeKm;
-        st.fuelConsumptionKmL = kmPerLiter;
+        st.fuelConsumptionKmL = kmPerLiterVal;
     });
 }
 

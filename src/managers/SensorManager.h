@@ -39,5 +39,16 @@ private:
     float _speedEma = 0, _rpmEma = 0, _fuelEma = 0;
     uint32_t _lastTickMs = 0;
 
+    // Speed/RPM are computed over a WIDER window than the 50ms task tick —
+    // see the comment in SensorManager.cpp::tick(). A 1-pulse-per-revolution
+    // wheel sensor produces under 1 pulse per 50ms at normal riding speeds,
+    // so counting pulses in a 50ms window quantizes to 0-or-1 and reads
+    // wildly noisy. Accumulating over ~200ms fixes it without meaningfully
+    // hurting dashboard responsiveness (5Hz updates are imperceptible on a
+    // speedometer). This was caught by test/native/test_vehicle_math.cpp's
+    // regression test — see that file's comments for the numbers.
+    uint32_t _lastSpeedRpmCalcMs = 0;
+    static constexpr uint32_t SPEED_RPM_CALC_WINDOW_MS = 200;
+
     bool _imuOk = false, _envOk = false;
 };
