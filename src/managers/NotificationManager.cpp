@@ -60,9 +60,15 @@ void NotificationManager::push(const String& title, const String& body, NotifPri
                 break;
             }
         }
-        if (_count >= MAX_QUEUE) return;   // still full of criticals — genuinely drop
+        if (_count >= MAX_QUEUE) return;
     }
-    _queue[_count++] = { title, body, p, millis(), false };
+    Notification n;
+    n.title = title;
+    n.body = body;
+    n.priority = p;
+    n.createdMs = millis();
+    n.acknowledged = false;
+    _queue[_count++] = n;
 }
 
 const Notification* NotificationManager::current() const {

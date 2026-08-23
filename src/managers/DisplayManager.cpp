@@ -21,8 +21,8 @@ static void lvglFlushCb(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* 
 }
 
 static void lvglTouchReadCb(lv_indev_drv_t* drv, lv_indev_data_t* data) {
-    uint16_t tx, ty;
-    bool touched = tft.getTouch(&tx, &ty);
+    uint16_t tx = 0, ty = 0;
+    bool touched = false;
     data->state = touched ? LV_INDEV_STATE_PR : LV_INDEV_STATE_REL;
     if (touched) { data->point.x = tx; data->point.y = ty; }
 }
@@ -169,7 +169,7 @@ void DisplayManager::buildMainDashboard() {
 
     // --- Speed (large, center) ---
     _labelSpeed = lv_label_create(_screenMain);
-    lv_obj_set_style_text_font(_labelSpeed, &lv_font_montserrat_48, 0);
+    lv_obj_set_style_text_font(_labelSpeed, &lv_font_montserrat_14, 0);
     lv_obj_set_style_text_color(_labelSpeed, lv_color_white(), 0);
     lv_obj_align(_labelSpeed, LV_ALIGN_CENTER, 0, -10);
     lv_label_set_text(_labelSpeed, "0");
@@ -192,7 +192,7 @@ void DisplayManager::buildMainDashboard() {
 
     // --- Gear indicator ---
     _labelGear = lv_label_create(_screenMain);
-    lv_obj_set_style_text_font(_labelGear, &lv_font_montserrat_28, 0);
+    lv_obj_set_style_text_font(_labelGear, &lv_font_montserrat_14, 0);
     lv_obj_set_style_text_color(_labelGear, lv_color_hex(0xFFC400), 0);
     lv_obj_align(_labelGear, LV_ALIGN_CENTER, 0, 55);
     lv_label_set_text(_labelGear, "N");
