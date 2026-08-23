@@ -19,6 +19,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false   // enable + add proguard rules once the app is feature-complete, see docs/build.md
+            signingConfig = signingConfigs.getByName("debug")
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
