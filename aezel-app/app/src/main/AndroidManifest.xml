@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- BLE — Android 12+ (API 31+) uses the new runtime-requested Bluetooth
+         permissions; neverForLocation is safe here since this app doesn't
+         use BLE scan results to infer location, it only cares about
+         AEZEL's specific advertised service. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_SCAN"
+        android:usesPermissionFlags="neverForLocation" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+    <!-- Pre-Android-12 BLE scan requires location permission at the OS
+         level even though this app doesn't use location data itself —
+         that's an Android platform requirement for BLE scanning on those
+         versions, not an AEZEL design choice. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH"
+        android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"
+        android:maxSdkVersion="30" />
+
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true" />
+
+    <!-- Foreground service keeps the BLE connection (and notification
+         forwarding) alive while the app is backgrounded during a ride —
+         see service/AezelForegroundService.kt. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Lets acceptCall() in PhoneActionHandler answer a ringing call when
+         the dashboard's Accept button is pressed. There is deliberately no
+         equivalent permission requested for rejecting/ending calls — see
+         PhoneActionHandler's PLATFORM LIMITATION comment for why that's
+         not something a normal third-party app can do reliably. -->
+    <uses-permission android:name="android.permission.ANSWER_PHONE_CALLS" />
+
+    <!-- Required for the call/SMS/WhatsApp/music mirroring feature (see
+         docs/phone_link.md on the firmware side, and
+         service/NotificationForwardingService.kt here) — this is a
+         sensitive permission the user must explicitly grant in Android's
+         Settings > Notification Access, it cannot be requested via a
+         normal runtime permission dialog. -->
+    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+        tools:ignore="ProtectedPermissions" />
+
+    <application
+        android:name=".AezelApplication"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Aezel">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Aezel"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".service.NotificationForwardingService"
+            android:exported="false"
+            android:label="AEZEL Notification Mirror"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".service.AezelForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice" />
+
+    </application>
+
+</manifest>
