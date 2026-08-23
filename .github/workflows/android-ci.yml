@@ -29,12 +29,10 @@ jobs:
 
       - name: Ensure valid Gradle Wrapper (8.7) and Build APKs
         run: |
-          if [ -f "./gradlew" ]; then
-            gradle wrapper --gradle-version 8.7
-            chmod +x ./gradlew
-            ./gradlew assembleDebug assembleRelease --stacktrace
-          elif [ -f "./aezel-app/gradlew" ]; then
+          if [ -d "./aezel-app" ]; then
             cd aezel-app && gradle wrapper --gradle-version 8.7 && chmod +x ./gradlew && ./gradlew assembleDebug assembleRelease --stacktrace
+          elif [ -f "./gradlew" ]; then
+            gradle wrapper --gradle-version 8.7 && chmod +x ./gradlew && ./gradlew assembleDebug assembleRelease --stacktrace
           fi
 
       - name: Upload APK Artifacts
