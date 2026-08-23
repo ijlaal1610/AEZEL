@@ -1,11 +1,11 @@
 name: Android CI (Companion App)
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ main, android-app, gemini-android-app ]
+    branches: [ main, android-app, gemini-android-app, claude-android-app ]
   pull_request:
-    branches: [ main, android-app, gemini-android-app ]
-  workflow_dispatch: {}
+    branches: [ main, android-app, gemini-android-app, claude-android-app ]
 
 jobs:
   build:
@@ -27,20 +27,21 @@ jobs:
       - name: Set up Gradle (caching)
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Make gradlew executable
+      - name: Ensure valid Gradle Wrapper (8.7) and Build APKs
         run: |
           if [ -f "./gradlew" ]; then
+            gradle wrapper --gradle-version 8.7
             chmod +x ./gradlew
-            ./gradlew assembleDebug --stacktrace
+            ./gradlew assembleDebug assembleRelease --stacktrace
           elif [ -f "./aezel-app/gradlew" ]; then
-            cd aezel-app && chmod +x ./gradlew && ./gradlew assembleDebug --stacktrace
+            cd aezel-app && gradle wrapper --gradle-version 8.7 && chmod +x ./gradlew && ./gradlew assembleDebug assembleRelease --stacktrace
           fi
 
-      - name: Upload debug APK Artifact
+      - name: Upload APK Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: aezel-companion-debug
+          name: aezel-companion-apks
           path: |
-            app/build/outputs/apk/debug/*.apk
-            aezel-app/app/build/outputs/apk/debug/*.apk
+            app/build/outputs/apk/**/*.apk
+            aezel-app/app/build/outputs/apk/**/*.apk
           if-no-files-found: ignore
