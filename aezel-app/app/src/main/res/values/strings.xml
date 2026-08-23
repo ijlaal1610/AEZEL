@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">AEZEL Companion</string>
-    <string name="notification_channel_connection">AEZEL Connection</string>
-    <string name="notification_channel_connection_desc">Shows when the app is connected to your bike and forwarding calls/messages/music</string>
-    <string name="fg_service_notification_title">Connected to AEZEL</string>
-    <string name="fg_service_notification_text">Mirroring calls, messages, and music to your dashboard</string>
-</resources>
