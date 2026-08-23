@@ -1,6 +1,6 @@
 <div align="center">
 
-![AEZEL Banner](docs/images/aezel_banner_new.png)
+![AEZEL Banner](docs/images/aezel_banner_new.jpg)
 
 # AEZEL — Open-Source ESP32-S3 Smart Motorcycle Platform
 
