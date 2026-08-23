@@ -107,12 +107,6 @@ struct VehicleState {
     RideMode  rideMode  = RideMode::CITY;
     ThemeMode theme     = ThemeMode::MODERN_DIGITAL;
     uint32_t  activeWarnings = 0;   // bitmask of WarningFlag
-    bool      showSpeedometer = true;
-    bool      focusMode = false;
-    bool      allowNotifOverlay = true;
-    bool      enableLockscreen = true;
-    bool      isLocked = false;
-    char      pinCode[5] = "1234";
 
     // --- Diagnostics -----------------------------------------------------
     uint32_t freeHeapBytes = 0;
