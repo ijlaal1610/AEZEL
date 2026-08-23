@@ -188,6 +188,6 @@ private fun iconFor(dest: AezelDestination) = when (dest) {
     AezelDestination.Dashboard -> Icons.Filled.Home
     AezelDestination.Remote -> Icons.Filled.Warning   // horn/lights — closest stock icon; swap for a real horn glyph later
     AezelDestination.Security -> Icons.Filled.Lock
-    AezelDestination.Maintenance -> Icons.Default.Build
+    AezelDestination.Maintenance -> BuildIcon
     AezelDestination.Device -> Icons.Filled.Settings
 }
