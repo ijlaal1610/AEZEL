@@ -133,29 +133,39 @@ class BleConnectionManager(private val context: Context) {
     }
 
     /**
-     * Sends one JSON command — see docs/remote_control.md, docs/maintenance.md,
-     * docs/security.md, and docs/phone_link.md on the firmware side for the
-     * full command vocabulary this can send. Returns false immediately if
-     * not connected/ready rather than queuing (a stale queued command —
-     * e.g. an old horn_on sent after reconnecting minutes later — is worse
-     * than a dropped one; the caller should retry explicitly if it matters).
+     * Writes raw payload string to command characteristic.
      */
     fun sendCommand(json: String): Boolean {
         val g = gatt ?: return false
-        val characteristic = commandCharacteristic ?: return false
+        val cmdChar = commandCharacteristic ?: return false
         val bytes = json.toByteArray(StandardCharsets.UTF_8)
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            g.writeCharacteristic(characteristic, bytes, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT) == BluetoothStatusCodes.SUCCESS
+            g.writeCharacteristic(cmdChar, bytes, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT) == BluetoothStatusCodes.SUCCESS
         } else {
             @Suppress("DEPRECATION")
-            characteristic.value = bytes
+            cmdChar.value = bytes
             @Suppress("DEPRECATION")
-            characteristic.writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
+            cmdChar.writeType = BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
             @Suppress("DEPRECATION")
-            g.writeCharacteristic(characteristic)
+            g.writeCharacteristic(cmdChar)
         }
     }
+
+    // High-Level Remote Commands for Gemini VCU
+    fun remoteEngineStart(): Boolean = sendCommand("{\"cmd\":\"remote_start_engine\"}")
+    fun toggleIgnition(): Boolean = sendCommand("{\"cmd\":\"remote_ignition_toggle\"}")
+    fun pulseHorn(): Boolean = sendCommand("{\"cmd\":\"remote_horn_beep\"}")
+    fun toggleHazard(): Boolean = sendCommand("{\"cmd\":\"remote_hazard_toggle\"}")
+    fun triggerSeatRelease(): Boolean = sendCommand("{\"cmd\":\"remote_seat_release\"}")
+    fun triggerFindMyBike(): Boolean = sendCommand("{\"cmd\":\"find_bike\"}")
+    fun toggleSpeedo(): Boolean = sendCommand("{\"cmd\":\"toggle_speedo\"}")
+    fun toggleFocus(): Boolean = sendCommand("{\"cmd\":\"toggle_focus\"}")
+    fun toggleNotifOverlay(): Boolean = sendCommand("{\"cmd\":\"toggle_notif_overlay\"}")
+    fun toggleLockscreen(): Boolean = sendCommand("{\"cmd\":\"toggle_lockscreen\"}")
+    fun setPin(pin: String): Boolean = sendCommand("{\"cmd\":\"set_pin\",\"pin\":\"$pin\"}")
+    fun resetTripA(): Boolean = sendCommand("{\"cmd\":\"reset_trip_a\"}")
+    fun resetTripB(): Boolean = sendCommand("{\"cmd\":\"reset_trip_b\"}")
 
     private val gattCallback = object : BluetoothGattCallback() {
         override fun onConnectionStateChange(g: BluetoothGatt, status: Int, newState: Int) {
