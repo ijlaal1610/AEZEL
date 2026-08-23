@@ -36,9 +36,9 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Ensure valid Gradle Wrapper and Build APKs
+      - name: Ensure valid Gradle Wrapper (8.7) and Build APKs
         run: |
-          gradle wrapper --gradle-version 8.5
+          gradle wrapper --gradle-version 8.7
           chmod +x ./gradlew
           ./gradlew assembleDebug assembleRelease --stacktrace
 
