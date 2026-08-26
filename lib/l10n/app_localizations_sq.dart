@@ -228,7 +228,7 @@ class AppLocalizationsSq extends AppLocalizations {
   String get version => 'Versioni';
 
   @override
-  String get madeBy => 'Krijuar nga dddevid';
+  String get madeBy => 'Krijuar nga Ijlaal Akhtar';
 
   @override
   String get githubRepository => 'Depoja në GitHub';
@@ -1637,10 +1637,10 @@ class AppLocalizationsSq extends AppLocalizations {
   String get aboutPlatform => 'Platform';
 
   @override
-  String get aboutMadeBy => 'Made by dddevid';
+  String get aboutMadeBy => 'Made by Ijlaal Akhtar';
 
   @override
-  String get aboutGitHub => 'github.com/dddevid';
+  String get aboutGitHub => 'github.com/ijlaal1610';
 
   @override
   String get aboutLinkGitHub => 'GitHub Repository';

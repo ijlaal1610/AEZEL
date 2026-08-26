@@ -15,7 +15,7 @@ Per completare il deployment, devi abilitare GitHub Pages nelle impostazioni del
 ### Passaggi
 
 1. **Vai su GitHub**
-   - Apri https://github.com/dddevid/Musly
+   - Apri https://github.com/ijlaal1610/musly
 
 2. **Settings → Pages**
    - Nel menu laterale, clicca su **Settings**

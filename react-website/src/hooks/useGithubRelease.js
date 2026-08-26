@@ -32,7 +32,7 @@ export function useGithubRelease() {
 
         let cancelled = false
 
-        fetch('https://api.github.com/repos/dddevid/Musly/releases/latest', {
+        fetch('https://api.github.com/repos/ijlaal1610/musly/releases/latest', {
             headers: { Accept: 'application/vnd.github+json' },
         })
             .then(res => {
@@ -49,7 +49,7 @@ export function useGithubRelease() {
                           day: 'numeric',
                       })
                     : null
-                const url = json.html_url ?? 'https://github.com/dddevid/Musly/releases/latest'
+                const url = json.html_url ?? 'https://github.com/ijlaal1610/musly/releases/latest'
                 const data = { version, date, url }
 
                 // Cache result

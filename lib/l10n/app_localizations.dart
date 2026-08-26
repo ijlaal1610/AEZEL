@@ -577,7 +577,7 @@ abstract class AppLocalizations {
   /// Developer credit
   ///
   /// In en, this message translates to:
-  /// **'Made by dddevid'**
+  /// **'Made by Ijlaal Akhtar'**
   String get madeBy;
 
   /// GitHub repository link label
@@ -3121,13 +3121,13 @@ abstract class AppLocalizations {
   /// Developer credit text in the about tab
   ///
   /// In en, this message translates to:
-  /// **'Made by dddevid'**
+  /// **'Made by Ijlaal Akhtar'**
   String get aboutMadeBy;
 
   /// Developer GitHub handle shown as subtitle
   ///
   /// In en, this message translates to:
-  /// **'github.com/dddevid'**
+  /// **'github.com/ijlaal1610'**
   String get aboutGitHub;
 
   /// Link tile title for the GitHub repo

@@ -9,16 +9,16 @@ const sections = {
             { label: 'Features', href: '#features' },
             { label: 'Screenshots', href: '#screenshots' },
             { label: 'Download', href: '#download' },
-            { label: 'Changelog', href: 'https://github.com/dddevid/Musly/blob/master/CHANGELOG.md', ext: true },
+            { label: 'Changelog', href: 'https://github.com/ijlaal1610/musly/blob/master/CHANGELOG.md', ext: true },
         ]
     },
     resources: {
         title: 'Resources',
         links: [
-            { label: 'GitHub', href: 'https://github.com/dddevid/Musly', ext: true },
-            { label: 'Issues', href: 'https://github.com/dddevid/Musly/issues', ext: true },
-            { label: 'Releases', href: 'https://github.com/dddevid/Musly/releases', ext: true },
-            { label: 'License', href: 'https://github.com/dddevid/Musly/blob/master/LICENSE', ext: true },
+            { label: 'GitHub', href: 'https://github.com/ijlaal1610/musly', ext: true },
+            { label: 'Issues', href: 'https://github.com/ijlaal1610/musly/issues', ext: true },
+            { label: 'Releases', href: 'https://github.com/ijlaal1610/musly/releases', ext: true },
+            { label: 'License', href: 'https://github.com/ijlaal1610/musly/blob/master/LICENSE', ext: true },
         ]
     },
     community: {
@@ -58,7 +58,7 @@ export default function Footer({ onPrivacyClick }) {
                             The best free Navidrome &amp; Subsonic client with an modern and elegant interface.
                         </p>
                         <div className="footer-socials">
-                            <a href="https://github.com/dddevid/Musly" target="_blank" rel="noopener noreferrer" className="footer-social" aria-label="GitHub">
+                            <a href="https://github.com/ijlaal1610/musly" target="_blank" rel="noopener noreferrer" className="footer-social" aria-label="GitHub">
                                 <Github size={18} />
                             </a>
                             <a href="https://discord.gg/k9FqpbT65M" target="_blank" rel="noopener noreferrer" className="footer-social" aria-label="Discord">

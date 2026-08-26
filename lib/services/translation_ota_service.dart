@@ -83,7 +83,7 @@ class TranslationOtaService {
       }
 
       // 1. Fetch latest .arb file for target locale from GitHub master
-      final url = 'https://raw.githubusercontent.com/dddevid/Musly/master/lib/l10n/app_$targetLocale.arb';
+      final url = 'https://raw.githubusercontent.com/ijlaal1610/musly/master/lib/l10n/app_$targetLocale.arb';
       final response = await _dio.get<String>(
         url,
         options: Options(responseType: ResponseType.plain),
@@ -122,7 +122,7 @@ class TranslationOtaService {
   Future<void> _discoverRemoteLanguages(SharedPreferences prefs) async {
     try {
       final res = await _dio.get<dynamic>(
-        'https://api.github.com/repos/dddevid/Musly/contents/lib/l10n',
+        'https://api.github.com/repos/ijlaal1610/musly/contents/lib/l10n',
       );
 
       if (res.statusCode == 200 && res.data is List) {

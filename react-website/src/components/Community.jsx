@@ -37,7 +37,7 @@ const cards = [
         title: 'Contribute on GitHub',
         description: 'Report bugs, suggest features, submit pull requests, and shape the future of Musly.',
         actions: [
-            { href: 'https://github.com/dddevid/Musly', label: 'View on GitHub', style: 'github' }
+            { href: 'https://github.com/ijlaal1610/musly', label: 'View on GitHub', style: 'github' }
         ]
     },
 ]

@@ -1641,7 +1641,7 @@ class AppLocalizationsSv extends AppLocalizations {
   String get aboutMadeBy => 'Gjord av dddevid';
 
   @override
-  String get aboutGitHub => 'github.com/dddevid';
+  String get aboutGitHub => 'github.com/ijlaal1610';
 
   @override
   String get aboutLinkGitHub => 'GitHub Repository';

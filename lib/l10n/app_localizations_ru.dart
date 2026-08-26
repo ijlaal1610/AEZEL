@@ -228,7 +228,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get version => 'Версия';
 
   @override
-  String get madeBy => 'Сделано dddevid';
+  String get madeBy => 'Сделано Ijlaal Akhtar';
 
   @override
   String get githubRepository => 'Репозиторий на GitHub';
@@ -1645,10 +1645,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get aboutPlatform => 'Платформа';
 
   @override
-  String get aboutMadeBy => 'Сделано dddevid';
+  String get aboutMadeBy => 'Сделано Ijlaal Akhtar';
 
   @override
-  String get aboutGitHub => 'github.com/dddevid';
+  String get aboutGitHub => 'github.com/ijlaal1610';
 
   @override
   String get aboutLinkGitHub => 'GitHub репозиторий';

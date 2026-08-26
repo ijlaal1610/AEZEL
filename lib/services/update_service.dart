@@ -48,7 +48,7 @@ class UpdateService {
   static const String currentVersion = '2.0.1';
 
   static const String _apiUrl =
-      'https://api.github.com/repos/dddevid/Musly/releases/latest';
+      'https://api.github.com/repos/ijlaal1610/musly/releases/latest';
 
   static final _dio = Dio(
     BaseOptions(

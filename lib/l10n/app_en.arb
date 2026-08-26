@@ -290,7 +290,7 @@
   "@version": {
     "description": "Version info label"
   },
-  "madeBy": "Made by dddevid",
+  "madeBy": "Made by Ijlaal Akhtar",
   "@madeBy": {
     "description": "Developer credit"
   },
@@ -1867,11 +1867,11 @@
   "@aboutPlatform": {
     "description": "About screen platform row title"
   },
-  "aboutMadeBy": "Made by dddevid",
+  "aboutMadeBy": "Made by Ijlaal Akhtar",
   "@aboutMadeBy": {
     "description": "Developer credit text in the about tab"
   },
-  "aboutGitHub": "github.com/dddevid",
+  "aboutGitHub": "github.com/ijlaal1610",
   "@aboutGitHub": {
     "description": "Developer GitHub handle shown as subtitle"
   },

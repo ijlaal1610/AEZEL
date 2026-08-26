@@ -47,7 +47,7 @@ export default function Navbar() {
                     {/* Desktop actions */}
                     <div className="navbar-actions">
                         <a
-                            href="https://github.com/dddevid/Musly"
+                            href="https://github.com/ijlaal1610/musly"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="navbar-gh"
@@ -96,7 +96,7 @@ export default function Navbar() {
                             </motion.a>
                         ))}
                         <a
-                            href="https://github.com/dddevid/Musly"
+                            href="https://github.com/ijlaal1610/musly"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="navbar-mobile-link"

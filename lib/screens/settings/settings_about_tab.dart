@@ -82,21 +82,21 @@ class _SettingsAboutTabState extends State<SettingsAboutTab> {
               context,
               icon: Icons.code_rounded,
               title: AppLocalizations.of(context)!.aboutLinkGitHub,
-              url: 'https://github.com/dddevid/Musly',
+              url: 'https://github.com/ijlaal1610/musly',
             ),
             _buildDivider(context),
             _buildLinkTile(
               context,
               icon: CupertinoIcons.doc_text,
               title: AppLocalizations.of(context)!.aboutLinkChangelog,
-              url: 'https://github.com/dddevid/Musly/releases/tag/v2.0.1',
+              url: 'https://github.com/ijlaal1610/musly/releases/tag/v2.0.1',
             ),
             _buildDivider(context),
             _buildLinkTile(
               context,
               icon: CupertinoIcons.exclamationmark_bubble,
               title: AppLocalizations.of(context)!.aboutLinkReportIssue,
-              url: 'https://github.com/dddevid/Musly/issues/new',
+              url: 'https://github.com/ijlaal1610/musly/issues/new',
             ),
             _buildDivider(context),
             _buildLinkTile(
@@ -287,7 +287,7 @@ class _SettingsAboutTabState extends State<SettingsAboutTab> {
         style: const TextStyle(fontSize: 13),
       ),
       trailing: const Icon(Icons.open_in_new_rounded, size: 18),
-      onTap: () => _openUrl('https://github.com/dddevid'),
+      onTap: () => _openUrl('https://github.com/ijlaal1610'),
     );
   }
 

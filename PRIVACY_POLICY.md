@@ -43,11 +43,11 @@ When enabled, Musly interacts with public services strictly on-demand:
 
 ## 8. Open Source Transparency
 Musly is 100% open source under the CC BY-NC-SA 4.0 license. The entire source code is available for public audit and review:  
-👉 **[https://github.com/dddevid/Musly](https://github.com/dddevid/Musly)**
+👉 **[https://github.com/ijlaal1610/musly](https://github.com/ijlaal1610/musly)**
 
 ---
 
 ## Contact
 If you have any questions or feedback regarding this Privacy Policy, you can open an issue or start a discussion on GitHub:  
-- **GitHub Issues:** [https://github.com/dddevid/Musly/issues](https://github.com/dddevid/Musly/issues)
+- **GitHub Issues:** [https://github.com/ijlaal1610/musly/issues](https://github.com/ijlaal1610/musly/issues)
 - **Discord Community:** [https://discord.gg/RrcFvFPdRU](https://discord.gg/RrcFvFPdRU)

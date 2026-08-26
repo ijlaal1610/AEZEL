@@ -175,7 +175,7 @@ function PrivacyPolicy({ onBack }) {
             <a href="https://discord.gg/RrcFvFPdRU" className="contact-link">
               Discord Community
             </a>
-            <a href="https://github.com/dddevid/Musly/issues" className="contact-link">
+            <a href="https://github.com/ijlaal1610/musly/issues" className="contact-link">
               GitHub Issues
             </a>
           </div>
@@ -190,7 +190,7 @@ function PrivacyPolicy({ onBack }) {
             Musly is 100% open source. You can verify every line of code that handles your data:
           </p>
           <a 
-            href="https://github.com/dddevid/Musly" 
+            href="https://github.com/ijlaal1610/musly" 
             className="github-link"
             target="_blank"
             rel="noopener noreferrer"
