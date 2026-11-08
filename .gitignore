@@ -1,0 +1,43 @@
+# PlatformIO
+.pio/
+.vscode/
+.gradle/
+
+# Build artifacts & CMake
+build/
+bin/
+*.bin
+*.elf
+*.hex
+*.o
+*.a
+*.d
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+
+# Secrets & Environment variables
+*.env
+*.env.*
+*.secret
+*.key
+*.pem
+credentials.json
+
+# Logs & dumps
+*.log
+serial.log
+*.gpx
+
+# Python / Simulation temporary files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS & Editor generated files
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
