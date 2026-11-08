@@ -50,12 +50,12 @@ AEZEL uses PlatformIO to manage libraries, toolchains, and build flags.
 
 ### Build Binary Target:
 ```bash
-pio run -e esp32-phoenix
+pio run -e esp32-aezel
 ```
 
 The compiled output artifacts will be generated in:
-- `.pio/build/esp32-phoenix/firmware.bin` (Firmware binary)
-- `.pio/build/esp32-phoenix/firmware.elf` (ELF symbol file)
+- `.pio/build/esp32-aezel/firmware.bin` (Firmware binary)
+- `.pio/build/esp32-aezel/firmware.elf` (ELF symbol file)
 
 ---
 
@@ -63,8 +63,8 @@ The compiled output artifacts will be generated in:
 
 AEZEL includes a virtual testbench mapped to ESP32-S3 DevKitC-1 pins:
 
-- [`diagram.json`](../diagram.json): Virtual schematic (ILI9341 display, rotary encoder, push buttons, potentiometers, MPU6050, DS18B20, buzzer, and NeoPixel strip).
-- [`wokwi.toml`](../wokwi.toml): Simulation configuration pointing to `.pio/build/esp32-phoenix/firmware.bin`.
+- `diagram.json`: Virtual schematic (ILI9341 display, rotary encoder, push buttons, potentiometers, MPU6050, DS18B20, buzzer, and NeoPixel strip).
+- `wokwi.toml`: Simulation configuration pointing to `.pio/build/esp32-aezel/firmware.bin`.
 
 ### Lint Simulation Schematic:
 ```bash

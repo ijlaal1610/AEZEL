@@ -88,7 +88,7 @@ This ensures a slow SD card write or a flaky BLE connection can never drop a dis
 ## 6. Build System & Simulation Tooling
 
 ### Q14: How does the one-command `./setup.sh` script work?
-**A:** Executing [`./setup.sh`](../setup.sh) automatically checks Python 3, installs/verifies PlatformIO CLI (`pio`) and Wokwi CLI (`wokwi-cli`), compiles the AEZEL firmware (`esp32-phoenix` environment), and generates the binary artifact [`.pio/build/esp32-phoenix/firmware.bin`](../.pio/build/esp32-phoenix/firmware.bin).
+**A:** Executing [`./setup.sh`](../setup.sh) automatically checks Python 3, installs/verifies PlatformIO CLI (`pio`) and native compilers, compiles the AEZEL firmware (`esp32-aezel` environment), and generates the binary artifact `.pio/build/esp32-aezel/firmware.bin`.
 
 ### Q15: Why are `diagram.json` and `wokwi.toml` exclusive to the `Wokwi-Simulation` branch?
 **A:** The `main` branch is kept clean as the core production codebase. Simulation testbench files (`diagram.json` and `wokwi.toml`) are isolated on the `Wokwi-Simulation` branch so developers testing virtual hardware can work in a dedicated simulation workspace without cluttering the main branch.
