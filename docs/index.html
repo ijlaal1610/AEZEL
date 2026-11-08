@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AEZEL — Universal Connected Cockpit & Vehicle Control Unit</title>
     <meta name="description" content="Open-source digital instrument cluster, Vehicle Control Unit (VCU), and telemetry ecosystem supporting Apple CarPlay, Android Auto, direct sensors & OBD-II across ESP32-S3, ESP32-P4 RISC-V, and Linux SBCs.">
+    
+    <!-- Open Graph / Facebook / LinkedIn / Discord -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ijlaal1610.github.io/AEZEL/">
+    <meta property="og:title" content="AEZEL — Universal Connected Cockpit & Vehicle Control Unit">
+    <meta property="og:description" content="Open-source digital instrument cluster & VCU ecosystem supporting Apple CarPlay, Android Auto, direct sensors & OBD-II across ESP32-S3, ESP32-P4 RISC-V, and Linux SBCs.">
+    <meta property="og:image" content="https://ijlaal1610.github.io/AEZEL/images/aezel_banner_new.jpg">
+
+    <!-- Twitter / X Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://ijlaal1610.github.io/AEZEL/">
+    <meta name="twitter:title" content="AEZEL — Universal Connected Cockpit & Vehicle Control Unit">
+    <meta name="twitter:description" content="Open-source digital instrument cluster & VCU ecosystem supporting Apple CarPlay, Android Auto, direct sensors & OBD-II across ESP32-S3, ESP32-P4 RISC-V, and Linux SBCs.">
+    <meta name="twitter:image" content="https://ijlaal1610.github.io/AEZEL/images/aezel_banner_new.jpg">
+    <meta name="twitter:creator" content="@ijlaalakhtar">
+
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="alternate icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -509,10 +525,12 @@
             background: var(--bg-surface-elevated);
             border: 1px solid var(--border-subtle);
             border-radius: var(--radius-sm);
-            padding: 14px;
-            height: 120px;
+            padding: 12px 14px;
+            height: 124px;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
+            box-sizing: border-box;
         }
 
         .hud-can-header {
@@ -525,7 +543,8 @@
             letter-spacing: 0.5px;
             border-bottom: 1px solid var(--border-subtle);
             padding-bottom: 6px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
         }
 
         .can-live-dot {
@@ -535,28 +554,47 @@
             border-radius: 50%;
             box-shadow: 0 0 6px var(--status-success);
             animation: pulse-dot 2s infinite ease-in-out;
+            flex-shrink: 0;
         }
 
         .hud-can-feed {
             font-family: var(--font-mono);
-            font-size: 0.72rem;
+            font-size: 0.70rem;
             color: var(--text-secondary);
-            overflow-y: hidden;
-            line-height: 1.5;
-            flex-grow: 1;
+            overflow: hidden;
             display: flex;
-            flex-direction: column-reverse;
+            flex-direction: column;
+            gap: 4px;
+            flex-grow: 1;
+            justify-content: flex-start;
         }
 
-        .hud-can-feed span {
+        .hud-can-line {
+            display: block;
+            height: 18px;
+            line-height: 18px;
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
+            flex-shrink: 0;
+            animation: canLineFade 0.25s ease-out both;
+        }
+
+        @keyframes canLineFade {
+            from {
+                opacity: 0;
+                transform: translateY(-4px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .can-addr {
             color: var(--accent-cyan);
             font-weight: 600;
+            margin-right: 4px;
         }
 
         /* Key Metrics Ribbon */
@@ -1393,9 +1431,10 @@
                         <span class="can-live-dot"></span>
                     </div>
                     <div class="hud-can-feed" id="hud-can-feed">
-                        <span><span class="can-addr">0x100</span> SPEED: 84 km/h [Hall 18.2ms]</span>
-                        <span><span class="can-addr">0x101</span> RPM: 6,420 [Coil-Neg IRQ]</span>
-                        <span><span class="can-addr">0x102</span> TEMP_ENG: 86°C [DS18B20]</span>
+                        <div class="hud-can-line"><span class="can-addr">0x100</span> SPEED: 84 km/h [Hall 18.2ms]</div>
+                        <div class="hud-can-line"><span class="can-addr">0x101</span> RPM: 6,420 [Coil-Neg IRQ]</div>
+                        <div class="hud-can-line"><span class="can-addr">0x102</span> TEMP_ENG: 86°C Ambient: 28°C</div>
+                        <div class="hud-can-line"><span class="can-addr">0x103</span> BATT: 12.8V [Charging Normal]</div>
                     </div>
                 </div>
             </div>
@@ -1926,17 +1965,18 @@
                 '<span class="can-addr">0x106</span> BLE: PHONE_CONNECTED [GATT OK]',
                 '<span class="can-addr">0x107</span> NVS: LOG_SYNC_COMPLETED [SD-OK]'
             ];
-            let frameIdx = 0;
+            let frameIdx = 4;
             setInterval(() => {
                 if (!canFeed) return;
-                const item = document.createElement('span');
-                item.innerHTML = sampleFrames[frameIdx % sampleFrames.length];
-                canFeed.prepend(item);
-                if (canFeed.children.length > 5) {
-                    canFeed.removeChild(canFeed.lastChild);
+                const line = document.createElement('div');
+                line.className = 'hud-can-line';
+                line.innerHTML = sampleFrames[frameIdx % sampleFrames.length];
+                canFeed.prepend(line);
+                while (canFeed.children.length > 4) {
+                    canFeed.removeChild(canFeed.lastElementChild);
                 }
                 frameIdx++;
-            }, 1200);
+            }, 1400);
 
             // -------------------------------------------------------------
             // 3. Scroll Reveal Animations (IntersectionObserver)
