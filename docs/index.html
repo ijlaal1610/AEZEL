@@ -7,7 +7,7 @@
     <meta name="description" content="Open-source digital instrument cluster, Vehicle Control Unit (VCU), Apple CarPlay, Android Auto, and telemetry platform for Motorcycles, Scooters, and Cars.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #080a0f;
@@ -16,6 +16,7 @@
             --accent-cyan: #00d4ff;
             --accent-orange: #ff8a00;
             --accent-green: #39ff14;
+            --accent-pink: #ea4aaa;
             --accent-red: #ff1744;
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
@@ -37,7 +38,8 @@
             overflow-x: hidden;
             background-image: 
                 radial-gradient(circle at 15% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 60%, rgba(255, 138, 0, 0.06) 0%, transparent 45%);
+                radial-gradient(circle at 85% 60%, rgba(255, 138, 0, 0.06) 0%, transparent 45%),
+                radial-gradient(circle at 50% 90%, rgba(234, 74, 170, 0.04) 0%, transparent 50%);
             background-attachment: fixed;
         }
 
@@ -63,7 +65,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(8, 10, 15, 0.85);
+            background: rgba(8, 10, 15, 0.88);
             backdrop-filter: blur(16px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding: 16px 0;
@@ -89,7 +91,7 @@
 
         .nav-links {
             display: flex;
-            gap: 24px;
+            gap: 22px;
             list-style: none;
             align-items: center;
         }
@@ -103,6 +105,22 @@
         .nav-links a:hover {
             color: var(--text-main);
             text-decoration: none;
+        }
+
+        .nav-sponsor-link {
+            color: #ff70c5 !important;
+            font-weight: 700 !important;
+            background: rgba(234, 74, 170, 0.12);
+            padding: 5px 12px;
+            border-radius: 9999px;
+            border: 1px solid rgba(234, 74, 170, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .nav-sponsor-link:hover {
+            background: rgba(234, 74, 170, 0.22);
+            border-color: rgba(234, 74, 170, 0.5);
+            transform: translateY(-1px);
         }
 
         .btn {
@@ -143,7 +161,7 @@
 
         /* Hero */
         .hero {
-            padding: 80px 0 60px;
+            padding: 70px 0 50px;
             text-align: center;
         }
 
@@ -163,7 +181,7 @@
         }
 
         .hero h1 {
-            font-size: 3.5rem;
+            font-size: 3.4rem;
             font-weight: 900;
             line-height: 1.15;
             letter-spacing: -1px;
@@ -194,7 +212,7 @@
         /* Banner Frame */
         .banner-wrap {
             max-width: 1000px;
-            margin: 0 auto 80px;
+            margin: 0 auto 70px;
             border-radius: 16px;
             overflow: hidden;
             border: 1px solid rgba(0, 212, 255, 0.3);
@@ -226,6 +244,381 @@
             font-size: 1.05rem;
         }
 
+        /* =========================================================
+           LIVE DYNAMIC ROADMAP STYLES
+           ========================================================= */
+        .sync-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            background: rgba(57, 255, 20, 0.12);
+            border: 1px solid rgba(57, 255, 20, 0.3);
+            color: var(--accent-green);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-green);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 10px var(--accent-green);
+            animation: pulse-glow 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.85); }
+        }
+
+        .roadmap-stats-card {
+            background: rgba(8, 12, 20, 0.75);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .stats-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .stats-percentage {
+            font-size: 2.4rem;
+            font-weight: 900;
+            font-family: var(--font-mono);
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+
+        .stats-counts {
+            font-family: var(--font-mono);
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .stats-counts strong {
+            color: var(--text-main);
+        }
+
+        .progress-track {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 9999px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
+            border-radius: 9999px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 16px rgba(0, 212, 255, 0.6);
+        }
+
+        .roadmap-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+        }
+
+        .filter-btn.active {
+            background: rgba(0, 212, 255, 0.15);
+            border-color: var(--accent-cyan);
+            color: var(--accent-cyan);
+        }
+
+        /* Phases Accordion */
+        .phases-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .phase-card {
+            background: rgba(14, 18, 30, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.2s ease;
+        }
+
+        .phase-card:hover {
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .phase-header {
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+            gap: 16px;
+            background: rgba(255, 255, 255, 0.015);
+        }
+
+        .phase-header:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .phase-title-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            flex-wrap: wrap;
+        }
+
+        .phase-tag {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 6px;
+            background: rgba(0, 212, 255, 0.12);
+            color: var(--accent-cyan);
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            white-space: nowrap;
+        }
+
+        .phase-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .phase-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .phase-progress-mini {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        .phase-chevron {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            transition: transform 0.25s ease;
+        }
+
+        .phase-card.open .phase-chevron {
+            transform: rotate(180deg);
+        }
+
+        .phase-body {
+            display: none;
+            padding: 0 24px 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .phase-card.open .phase-body {
+            display: block;
+        }
+
+        .task-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .task-item {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+            padding: 10px 14px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.92rem;
+            line-height: 1.5;
+        }
+
+        .task-item.done {
+            border-color: rgba(57, 255, 20, 0.15);
+            background: rgba(57, 255, 20, 0.03);
+        }
+
+        .task-item.pending {
+            border-color: rgba(0, 212, 255, 0.1);
+        }
+
+        .task-icon {
+            font-size: 1rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .task-item.done .task-icon {
+            color: var(--accent-green);
+        }
+
+        .task-item.pending .task-icon {
+            color: var(--accent-cyan);
+            opacity: 0.7;
+        }
+
+        .task-content {
+            flex: 1;
+        }
+
+        .task-content a {
+            color: var(--accent-cyan);
+            text-decoration: underline;
+        }
+
+        .sub-bullet-list {
+            margin-top: 8px;
+            margin-left: 20px;
+            list-style: disc;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .inline-code {
+            font-family: var(--font-mono);
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.82em;
+            color: #38bdf8;
+        }
+
+        /* =========================================================
+           SPONSOR & DONATION SECTION STYLES
+           ========================================================= */
+        .sponsor-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .sponsor-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 32px 24px;
+            backdrop-filter: blur(12px);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .sponsor-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(234, 74, 170, 0.4);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(234, 74, 170, 0.15);
+        }
+
+        .sponsor-icon {
+            font-size: 2.6rem;
+            margin-bottom: 16px;
+        }
+
+        .sponsor-card h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .sponsor-card p {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin-bottom: 24px;
+            flex-grow: 1;
+        }
+
+        .btn-sponsor-gh {
+            background: linear-gradient(135deg, #ea4aaa, #c92a8e);
+            color: #fff;
+            width: 100%;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(234, 74, 170, 0.3);
+        }
+
+        .btn-sponsor-gh:hover {
+            box-shadow: 0 6px 22px rgba(234, 74, 170, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-sponsor-bmac {
+            background: linear-gradient(135deg, #ffdd00, #ffb700);
+            color: #000;
+            width: 100%;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(255, 221, 0, 0.25);
+        }
+
+        .btn-sponsor-bmac:hover {
+            box-shadow: 0 6px 22px rgba(255, 221, 0, 0.45);
+            transform: translateY(-2px);
+        }
+
+        .btn-sponsor-kofi {
+            background: linear-gradient(135deg, #ff5e5b, #e0322e);
+            color: #fff;
+            width: 100%;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(255, 94, 91, 0.3);
+        }
+
+        .btn-sponsor-kofi:hover {
+            box-shadow: 0 6px 22px rgba(255, 94, 91, 0.5);
+            transform: translateY(-2px);
+        }
+
         /* Three Tiers Grid */
         .tiers-grid {
             display: grid;
@@ -250,53 +643,42 @@
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 212, 255, 0.12);
         }
 
+        .tier-lite { border-top: 4px solid var(--accent-cyan); }
+        .tier-auto { border-top: 4px solid var(--accent-green); }
+        .tier-pro  { border-top: 4px solid var(--accent-orange); }
+
         .tier-badge {
-            display: inline-block;
             font-family: var(--font-mono);
             font-size: 0.75rem;
-            font-weight: 700;
             text-transform: uppercase;
-            padding: 4px 10px;
-            border-radius: 6px;
-            margin-bottom: 16px;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 12px;
         }
 
-        .tier-lite .tier-badge {
-            background: rgba(0, 212, 255, 0.15);
-            color: var(--accent-cyan);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-        }
-
-        .tier-auto .tier-badge {
-            background: rgba(57, 255, 20, 0.15);
-            color: var(--accent-green);
-            border: 1px solid rgba(57, 255, 20, 0.3);
-        }
-
-        .tier-pro .tier-badge {
-            background: rgba(255, 138, 0, 0.15);
-            color: var(--accent-orange);
-            border: 1px solid rgba(255, 138, 0, 0.3);
-        }
+        .tier-lite .tier-badge { color: var(--accent-cyan); }
+        .tier-auto .tier-badge { color: var(--accent-green); }
+        .tier-pro .tier-badge  { color: var(--accent-orange); }
 
         .tier-card h3 {
             font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 8px;
+            font-weight: 800;
+            margin-bottom: 12px;
         }
 
-        .tier-card .tier-desc {
+        .tier-desc {
             color: var(--text-muted);
             font-size: 0.95rem;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             min-height: 48px;
         }
 
         .tier-specs {
             list-style: none;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding-top: 16px;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 20px;
         }
 
         .tier-specs li {
@@ -306,11 +688,6 @@
             align-items: center;
             gap: 10px;
             color: var(--text-main);
-        }
-
-        .tier-specs li svg {
-            color: var(--accent-cyan);
-            flex-shrink: 0;
         }
 
         .tier-cost {
@@ -409,11 +786,12 @@
         <div class="container nav-wrap">
             <a href="#" class="logo">⚡ AEZEL</a>
             <ul class="nav-links">
-                <li><a href="#roadmap">Roadmap</a></li>
+                <li><a href="#roadmap">Live Roadmap</a></li>
                 <li><a href="#hardware-tiers">Hardware Tiers</a></li>
                 <li><a href="#features">Features</a></li>
+                <li><a href="#sponsor" class="nav-sponsor-link">💖 Sponsor</a></li>
                 <li><a href="preview/">Interactive Simulator</a></li>
-                <li><a href="https://github.com/ijlaal1610/AEZEL" target="_blank">Documentation</a></li>
+                <li><a href="https://github.com/ijlaal1610/AEZEL" target="_blank">Docs</a></li>
             </ul>
             <a href="https://github.com/ijlaal1610/AEZEL" class="btn btn-outline" target="_blank">
                 ⭐ Star on GitHub
@@ -430,7 +808,8 @@
         </p>
         <div class="hero-actions">
             <a href="preview/" class="btn btn-primary">🎮 Launch Live Web Simulator</a>
-            <a href="#roadmap" class="btn btn-outline">🗺️ View Project Roadmap</a>
+            <a href="#roadmap" class="btn btn-outline">🗺️ View Live Roadmap</a>
+            <a href="#sponsor" class="btn btn-outline" style="border-color: rgba(234, 74, 170, 0.4); color: #ff70c5;">💖 Support Project</a>
             <a href="https://github.com/ijlaal1610/AEZEL" class="btn btn-outline" target="_blank">📦 GitHub Source</a>
         </div>
 
@@ -439,37 +818,66 @@
         </div>
     </section>
 
-    <!-- Roadmap Highlight Section -->
+    <!-- Live Dynamic Roadmap Section -->
     <section class="container" id="roadmap" style="margin-bottom: 80px;">
         <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.12), rgba(255, 138, 0, 0.08)); border: 1px solid rgba(0, 212, 255, 0.35); border-radius: 16px; padding: 40px 32px; backdrop-filter: blur(16px); box-shadow: 0 10px 30px rgba(0,0,0,0.4);">
-            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; margin-bottom: 28px;">
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; margin-bottom: 24px;">
                 <div>
-                    <span style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1.5px; background: rgba(0, 212, 255, 0.15); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(0, 212, 255, 0.3);">🗺️ Project Roadmap</span>
-                    <h2 style="font-size: 2rem; font-weight: 800; margin-top: 10px;">Engineering Lifecycle & Multi-Phase Roadmap</h2>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1.5px; background: rgba(0, 212, 255, 0.15); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(0, 212, 255, 0.3);">🗺️ Live Project Roadmap</span>
+                        <span id="roadmap-sync-badge" class="sync-badge">
+                            <span class="pulse-dot"></span> Auto-Syncing with <code>docs/roadmap.md</code>
+                        </span>
+                    </div>
+                    <h2 style="font-size: 2rem; font-weight: 800;">Real-Time Engineering Lifecycle & Tasks</h2>
+                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 4px;">
+                        Directly parsed from the repository markdown. Checking off or adding tasks in <code>docs/roadmap.md</code> on GitHub updates this live dashboard automatically.
+                    </p>
                 </div>
                 <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                    <a href="https://github.com/ijlaal1610/AEZEL/blob/main/docs/roadmap.md" class="btn btn-primary" target="_blank">📋 Master Roadmap (Phases 0–6)</a>
-                    <a href="https://github.com/ijlaal1610/AEZEL/blob/main/docs/navigation_and_telemetry_roadmap.md" class="btn btn-outline" target="_blank">🧭 Navigation & Infotainment Specs</a>
+                    <a href="https://github.com/ijlaal1610/AEZEL/blob/main/docs/roadmap.md" class="btn btn-primary" target="_blank">📋 View raw docs/roadmap.md</a>
+                    <a href="https://github.com/ijlaal1610/AEZEL/edit/main/docs/roadmap.md" class="btn btn-outline" target="_blank">✏️ Check Off / Edit on GitHub</a>
                 </div>
             </div>
 
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
-                <div style="background: rgba(8, 10, 15, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px;">
-                    <div style="color: var(--accent-cyan); font-weight: 700; font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: 6px;">PHASE 0 – 2</div>
-                    <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">Core Instrumentation & UI</h4>
-                    <p style="font-size: 0.88rem; color: var(--text-muted);">60 FPS LVGL cluster, FreeRTOS dual-core tasks, 6 vehicle presets, and web-based telemetry simulation.</p>
+            <!-- Global Progress Bar Card -->
+            <div class="roadmap-stats-card">
+                <div class="stats-header">
+                    <div>
+                        <div class="stats-label">OVERALL FIRMWARE & HARDWARE PROGRESS</div>
+                        <div class="stats-percentage" id="global-progress-pct">--%</div>
+                    </div>
+                    <div class="stats-counts" id="global-progress-counts">
+                        Loading tasks from docs/roadmap.md...
+                    </div>
                 </div>
-                <div style="background: rgba(8, 10, 15, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px;">
-                    <div style="color: var(--accent-green); font-weight: 700; font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: 6px;">PHASE 3 – 4</div>
-                    <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">Flutter App & Maps Bridge</h4>
-                    <p style="font-size: 0.88rem; color: var(--text-muted);">Cross-platform iOS & Android companion app, official Google & Apple Maps HUD mirroring, and dual GNSS fallback.</p>
+                <div class="progress-track">
+                    <div class="progress-fill" id="global-progress-fill" style="width: 0%;"></div>
                 </div>
-                <div style="background: rgba(8, 10, 15, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px;">
-                    <div style="color: var(--accent-orange); font-weight: 700; font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: 6px;">PHASE 5 – 6</div>
-                    <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">CarPlay & Android Auto</h4>
-                    <p style="font-size: 0.88rem; color: var(--text-muted);">Automotive CAN Bus OBD-II, ESP32-P4 wireless Android Auto (esp32p4-aa), and Raspberry Pi Apple CarPlay (LIVI).</p>
+                
+                <!-- Filter Tabs -->
+                <div class="roadmap-filters">
+                    <button class="filter-btn active" data-filter="all" id="filter-all-btn">All Tasks (<span id="count-all">0</span>)</button>
+                    <button class="filter-btn" data-filter="pending" id="filter-pending-btn">Pending & In Progress (<span id="count-pending">0</span>)</button>
+                    <button class="filter-btn" data-filter="completed" id="filter-completed-btn">Completed (<span id="count-completed">0</span>)</button>
                 </div>
             </div>
+
+            <!-- Live Phases Accordion Container -->
+            <div id="live-phases-container" class="phases-container">
+                <div id="roadmap-loading-status" style="text-align: center; padding: 40px 0;">
+                    <p style="color: var(--text-muted); font-family: var(--font-mono); font-size: 0.9rem;">Fetching live roadmap from docs/roadmap.md...</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 24px; text-align: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 18px;">
+                <p style="font-size: 0.88rem; color: var(--text-muted);">
+                    💡 Also check out our deep navigation architecture specification: 
+                    <a href="https://github.com/ijlaal1610/AEZEL/blob/main/docs/navigation_and_telemetry_roadmap.md" target="_blank" style="font-weight: 700; color: var(--accent-cyan);">docs/navigation_and_telemetry_roadmap.md ↗</a>
+                </p>
+            </div>
+
         </div>
     </section>
 
@@ -578,6 +986,66 @@
         </div>
     </section>
 
+    <!-- Sponsor & Hardware Prototyping Fund Section -->
+    <section class="container" id="sponsor" style="margin-bottom: 80px;">
+        <div class="section-header">
+            <span class="pill-badge" style="background: rgba(234, 74, 170, 0.15); border-color: rgba(234, 74, 170, 0.4); color: #ff60c0;">💖 Community & Hardware Fund</span>
+            <h2>Support AEZEL Open-Source Development</h2>
+            <p>Help us validate on physical motorcycle harnesses, procure ESP32-P4 RISC-V automotive silicon, and accelerate CarPlay milestones.</p>
+        </div>
+
+        <div class="sponsor-grid">
+            <!-- Card 1: GitHub Sponsors -->
+            <div class="sponsor-card">
+                <div class="sponsor-icon" style="color: #ea4aaa;">💖</div>
+                <h3>GitHub Sponsors</h3>
+                <p>Direct sponsorship on GitHub with 0% platform cuts. Backers receive public sponsor credit in our repository and release notes.</p>
+                <a href="https://github.com/sponsors/ijlaal1610" target="_blank" class="btn btn-sponsor-gh">💖 Sponsor on GitHub</a>
+            </div>
+
+            <!-- Card 2: Buy Me a Coffee -->
+            <div class="sponsor-card">
+                <div class="sponsor-icon" style="color: #ffdd00;">☕</div>
+                <h3>Buy Me a Coffee</h3>
+                <p>One-click micro-donations to fund late-night FreeRTOS task optimizations, oscilloscope test runs, and hardware components.</p>
+                <a href="https://buymeacoffee.com/ijlaal" target="_blank" class="btn btn-sponsor-bmac">☕ Buy Me a Coffee</a>
+            </div>
+
+            <!-- Card 3: Ko-fi -->
+            <div class="sponsor-card">
+                <div class="sponsor-icon" style="color: #ff5e5b;">☕</div>
+                <h3>Ko-fi Support</h3>
+                <p>Flexible one-time tips or recurring monthly micro-sponsorships via credit card or PayPal with zero extra platform fees.</p>
+                <a href="https://ko-fi.com/ijlaal" target="_blank" class="btn btn-sponsor-kofi">☕ Support on Ko-fi</a>
+            </div>
+        </div>
+
+        <!-- Hardware Fund Impact -->
+        <div style="background: rgba(18, 24, 38, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 28px; backdrop-filter: blur(12px);">
+            <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+                <span>🎯 What 100% of Community Sponsorship Directly Funds:</span>
+            </h4>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
+                <div style="background: rgba(8, 10, 15, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 16px;">
+                    <div style="color: var(--accent-cyan); font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;">🔬 ESP32-P4 RISC-V Dev Kits</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Silicon evaluation boards and 800×480 MIPI-DSI ST7701 displays for native Android Auto testing.</p>
+                </div>
+                <div style="background: rgba(8, 10, 15, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 16px;">
+                    <div style="color: var(--accent-orange); font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;">🏍️ Motorcycle Harness Bench Rigs</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">Oscilloscope validation, 12V transient surge clamping, and opto-isolated discrete signal testing.</p>
+                </div>
+                <div style="background: rgba(8, 10, 15, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 16px;">
+                    <div style="color: var(--accent-green); font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;">📡 High-Precision GNSS Modules</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">u-blox NEO-M8N / M9N dual-band satellite receivers and active patch antennas.</p>
+                </div>
+                <div style="background: rgba(8, 10, 15, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 16px;">
+                    <div style="color: #ff60c0; font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;">🔌 CAN Bus Transceivers</div>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">MCP2515 controllers and TJA1050 / SN65HVD230 transceivers for real ECU integration.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Simulator Callout -->
     <section class="container">
         <div class="sim-callout">
@@ -595,5 +1063,226 @@
         </div>
     </footer>
 
+    <!-- Live Dynamic Roadmap JavaScript Engine -->
+    <script>
+        (function() {
+            let allPhases = [];
+            let currentFilter = 'all';
+
+            // Helper to escape HTML
+            function escapeHtml(str) {
+                return str.replace(/&/g, '&amp;')
+                          .replace(/</g, '&lt;')
+                          .replace(/>/g, '&gt;');
+            }
+
+            // Helper to format inline markdown (links, code, bold)
+            function formatMarkdown(text) {
+                let formatted = escapeHtml(text);
+                // Convert markdown links to anchor tags
+                formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+                // Convert `code` to <code class="inline-code">
+                formatted = formatted.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+                // Convert **bold** to <strong>
+                formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+                return formatted;
+            }
+
+            // Parse raw markdown from docs/roadmap.md
+            function parseRoadmap(md) {
+                const lines = md.split('\n');
+                const phases = [];
+                let currentPhase = null;
+                let currentTask = null;
+
+                for (let rawLine of lines) {
+                    const line = rawLine.trimEnd();
+                    const trimmed = line.trim();
+
+                    if (trimmed.startsWith('## Phase')) {
+                        currentPhase = {
+                            title: trimmed.replace(/^##\s+/, ''),
+                            tasks: []
+                        };
+                        phases.push(currentPhase);
+                        currentTask = null;
+                    } else if (currentPhase && /^-\s+\[([ xX])\]\s+(.+)/.test(trimmed)) {
+                        const match = trimmed.match(/^-\s+\[([ xX])\]\s+(.+)/);
+                        const done = match[1].toLowerCase() === 'x';
+                        currentTask = {
+                            done: done,
+                            text: match[2],
+                            sub: []
+                        };
+                        currentPhase.tasks.push(currentTask);
+                    } else if (currentTask && trimmed.startsWith('- ')) {
+                        currentTask.sub.push(trimmed.substring(2));
+                    } else if (currentTask && trimmed.length > 0 && !trimmed.startsWith('#')) {
+                        // Continuation line of previous task description
+                        currentTask.text += ' ' + trimmed;
+                    }
+                }
+                return phases;
+            }
+
+            // Render phases and calculate stats
+            function renderRoadmap() {
+                const container = document.getElementById('live-phases-container');
+                if (!container) return;
+
+                let totalTasks = 0;
+                let completedTasks = 0;
+
+                allPhases.forEach(phase => {
+                    phase.tasks.forEach(task => {
+                        totalTasks++;
+                        if (task.done) completedTasks++;
+                    });
+                });
+
+                const pendingTasks = totalTasks - completedTasks;
+                const pct = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+                // Update Overview Card
+                document.getElementById('global-progress-pct').textContent = pct + '%';
+                document.getElementById('global-progress-fill').style.width = pct + '%';
+                document.getElementById('global-progress-counts').innerHTML = 
+                    `<strong>${completedTasks}</strong> Completed / <strong>${totalTasks}</strong> Total Tasks`;
+
+                document.getElementById('count-all').textContent = totalTasks;
+                document.getElementById('count-pending').textContent = pendingTasks;
+                document.getElementById('count-completed').textContent = completedTasks;
+
+                // Build Phase Cards
+                container.innerHTML = '';
+
+                allPhases.forEach((phase, index) => {
+                    const phaseTotal = phase.tasks.length;
+                    const phaseDone = phase.tasks.filter(t => t.done).length;
+                    const phasePct = phaseTotal > 0 ? Math.round((phaseDone / phaseTotal) * 100) : 0;
+
+                    // Filter tasks based on current filter
+                    const filteredTasks = phase.tasks.filter(task => {
+                        if (currentFilter === 'completed') return task.done;
+                        if (currentFilter === 'pending') return !task.done;
+                        return true;
+                    });
+
+                    // Don't show phase if no tasks match filter
+                    if (filteredTasks.length === 0 && currentFilter !== 'all') {
+                        return;
+                    }
+
+                    const card = document.createElement('div');
+                    card.className = 'phase-card open'; // default open
+
+                    // Extract phase tag and name
+                    const match = phase.title.match(/^(Phase\s+\d+)\s*—\s*(.+)$/i);
+                    const phaseTag = match ? match[1] : `Phase ${index}`;
+                    const phaseName = match ? match[2] : phase.title;
+
+                    // Badge color logic
+                    let badgeColor = 'var(--accent-cyan)';
+                    if (phasePct === 100) badgeColor = 'var(--accent-green)';
+                    else if (phasePct > 0) badgeColor = 'var(--accent-cyan)';
+                    else badgeColor = 'var(--text-muted)';
+
+                    card.innerHTML = `
+                        <div class="phase-header">
+                            <div class="phase-title-wrap">
+                                <span class="phase-tag" style="color: ${badgeColor}; border-color: ${badgeColor};">${escapeHtml(phaseTag)}</span>
+                                <span class="phase-title">${escapeHtml(phaseName)}</span>
+                            </div>
+                            <div class="phase-meta">
+                                <span class="phase-progress-mini">${phaseDone}/${phaseTotal} (${phasePct}%)</span>
+                                <span class="phase-chevron">▼</span>
+                            </div>
+                        </div>
+                        <div class="phase-body">
+                            <ul class="task-list">
+                                ${filteredTasks.map(task => `
+                                    <li class="task-item ${task.done ? 'done' : 'pending'}">
+                                        <span class="task-icon">${task.done ? '✓' : '○'}</span>
+                                        <div class="task-content">
+                                            <div>${formatMarkdown(task.text)}</div>
+                                            ${task.sub.length > 0 ? `
+                                                <ul class="sub-bullet-list">
+                                                    ${task.sub.map(s => `<li>${formatMarkdown(s)}</li>`).join('')}
+                                                </ul>
+                                            ` : ''}
+                                        </div>
+                                    </li>
+                                `).join('')}
+                            </ul>
+                        </div>
+                    `;
+
+                    // Click header to toggle open/close
+                    const header = card.querySelector('.phase-header');
+                    header.addEventListener('click', () => {
+                        card.classList.toggle('open');
+                    });
+
+                    container.appendChild(card);
+                });
+            }
+
+            // Wire Filter Buttons
+            function setupFilters() {
+                const buttons = document.querySelectorAll('.filter-btn');
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        buttons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        currentFilter = btn.dataset.filter;
+                        renderRoadmap();
+                    });
+                });
+            }
+
+            // Fetch roadmap.md from repo
+            async function fetchRoadmapData() {
+                const candidates = [
+                    'roadmap.md?t=' + Date.now(),
+                    'https://raw.githubusercontent.com/ijlaal1610/AEZEL/main/docs/roadmap.md'
+                ];
+
+                for (let url of candidates) {
+                    try {
+                        const res = await fetch(url, { cache: 'no-cache' });
+                        if (res.ok) {
+                            const md = await res.text();
+                            allPhases = parseRoadmap(md);
+                            renderRoadmap();
+                            setupFilters();
+                            return;
+                        }
+                    } catch (e) {
+                        console.warn('Could not fetch from', url, e);
+                    }
+                }
+
+                // If both fetches fail (e.g. offline)
+                const status = document.getElementById('roadmap-loading-status');
+                if (status) {
+                    status.innerHTML = `
+                        <p style="color: var(--accent-orange); font-size: 0.95rem;">
+                            ⚠️ Unable to auto-load <code>docs/roadmap.md</code> offline.
+                            <br><a href="https://github.com/ijlaal1610/AEZEL/blob/main/docs/roadmap.md" target="_blank" style="color: var(--accent-cyan); font-weight: 700; margin-top: 8px; display: inline-block;">
+                                View Live Roadmap Directly on GitHub ↗
+                            </a>
+                        </p>
+                    `;
+                }
+            }
+
+            // Run on load
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', fetchRoadmapData);
+            } else {
+                fetchRoadmapData();
+            }
+        })();
+    </script>
 </body>
 </html>

@@ -11,6 +11,8 @@
 [![Framework](https://img.shields.io/badge/Framework-Arduino_|_FreeRTOS_|_POSIX-green.svg)](CMakeLists.txt)
 [![UI Engine](https://img.shields.io/badge/UI-LVGL_8.4-orange.svg)](https://lvgl.io)
 [![Tests](https://img.shields.io/badge/Native_Tests-83_Passed-brightgreen.svg)](test/native/)
+[![GitHub Sponsors](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/ijlaal1610)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-Support-FFDD00?logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/ijlaal)
 
 ---
 
@@ -24,6 +26,7 @@
 > 🗺️ **Active Project Roadmaps & Technical Architecture Specifications**:
 > - 📋 **[Master Firmware & Hardware Roadmap (Phases 0–6)](docs/roadmap.md)**: From bench MVP and FreeRTOS task graphs to Apple CarPlay & Android Auto across our 3 hardware tiers.
 > - 🧭 **[Cross-Platform Companion & Navigation Roadmap](docs/navigation_and_telemetry_roadmap.md)**: Unified Flutter companion app (iOS & Android), zero-API Google & Apple Maps HUD mirroring, and deep technical specs for ESP32-P4 & LIVI.
+> - 🌐 **[Live Interactive Roadmap on Project Website](https://ijlaal1610.github.io/AEZEL/#roadmap)**: Real-time dynamic sync from `docs/roadmap.md` with completion meters and interactive phase accordions.
 
 ---
 
@@ -40,6 +43,7 @@
 - [Hardware Safety & Wiring](#-hardware-safety--wiring)
 - [Documentation Index](#-documentation-index)
 - [Safety Notice & Disclaimer](#-safety-notice--disclaimer)
+- [💖 Support & Sponsorship](#-support--sponsorship)
 - [Contributing & Governance](#-contributing--governance)
 - [License](#-license)
 
@@ -306,6 +310,28 @@ AEZEL/
 
 > [!WARNING]
 > **SAFETY NOTICE**: AEZEL is an experimental open-source platform. Any features that interact with a motorcycle's electrical or control systems must be thoroughly tested on a bench supply before on-road installation. The authors, maintainers, and contributors accept no responsibility or liability for property damage, personal injury, vehicle failure, or legal issues resulting from the use, modification, or deployment of this software or hardware.
+
+---
+
+## 💖 Support & Hardware Prototyping Fund
+
+AEZEL is an independent, 100% open-source connected vehicle ecosystem built for the community. We don't sell proprietary hardware lock-ins or charge for software features.
+
+If AEZEL has saved you time, inspired your custom EV build, or you'd like to accelerate the **ESP32-P4 RISC-V Android Auto** and **Raspberry Pi CarPlay** milestones, your sponsorship makes a massive direct impact!
+
+### 🎯 What Your Sponsorship Funds:
+- 🔬 **ESP32-P4 RISC-V Development Hardware**: Silicon evaluation boards and 800×480 MIPI-DSI ST7701 touch displays.
+- 🏍️ **Automotive Bench Harnesses & Opto-Isolation Rigs**: Oscilloscope validation and 12V transient surge testing rigs.
+- 📡 **Dual-Band GNSS Hardware**: High-precision u-blox NEO-M8N / M9N receiver modules and active patch antennas.
+- 🔌 **CAN Bus Transceivers**: MCP2515 controllers and TJA1050 / SN65HVD230 transceivers for real ECU integration.
+
+<div align="center">
+
+[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor_on_GitHub-ea4aaa?style=for-the-badge&logo=githubsponsors&logoColor=white)](https://github.com/sponsors/ijlaal1610)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/ijlaal)
+[![Support on Ko-fi](https://img.shields.io/badge/Support_on_Ko--fi-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white)](https://ko-fi.com/ijlaal)
+
+</div>
 
 ---
 
