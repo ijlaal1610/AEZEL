@@ -101,32 +101,41 @@ AEZEL employs a Core + HAL decoupled architecture:
 
 ---
 
-## 🧭 Cross-Platform Navigation & Telemetry (Android + iOS)
+## 🧭 Cross-Platform Navigation, Apple CarPlay & Android Auto
 
-AEZEL provides native connected turn-by-turn navigation and dual-source GNSS telemetry supporting **both Android and iOS smartphones** over a unified Bluetooth Low Energy (BLE GATT) contract:
+AEZEL spans across **Three Hardware Tiers** to support everything from commuter motorcycles and scooters to high-performance electric vehicles and custom automobiles:
 
 ```mermaid
 flowchart LR
-    subgraph Mobile Phones
-        A[Android Device] -->|Google Maps Notification Listener<br/>(via Shr-c0de/navHUD)| BLE[AEZEL BLE Client]
-        B[iOS Device] -->|Apple MapKit / Mapbox Background Guidance<br/>(CoreBluetooth Central)| BLE
-        C[Phone GNSS] -->|Fused GPS Telemetry Stream<br/>(adapted from and0789)| BLE
+    subgraph T1 ["Tier 1: Lite (ESP32-S3)"]
+        S3[ESP32-S3 MCU] -->|BLE GATT| HUD[BLE Turn-by-Turn HUD<br/>(Real Google & Apple Maps)]
     end
 
-    subgraph AEZEL Instrument Cluster
-        BLE -->|Packed NavPacket| VCU[NavigationManager & BleManager]
-        GNSS[u-blox NEO-6M Hardware GPS<br/>(NMEA via Circuit-Digest)] -->|UART| VCU
-        VCU --> UI[LVGL 8.4 Turn-by-Turn HUD]
-        VCU --> SD[Micro-SD GPX Log]
+    subgraph T2 ["Tier 2: Auto (ESP32-P4)"]
+        P4[ESP32-P4 RISC-V] -->|MIPI-DSI + PPA| AA[Wireless Android Auto<br/>(via payalneg/esp32p4-android-auto)]
     end
 
-    SD --> Web[Cross-Platform Leaflet/OSM Replay]
+    subgraph T3 ["Tier 3: Pro (Raspberry Pi / Linux)"]
+        RPi[Raspberry Pi 4/5 / Linux] -->|GStreamer HW Decode| CP[Apple CarPlay & Android Auto<br/>(via f-io/LIVI Infotainment)]
+    end
+
+    App[AEZEL Flutter Companion App (iOS & Android)] -.-> S3
+    App -.-> P4
+    App -.-> RPi
 ```
 
-- **Android Support**: Zero-cost, zero-configuration turn-by-turn mirroring from the official Google Maps application via Android `NotificationListenerService` (inspired by [`Shr-c0de/navHUD`](https://github.com/Shr-c0de/navHUD)).
-- **iOS Support**: Native background turn-by-turn routing via Apple MapKit (`MKDirections`) or Mapbox, streaming maneuvers and distance countdowns over CoreBluetooth while the phone remains safely locked in a pocket or tank bag.
-- **Onboard GNSS & Trip Replay**: High-speed NMEA filtering (`$GPRMC` / `$GPGGA`) and web-based trip replay via Leaflet.js / OpenStreetMap (inspired by [`Circuit-Digest/Simple-GPS-Tracker`](https://github.com/Circuit-Digest/Simple-GPS-Tracker-using-ESP32---Visualize-Data-on-Map)).
-- **Phone-Assisted GPS Fallback**: If the onboard hardware GPS module loses satellite lock in tunnels or is omitted to minimize budget, the companion app continuously streams phone-fused GNSS coordinates over BLE (inspired by [`and0789/Android-GPS-Bluetooth`](https://github.com/and0789/Android-GPS-Bluetooth-Communication-with-ESP32)).
+- **Tier 1 — AEZEL Lite (ESP32-S3 Microcontroller)**:
+  - 60 FPS LVGL 8.4 digital instrument cluster.
+  - Zero-cost BLE Turn-by-Turn HUD mirroring official Google Maps (Android `NotificationListenerService` via [`Shr-c0de/navHUD`](https://github.com/Shr-c0de/navHUD)) and Apple Maps (iOS CoreBluetooth & ANCS).
+  - High-efficiency u-blox NEO-6M GNSS filtering & phone-assisted GPS fallback (via [`Circuit-Digest`](https://github.com/Circuit-Digest/Simple-GPS-Tracker-using-ESP32---Visualize-Data-on-Map) and [`and0789`](https://github.com/and0789/Android-GPS-Bluetooth-Communication-with-ESP32)).
+- **Tier 2 — AEZEL Auto (ESP32-P4 RISC-V SoC)**:
+  - Dual-core 400 MHz RISC-V with 800×480 MIPI-DSI and hardware PPA 2D acceleration.
+  - Native Wireless Android Auto video projection over Wi-Fi 6 with VCU CAN telemetry overlay (inspired by [`payalneg/esp32p4-android-auto`](https://github.com/payalneg/esp32p4-android-auto)).
+- **Tier 3 — AEZEL Pro (Raspberry Pi 4/5 / Linux SBC)**:
+  - Full In-Vehicle Infotainment powered by [`f-io/LIVI`](https://github.com/f-io/LIVI) (Rust + Slint UI) on AEZEL's Linux HAL (`src/hal/linux_pi/`).
+  - Native **Apple CarPlay** (wired & wireless) and **Android Auto** (wired & wireless) with zero-copy GStreamer hardware acceleration, Siri/Google Assistant, and split-screen telemetry.
+- **AEZEL Flutter Companion App (`app/` for iOS & Android)**:
+  - Live cockpit dashboard, vehicle preset switcher (6 profiles), remote vehicle controls, maintenance interval tracking, and one-tap Wi-Fi OTA firmware flashing.
 
 ---
 

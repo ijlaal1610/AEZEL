@@ -184,3 +184,62 @@ struct __attribute__((packed)) GpsFeedPacket {
 - [ ] BLE file transfer protocol to download micro-SD GPX logs to mobile phone storage.
 - [ ] Integrated Leaflet.js / OpenStreetMap trip viewer with elevation and lean angle heatmaps.
 - [ ] In-app Wi-Fi softAP flasher for one-tap wireless firmware updates.
+
+---
+
+## 5. Apple CarPlay & Android Auto Projection (Three-Tier Hardware Roadmap)
+
+To accommodate riders from entry-level commuter bikes to high-end touring motorcycles and automobiles, AEZEL establishes a **Three-Tier Hardware Architecture**:
+
+```mermaid
+flowchart TD
+    subgraph Tier1 ["Tier 1: AEZEL Lite (ESP32-S3 MCU)"]
+        S3[ESP32-S3 Xtensa Dual-Core] -->|SPI / 8080 TFT 3.5'| S3_UI[LVGL 8.4 60fps Cluster]
+        S3_BLE[BleManager.cpp] -->|BLE GATT NavPacket| S3_UI
+        Note1["Turn-by-Turn HUD via Companion App<br/>(Real Google Maps & Apple Maps)"]
+    end
+
+    subgraph Tier2 ["Tier 2: AEZEL Auto (ESP32-P4 RISC-V SoC)"]
+        P4[ESP32-P4 Dual RISC-V 400MHz] -->|MIPI-DSI 800x480| P4_UI[Native Android Auto Wireless]
+        P4_PPA[Hardware PPA 2D Accelerator] --> P4_UI
+        P4_H264[esp_h264 Video Decoder] --> P4_UI
+        P4_C6[ESP32-C6 Wi-Fi 6 + WROOM BT] --> P4
+        Note2["Ref: payalneg/esp32p4-android-auto<br/>Direct MCU Android Auto Projection"]
+    end
+
+    subgraph Tier3 ["Tier 3: AEZEL Pro (Raspberry Pi 4/5 / Linux SBC)"]
+        Pi[Raspberry Pi 4/5 / CM4 / CM5] -->|HDMI / DSI 60fps 1080p| Pi_UI[Full LIVI Infotainment Engine]
+        LIVI_Core[f-io/LIVI (Rust + Slint UI)] --> Pi_UI
+        GStreamer[GStreamer Zero-Copy HW Video] --> Pi_UI
+        SocketCAN[AEZEL Linux HAL / SocketCAN] --> Pi_UI
+        Note3["Ref: f-io/LIVI<br/>Full Apple CarPlay & Android Auto<br/>Wired + Wireless + Siri/Assistant"]
+    end
+```
+
+### Comparison Matrix Across Hardware Tiers
+
+| Architecture Pillar | Tier 1: AEZEL Lite (ESP32-S3) | Tier 2: AEZEL Auto (ESP32-P4) | Tier 3: AEZEL Pro (Linux / RPi) |
+| :--- | :--- | :--- | :--- |
+| **Reference Architecture** | AEZEL Native Core + [navHUD](https://github.com/Shr-c0de/navHUD) | [payalneg/esp32p4-android-auto](https://github.com/payalneg/esp32p4-android-auto) | [f-io/LIVI](https://github.com/f-io/LIVI) |
+| **Processor** | Espressif ESP32-S3 (240 MHz Xtensa) | Espressif ESP32-P4 (400 MHz RISC-V) | Broadcom BCM2711/2712 (Quad ARM Cortex-A72/A76) |
+| **Phone Projection** | **BLE Turn-by-Turn HUD** (Arrows, Distance, Street Name) | **Native Wireless Android Auto** (800×480 @ 10–15 FPS) | **Full Apple CarPlay & Android Auto** (60 FPS 720p/1080p, Wired & Wireless) |
+| **Video Decoding** | None (Static bitmap/glyph render) | `esp_h264` software decode + PPA 2D acceleration | Native GStreamer zero-copy hardware H.264/H.265 |
+| **Audio & Voice** | Piezo buzzer chimes / tones | System beeps / click feedback channel | Full bidirectional audio, microphone uplink & Siri / Google Assistant |
+| **Display Interface** | SPI / 8080 Parallel (3.5" to 4.3" 480×320) | MIPI-DSI (4.3" to 7.0" 800×480) | DSI / HDMI / eDP (5.0" to 10.25" ultrawide) |
+| **Compositing** | Single LVGL 8.4 UI screen | Android Auto viewport with live VCU telemetry overlay | Split-Screen: 70% CarPlay navigation + 30% AEZEL live instrument gauges |
+| **Target Vehicle** | Commuter bikes, Scooters, DIY e-bikes | Performance e-bikes, Custom motorcycles | Adventure tourers, Trikes, Cars, Restomods |
+| **Cold Boot Time** | **< 300 ms** (Instant-on) | **< 1.2 seconds** | **5–8 seconds** |
+| **Estimated BOM** | **$20 – $35** | **$45 – $65** | **$85 – $130** |
+
+---
+
+## 6. Open-Source Ecosystem Lineage
+
+AEZEL stands on the shoulders of five targeted open-source projects:
+
+1. **[`Shr-c0de/navHUD`](https://github.com/Shr-c0de/navHUD)**: Android `NotificationListenerService` blueprint for free, zero-API Google Maps turn mirroring.
+2. **[`Circuit-Digest/Simple-GPS-Tracker`](https://github.com/Circuit-Digest/Simple-GPS-Tracker-using-ESP32---Visualize-Data-on-Map)**: High-speed u-blox NEO-6M NMEA sentence filtering and open Leaflet.js route replay.
+3. **[`and0789/Android-GPS-Bluetooth`](https://github.com/and0789/Android-GPS-Bluetooth-Communication-with-ESP32)**: Phone-assisted GPS fallback streaming over wireless serial/BLE.
+4. **[`payalneg/esp32p4-android-auto`](https://github.com/payalneg/esp32p4-android-auto)**: First-in-class ESP32-P4 RISC-V implementation of native Wireless Android Auto and VESC/VCU CAN bus integration.
+5. **[`f-io/LIVI`](https://github.com/f-io/LIVI)**: State-of-the-art Linux In-Vehicle Infotainment engine providing native, zero-copy Apple CarPlay (wired/wireless) and Android Auto for Raspberry Pi / Linux SBCs.
+

@@ -88,6 +88,22 @@
 - [ ] Feature-flag in `Config.h` to select analog-sensor vs CAN-bus mode at
       build time, or auto-detect CAN bus presence at boot
 
+## Phase 6 — Apple CarPlay & Android Auto Projection (Three-Tier Hardware)
+- [ ] **Tier 1: ESP32-S3 Lite (Microcontroller Turn-by-Turn HUD)**:
+      - Dedicated 3.5" to 4.3" display running LVGL 8.4 UI at 60 FPS.
+      - BLE Turn-by-Turn HUD mirroring official Google Maps (Android) and Apple Maps (iOS).
+- [ ] **Tier 2: ESP32-P4 Automotive (Wireless Android Auto on RISC-V MCU)**:
+      - Adopt [payalneg/esp32p4-android-auto](https://github.com/payalneg/esp32p4-android-auto) architecture:
+      - ESP32-P4 400 MHz dual RISC-V with 800×480 MIPI-DSI (ST7701) + GT911 touch.
+      - Hardware PPA 2D pixel acceleration + `esp_h264` decoding.
+      - Native Wireless Android Auto video streaming via on-board ESP32-C6 (Wi-Fi 6) + WROOM-32 BT agent.
+      - Live AEZEL VCU telemetry overlay on top of projected Android Auto map.
+- [ ] **Tier 3: Raspberry Pi / Linux SBC Pro (Full Apple CarPlay & Android Auto)**:
+      - Leverage AEZEL's Linux HAL (`src/hal/linux_pi/`) on Raspberry Pi 4 / 5.
+      - Integrate Carlinkit / AutoKit CPC200 USB dongle or open-source OpenAuto.
+      - 60 FPS 720p/1080p full wireless Apple CarPlay & Android Auto with Siri/Google Assistant.
+      - Split-screen UI: 70% CarPlay/Android Auto navigation + 30% AEZEL live cluster gauges.
+
 ## Ongoing / never "done"
 - [ ] Testing checklist (`docs/testing_checklist.md`) run before every
       firmware release that touches safety-relevant code (warnings, crash
