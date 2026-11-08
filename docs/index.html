@@ -3,28 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AEZEL — Universal Connected Cockpit Platform</title>
-    <meta name="description" content="Open-source digital instrument cluster, Vehicle Control Unit (VCU), Apple CarPlay, Android Auto, and telemetry platform for Motorcycles, Scooters, and Cars.">
+    <title>AEZEL — Universal Connected Cockpit & Vehicle Control Unit</title>
+    <meta name="description" content="Open-source digital instrument cluster, Vehicle Control Unit (VCU), and telemetry ecosystem supporting Apple CarPlay, Android Auto, direct sensors & OBD-II across ESP32-S3, ESP32-P4 RISC-V, and Linux SBCs.">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="alternate icon" type="image/x-icon" href="favicon.ico">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    
+    <!-- Clean Industry-Grade Typography: Inter & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
         :root {
-            --bg-dark: #080a0f;
-            --bg-card: rgba(18, 24, 38, 0.7);
-            --border-glow: rgba(0, 212, 255, 0.25);
+            --bg-base: #090a0d;
+            --bg-surface: #101217;
+            --bg-surface-elevated: #161920;
+            --bg-surface-subtle: #1c202a;
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            --border-strong: rgba(255, 255, 255, 0.16);
+            --border-focus: #00d4ff;
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-tertiary: #64748b;
+            --text-inverse: #040810;
+
             --accent-cyan: #00d4ff;
-            --accent-orange: #ff8a00;
-            --accent-green: #39ff14;
-            --accent-pink: #ea4aaa;
-            --accent-red: #ff1744;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --font-main: 'Outfit', sans-serif;
-            --font-mono: 'JetBrains Mono', monospace;
+            --accent-cyan-subtle: rgba(0, 212, 255, 0.1);
+            --accent-blue: #38bdf8;
+            --status-success: #10b981;
+            --status-success-subtle: rgba(16, 185, 129, 0.12);
+            --status-pending: #f59e0b;
+            --status-pending-subtle: rgba(245, 158, 11, 0.12);
+
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+            
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --radius-pill: 9999px;
         }
 
         * {
@@ -33,420 +52,673 @@
             padding: 0;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
-            font-family: var(--font-main);
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            font-family: var(--font-sans);
+            font-size: 15px;
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
             overflow-x: hidden;
             background-image: 
-                radial-gradient(circle at 15% 20%, rgba(0, 212, 255, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 85% 60%, rgba(255, 138, 0, 0.06) 0%, transparent 45%),
-                radial-gradient(circle at 50% 90%, rgba(234, 74, 170, 0.04) 0%, transparent 50%);
-            background-attachment: fixed;
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0, 212, 255, 0.07), transparent 70%),
+                linear-gradient(to bottom, transparent, rgba(9, 10, 13, 0.9));
+            background-repeat: no-repeat;
         }
 
         a {
-            color: var(--accent-cyan);
+            color: var(--text-primary);
             text-decoration: none;
-            transition: all 0.2s ease;
+            transition: color 0.15s ease;
         }
 
         a:hover {
-            text-decoration: underline;
-            color: #67e8f9;
+            color: var(--accent-cyan);
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1180px;
             margin: 0 auto;
             padding: 0 24px;
         }
 
-        /* Header / Navbar */
+        /* -------------------------------------------------------------
+           Header & Navigation
+           ------------------------------------------------------------- */
         header {
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(8, 10, 15, 0.88);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 16px 0;
+            background: rgba(9, 10, 13, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-subtle);
+            height: 64px;
         }
 
         .nav-wrap {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            height: 100%;
         }
 
-        .logo {
-            font-size: 1.6rem;
-            font-weight: 900;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, #00d4ff, #ff8a00);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-mark {
             display: flex;
             align-items: center;
             gap: 8px;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: 1.5px;
+            color: var(--text-primary);
+        }
+
+        .logo-mark svg {
+            color: var(--accent-cyan);
+        }
+
+        .version-badge {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-subtle);
+            padding: 2px 7px;
+            border-radius: var(--radius-sm);
         }
 
         .nav-links {
             display: flex;
-            gap: 22px;
+            gap: 28px;
             list-style: none;
             align-items: center;
         }
 
         .nav-links a {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: color 0.15s ease;
         }
 
         .nav-links a:hover {
-            color: var(--text-main);
-            text-decoration: none;
+            color: var(--text-primary);
         }
 
-        .nav-sponsor-link {
-            color: #ff70c5 !important;
-            font-weight: 700 !important;
-            background: rgba(234, 74, 170, 0.12);
-            padding: 5px 12px;
-            border-radius: 9999px;
-            border: 1px solid rgba(234, 74, 170, 0.3);
-            transition: all 0.2s ease;
-        }
-
-        .nav-sponsor-link:hover {
-            background: rgba(234, 74, 170, 0.22);
-            border-color: rgba(234, 74, 170, 0.5);
-            transform: translateY(-1px);
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
         .btn {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.95rem;
+            font-family: var(--font-sans);
+            font-size: 0.88rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
+            white-space: nowrap;
             text-decoration: none !important;
+            border: 1px solid transparent;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent-cyan), #0099cc);
-            color: #040914;
-            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+            background: var(--accent-cyan);
+            color: var(--text-inverse);
+            font-weight: 600;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(0, 212, 255, 0.45);
+            background: #2fe0ff;
+            color: var(--text-inverse);
+            box-shadow: 0 0 16px rgba(0, 212, 255, 0.35);
         }
 
-        .btn-outline {
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: var(--text-main);
+        .btn-secondary {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-surface-subtle);
+            border-color: var(--border-strong);
+            color: var(--text-primary);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-subtle);
+        }
+
+        .btn-ghost:hover {
+            color: var(--text-primary);
+            border-color: var(--border-strong);
             background: rgba(255, 255, 255, 0.03);
         }
 
-        .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.4);
-            transform: translateY(-2px);
-        }
-
-        /* Hero */
+        /* -------------------------------------------------------------
+           Hero Section
+           ------------------------------------------------------------- */
         .hero {
-            padding: 70px 0 50px;
+            padding: 80px 0 60px;
             text-align: center;
         }
 
-        .pill-badge {
+        .badge-kicker {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 14px;
-            border-radius: 9999px;
-            background: rgba(0, 212, 255, 0.1);
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            color: var(--accent-cyan);
             font-family: var(--font-mono);
-            font-size: 0.85rem;
-            font-weight: 700;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--accent-cyan);
+            background: var(--accent-cyan-subtle);
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            padding: 4px 12px;
+            border-radius: var(--radius-pill);
             margin-bottom: 24px;
         }
 
         .hero h1 {
-            font-size: 3.4rem;
-            font-weight: 900;
-            line-height: 1.15;
+            font-size: 3.2rem;
+            font-weight: 800;
             letter-spacing: -1px;
-            margin-bottom: 20px;
-        }
-
-        .hero h1 span {
-            background: linear-gradient(135deg, #00d4ff 0%, #38bdf8 50%, #ff8a00 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            line-height: 1.15;
+            color: var(--text-primary);
+            max-width: 900px;
+            margin: 0 auto 20px;
         }
 
         .hero p {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            max-width: 750px;
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 740px;
             margin: 0 auto 36px;
+            line-height: 1.65;
+            font-weight: 400;
         }
 
         .hero-actions {
             display: flex;
-            gap: 16px;
+            align-items: center;
             justify-content: center;
-            flex-wrap: wrap;
+            gap: 14px;
             margin-bottom: 48px;
+            flex-wrap: wrap;
         }
 
-        /* Banner Frame */
-        .banner-wrap {
-            max-width: 1000px;
-            margin: 0 auto 70px;
-            border-radius: 16px;
+        /* Key Metrics Ribbon */
+        .metrics-ribbon {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border-subtle);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
             overflow: hidden;
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6), 0 0 60px rgba(0, 212, 255, 0.15);
+            max-width: 860px;
+            margin: 0 auto 56px;
+        }
+
+        .metric-cell {
+            background: var(--bg-surface);
+            padding: 16px 20px;
+            text-align: center;
+        }
+
+        .metric-val {
+            font-family: var(--font-mono);
+            font-size: 1.45rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .metric-label {
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Frame Wrap */
+        .banner-frame {
+            max-width: 1040px;
+            margin: 0 auto 90px;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            border: 1px solid var(--border-subtle);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
             background: #000;
         }
 
-        .banner-wrap img {
+        .banner-frame img {
             width: 100%;
             height: auto;
             display: block;
         }
 
-        /* Section Title */
+        /* -------------------------------------------------------------
+           Section Headers
+           ------------------------------------------------------------- */
         .section-header {
+            margin-bottom: 40px;
+        }
+
+        .section-header.center {
             text-align: center;
-            margin-bottom: 48px;
         }
 
-        .section-header h2 {
-            font-size: 2.2rem;
-            font-weight: 800;
+        .section-tag {
+            font-family: var(--font-mono);
+            font-size: 0.76rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent-cyan);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
             letter-spacing: -0.5px;
-            margin-bottom: 12px;
+            color: var(--text-primary);
+            margin-bottom: 10px;
         }
 
-        .section-header p {
-            color: var(--text-muted);
-            font-size: 1.05rem;
+        .section-desc {
+            font-size: 1.02rem;
+            color: var(--text-secondary);
+            max-width: 680px;
         }
 
-        /* =========================================================
-           LIVE DYNAMIC ROADMAP STYLES
-           ========================================================= */
-        .sync-badge {
+        .section-header.center .section-desc {
+            margin: 0 auto;
+        }
+
+        /* -------------------------------------------------------------
+           Three Hardware Tiers Grid
+           ------------------------------------------------------------- */
+        .tiers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 90px;
+        }
+
+        .tier-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 32px 28px;
+            display: flex;
+            flex-direction: column;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .tier-card:hover {
+            border-color: var(--border-strong);
+            transform: translateY(-3px);
+        }
+
+        .tier-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .tier-badge {
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+        }
+
+        .tier-card h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .tier-desc {
+            color: var(--text-secondary);
+            font-size: 0.92rem;
+            line-height: 1.55;
+            margin-bottom: 24px;
+            min-height: 44px;
+        }
+
+        .tier-spec-list {
+            list-style: none;
+            margin-bottom: 28px;
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 20px;
+            flex-grow: 1;
+        }
+
+        .tier-spec-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            line-height: 1.45;
+        }
+
+        .tier-spec-list li svg {
+            color: var(--accent-cyan);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .tier-footer {
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 16px;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+        }
+
+        .bom-label {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            font-family: var(--font-mono);
+        }
+
+        .bom-cost {
+            font-family: var(--font-mono);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* -------------------------------------------------------------
+           Core Engineering Features Grid
+           ------------------------------------------------------------- */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            margin-bottom: 90px;
+        }
+
+        .feature-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 28px;
+            transition: border-color 0.2s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--border-strong);
+        }
+
+        .feature-icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-cyan);
+            margin-bottom: 18px;
+        }
+
+        .feature-card h4 {
+            font-size: 1.12rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* -------------------------------------------------------------
+           Live Engineering Roadmap (Linear / Enterprise Issue UI)
+           ------------------------------------------------------------- */
+        .roadmap-container-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 36px 32px;
+            margin-bottom: 90px;
+        }
+
+        .roadmap-top-bar {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 28px;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 24px;
+        }
+
+        .sync-indicator {
             display: inline-flex;
             align-items: center;
             gap: 6px;
             font-family: var(--font-mono);
-            font-size: 0.78rem;
-            padding: 3px 10px;
-            border-radius: 9999px;
-            background: rgba(57, 255, 20, 0.12);
-            border: 1px solid rgba(57, 255, 20, 0.3);
-            color: var(--accent-green);
+            font-size: 0.74rem;
+            font-weight: 600;
+            color: var(--status-success);
+            background: var(--status-success-subtle);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            padding: 3px 8px;
+            border-radius: var(--radius-pill);
         }
 
-        .pulse-dot {
-            width: 8px;
-            height: 8px;
-            background-color: var(--accent-green);
+        .sync-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--status-success);
             border-radius: 50%;
-            display: inline-block;
-            box-shadow: 0 0 10px var(--accent-green);
-            animation: pulse-glow 2s infinite ease-in-out;
+            box-shadow: 0 0 6px var(--status-success);
+            animation: pulse-dot 2.5s infinite ease-in-out;
         }
 
-        @keyframes pulse-glow {
+        @keyframes pulse-dot {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.4; transform: scale(0.85); }
         }
 
-        .roadmap-stats-card {
-            background: rgba(8, 12, 20, 0.75);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            padding: 24px;
+        /* Overview Metric Panel */
+        .roadmap-overview-bar {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 22px 24px;
             margin-bottom: 24px;
         }
 
-        .stats-header {
+        .overview-header {
             display: flex;
+            align-items: baseline;
             justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             flex-wrap: wrap;
             gap: 12px;
         }
 
-        .stats-label {
+        .overview-pct {
             font-family: var(--font-mono);
-            font-size: 0.75rem;
-            letter-spacing: 1.5px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            margin-bottom: 4px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
         }
 
-        .stats-percentage {
-            font-size: 2.4rem;
-            font-weight: 900;
+        .overview-counts {
             font-family: var(--font-mono);
-            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-green));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            line-height: 1;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
         }
 
-        .stats-counts {
-            font-family: var(--font-mono);
-            font-size: 0.95rem;
-            color: var(--text-muted);
-        }
-
-        .stats-counts strong {
-            color: var(--text-main);
+        .overview-counts strong {
+            color: var(--text-primary);
         }
 
         .progress-track {
-            height: 10px;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 9999px;
+            height: 6px;
+            background: var(--bg-surface-subtle);
+            border-radius: var(--radius-pill);
             overflow: hidden;
-            position: relative;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--accent-cyan), var(--accent-green));
-            border-radius: 9999px;
-            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 16px rgba(0, 212, 255, 0.6);
+            background: var(--accent-cyan);
+            border-radius: var(--radius-pill);
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
+        /* Roadmap Filter Tabs */
         .roadmap-filters {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .filter-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-muted);
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            font-weight: 600;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-family: var(--font-sans);
+            font-size: 0.82rem;
+            font-weight: 500;
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
 
         .filter-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-main);
+            color: var(--text-primary);
+            border-color: var(--border-strong);
         }
 
         .filter-btn.active {
-            background: rgba(0, 212, 255, 0.15);
-            border-color: var(--accent-cyan);
+            background: var(--accent-cyan-subtle);
             color: var(--accent-cyan);
+            border-color: rgba(0, 212, 255, 0.4);
+            font-weight: 600;
         }
 
         /* Phases Accordion */
-        .phases-container {
+        .phases-list {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 12px;
         }
 
         .phase-card {
-            background: rgba(14, 18, 30, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            background: var(--bg-surface-elevated);
             overflow: hidden;
-            transition: border-color 0.2s ease;
+            transition: border-color 0.15s ease;
         }
 
         .phase-card:hover {
-            border-color: rgba(0, 212, 255, 0.3);
+            border-color: var(--border-strong);
         }
 
         .phase-header {
-            padding: 18px 24px;
+            padding: 16px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             cursor: pointer;
             user-select: none;
             gap: 16px;
-            background: rgba(255, 255, 255, 0.015);
         }
 
         .phase-header:hover {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.02);
         }
 
-        .phase-title-wrap {
+        .phase-title-group {
             display: flex;
             align-items: center;
-            gap: 12px;
-            flex: 1;
+            gap: 10px;
             flex-wrap: wrap;
         }
 
         .phase-tag {
             font-family: var(--font-mono);
-            font-size: 0.78rem;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 6px;
-            background: rgba(0, 212, 255, 0.12);
-            color: var(--accent-cyan);
-            border: 1px solid rgba(0, 212, 255, 0.25);
-            white-space: nowrap;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 2px 7px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-surface-subtle);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
         }
 
         .phase-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--text-main);
+            font-size: 0.98rem;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
         .phase-meta {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
         }
 
-        .phase-progress-mini {
+        .phase-progress-val {
             font-family: var(--font-mono);
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            white-space: nowrap;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
         }
 
         .phase-chevron {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            transition: transform 0.25s ease;
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            transition: transform 0.2s ease;
         }
 
         .phase-card.open .phase-chevron {
@@ -455,8 +727,8 @@
 
         .phase-body {
             display: none;
-            padding: 0 24px 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 0 20px 18px;
+            border-top: 1px solid var(--border-subtle);
         }
 
         .phase-card.open .phase-body {
@@ -467,631 +739,748 @@
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin-top: 16px;
+            gap: 8px;
+            margin-top: 14px;
         }
 
-        .task-item {
+        .task-row {
             display: flex;
-            gap: 14px;
+            gap: 12px;
             align-items: flex-start;
-            padding: 10px 14px;
-            background: rgba(0, 0, 0, 0.25);
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            font-size: 0.92rem;
+            padding: 8px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-surface);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 0.88rem;
             line-height: 1.5;
         }
 
-        .task-item.done {
-            border-color: rgba(57, 255, 20, 0.15);
-            background: rgba(57, 255, 20, 0.03);
+        .task-row.done {
+            border-color: rgba(16, 185, 129, 0.15);
         }
 
-        .task-item.pending {
-            border-color: rgba(0, 212, 255, 0.1);
-        }
-
-        .task-icon {
-            font-size: 1rem;
+        .task-check-icon {
             flex-shrink: 0;
             margin-top: 2px;
         }
 
-        .task-item.done .task-icon {
-            color: var(--accent-green);
+        .task-check-icon.done {
+            color: var(--status-success);
         }
 
-        .task-item.pending .task-icon {
-            color: var(--accent-cyan);
-            opacity: 0.7;
+        .task-check-icon.pending {
+            color: var(--text-tertiary);
         }
 
-        .task-content {
+        .task-text {
             flex: 1;
+            color: var(--text-primary);
         }
 
-        .task-content a {
+        .task-text a {
             color: var(--accent-cyan);
             text-decoration: underline;
         }
 
         .sub-bullet-list {
-            margin-top: 8px;
-            margin-left: 20px;
+            margin-top: 6px;
+            margin-left: 18px;
             list-style: disc;
-            color: var(--text-muted);
-            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-size: 0.82rem;
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 4px;
         }
 
         .inline-code {
             font-family: var(--font-mono);
-            background: rgba(255, 255, 255, 0.08);
-            padding: 2px 6px;
-            border-radius: 4px;
             font-size: 0.82em;
-            color: #38bdf8;
+            background: var(--bg-surface-subtle);
+            border: 1px solid var(--border-subtle);
+            padding: 1px 5px;
+            border-radius: 4px;
+            color: var(--accent-blue);
         }
 
-        /* =========================================================
-           SPONSOR & DONATION SECTION STYLES
-           ========================================================= */
+        /* -------------------------------------------------------------
+           Hardware Prototyping & Sponsorship Section
+           ------------------------------------------------------------- */
+        .sponsor-section {
+            margin-bottom: 90px;
+        }
+
         .sponsor-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-            margin-bottom: 28px;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
         }
 
         .sponsor-card {
-            background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 32px 24px;
-            backdrop-filter: blur(12px);
-            text-align: center;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 24px 20px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            transition: all 0.3s ease;
+            transition: border-color 0.15s ease;
         }
 
         .sponsor-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(234, 74, 170, 0.4);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 25px rgba(234, 74, 170, 0.15);
+            border-color: var(--border-strong);
         }
 
-        .sponsor-icon {
-            font-size: 2.6rem;
-            margin-bottom: 16px;
-        }
-
-        .sponsor-card h3 {
-            font-size: 1.35rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .sponsor-card p {
-            color: var(--text-muted);
-            font-size: 0.92rem;
-            margin-bottom: 24px;
-            flex-grow: 1;
-        }
-
-        .btn-sponsor-gh {
-            background: linear-gradient(135deg, #ea4aaa, #c92a8e);
-            color: #fff;
-            width: 100%;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(234, 74, 170, 0.3);
-        }
-
-        .btn-sponsor-gh:hover {
-            box-shadow: 0 6px 22px rgba(234, 74, 170, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .btn-sponsor-bmac {
-            background: linear-gradient(135deg, #ffdd00, #ffb700);
-            color: #000;
-            width: 100%;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(255, 221, 0, 0.25);
-        }
-
-        .btn-sponsor-bmac:hover {
-            box-shadow: 0 6px 22px rgba(255, 221, 0, 0.45);
-            transform: translateY(-2px);
-        }
-
-        .btn-sponsor-kofi {
-            background: linear-gradient(135deg, #ff5e5b, #e0322e);
-            color: #fff;
-            width: 100%;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(255, 94, 91, 0.3);
-        }
-
-        .btn-sponsor-kofi:hover {
-            box-shadow: 0 6px 22px rgba(255, 94, 91, 0.5);
-            transform: translateY(-2px);
-        }
-
-        /* Three Tiers Grid */
-        .tiers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px;
-            margin-bottom: 80px;
-        }
-
-        .tier-card {
-            background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px;
-            padding: 32px 24px;
-            backdrop-filter: blur(12px);
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .tier-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--border-glow);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 212, 255, 0.12);
-        }
-
-        .tier-lite { border-top: 4px solid var(--accent-cyan); }
-        .tier-auto { border-top: 4px solid var(--accent-green); }
-        .tier-pro  { border-top: 4px solid var(--accent-orange); }
-
-        .tier-badge {
-            font-family: var(--font-mono);
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            font-weight: 700;
-            display: inline-block;
-            margin-bottom: 12px;
-        }
-
-        .tier-lite .tier-badge { color: var(--accent-cyan); }
-        .tier-auto .tier-badge { color: var(--accent-green); }
-        .tier-pro .tier-badge  { color: var(--accent-orange); }
-
-        .tier-card h3 {
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 12px;
-        }
-
-        .tier-desc {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            margin-bottom: 24px;
-            min-height: 48px;
-        }
-
-        .tier-specs {
-            list-style: none;
-            margin-bottom: 28px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            padding-top: 20px;
-        }
-
-        .tier-specs li {
-            font-size: 0.9rem;
-            margin-bottom: 10px;
+        .sponsor-card-top {
             display: flex;
             align-items: center;
             gap: 10px;
-            color: var(--text-main);
-        }
-
-        .tier-cost {
-            font-family: var(--font-mono);
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #fff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Features Section */
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            margin-bottom: 80px;
-        }
-
-        .feature-box {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 12px;
-            padding: 24px;
-            transition: all 0.2s ease;
-        }
-
-        .feature-box:hover {
-            border-color: rgba(0, 212, 255, 0.3);
-            background: rgba(0, 212, 255, 0.02);
-        }
-
-        .feature-icon {
-            font-size: 2rem;
             margin-bottom: 12px;
         }
 
-        .feature-box h4 {
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 8px;
+        .sponsor-card-top svg {
+            color: var(--text-primary);
+            flex-shrink: 0;
         }
 
-        .feature-box p {
-            color: var(--text-muted);
-            font-size: 0.9rem;
+        .sponsor-card h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
         }
 
-        /* Simulator Callout */
-        .sim-callout {
-            background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(255, 138, 0, 0.08));
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 16px;
-            padding: 48px 32px;
-            text-align: center;
-            margin-bottom: 80px;
+        .sponsor-card p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex-grow: 1;
         }
 
-        .sim-callout h2 {
-            font-size: 2.2rem;
-            font-weight: 800;
+        /* BOM Grant Breakdown */
+        .bom-breakdown-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 28px;
+        }
+
+        .bom-breakdown-header {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
             margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .sim-callout p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            max-width: 650px;
+        .bom-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+        }
+
+        .bom-item {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+        }
+
+        .bom-item-title {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--accent-cyan);
+            margin-bottom: 4px;
+        }
+
+        .bom-item-desc {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.45;
+        }
+
+        /* -------------------------------------------------------------
+           Simulator Callout CTA
+           ------------------------------------------------------------- */
+        .sim-banner {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 48px 36px;
+            text-align: center;
+            margin-bottom: 90px;
+            position: relative;
+        }
+
+        .sim-banner h2 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .sim-banner p {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 600px;
             margin: 0 auto 28px;
         }
 
-        /* Footer */
+        /* -------------------------------------------------------------
+           Footer
+           ------------------------------------------------------------- */
         footer {
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-top: 1px solid var(--border-subtle);
             padding: 40px 0;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-tertiary);
         }
 
-        footer a {
-            color: var(--text-main);
+        .footer-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+        }
+
+        .footer-links a:hover {
+            color: var(--text-primary);
         }
 
         @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
+            .hero h1 { font-size: 2.3rem; }
+            .metrics-ribbon { grid-template-columns: repeat(2, 1fr); }
             .nav-links { display: none; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
+    <!-- Header Navigation -->
     <header>
         <div class="container nav-wrap">
-            <a href="#" class="logo">⚡ AEZEL</a>
+            <div class="brand-wrap">
+                <a href="#" class="logo-mark">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    AEZEL
+                </a>
+                <span class="version-badge">v0.4.0-alpha</span>
+            </div>
+
             <ul class="nav-links">
-                <li><a href="#roadmap">Live Roadmap</a></li>
                 <li><a href="#hardware-tiers">Hardware Tiers</a></li>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#sponsor" class="nav-sponsor-link">💖 Sponsor</a></li>
-                <li><a href="preview/">Interactive Simulator</a></li>
-                <li><a href="https://github.com/ijlaal1610/AEZEL" target="_blank">Docs</a></li>
+                <li><a href="#features">Architecture</a></li>
+                <li><a href="#roadmap">Live Roadmap</a></li>
+                <li><a href="#sponsor">Funding</a></li>
+                <li><a href="preview/">Simulator</a></li>
             </ul>
-            <a href="https://github.com/ijlaal1610/AEZEL" class="btn btn-outline" target="_blank">
-                ⭐ Star on GitHub
-            </a>
+
+            <div class="nav-actions">
+                <a href="https://github.com/ijlaal1610/AEZEL" class="btn btn-secondary" target="_blank" rel="noopener">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+                    </svg>
+                    Star on GitHub
+                </a>
+            </div>
         </div>
     </header>
 
-    <!-- Hero -->
+    <!-- Hero Section -->
     <section class="hero container">
-        <div class="pill-badge">🚀 Universal Multi-Vehicle & Multi-Hardware Cockpit</div>
-        <h1>Next-Gen Connected Cockpit & VCU<br><span>Motorcycles • Scooters • Cars</span></h1>
+        <span class="badge-kicker">Open-Source Vehicle Control Unit & Digital Cluster Platform</span>
+        <h1>The Connected Cockpit for Motorcycles, Scooters & Cars</h1>
         <p>
-            An open-source digital instrument cluster, Vehicle Control Unit (VCU), and telemetry ecosystem featuring native Apple CarPlay, Android Auto, direct sensors & OBD-II across ESP32-S3, ESP32-P4 & Raspberry Pi.
+            An open, modular embedded platform powering real-time 60 FPS LVGL instrumentation, automotive CAN Bus telemetry, and smartphone projection across ESP32-S3, ESP32-P4 RISC-V, and Linux SBCs.
         </p>
+        
         <div class="hero-actions">
-            <a href="preview/" class="btn btn-primary">🎮 Launch Live Web Simulator</a>
-            <a href="#roadmap" class="btn btn-outline">🗺️ View Live Roadmap</a>
-            <a href="#sponsor" class="btn btn-outline" style="border-color: rgba(234, 74, 170, 0.4); color: #ff70c5;">💖 Support Project</a>
-            <a href="https://github.com/ijlaal1610/AEZEL" class="btn btn-outline" target="_blank">📦 GitHub Source</a>
+            <a href="preview/" class="btn btn-primary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
+                Launch Web Simulator
+            </a>
+            <a href="#roadmap" class="btn btn-secondary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                </svg>
+                Engineering Roadmap
+            </a>
+            <a href="https://github.com/ijlaal1610/AEZEL" class="btn btn-ghost" target="_blank" rel="noopener">
+                View Repository ↗
+            </a>
         </div>
 
-        <div class="banner-wrap">
-            <img src="images/aezel_banner_new.jpg" alt="AEZEL Cockpit Banner">
+        <!-- System Metrics Ribbon -->
+        <div class="metrics-ribbon">
+            <div class="metric-cell">
+                <div class="metric-val">6</div>
+                <div class="metric-label">Vehicle Presets</div>
+            </div>
+            <div class="metric-cell">
+                <div class="metric-val">3</div>
+                <div class="metric-label">Hardware Tiers</div>
+            </div>
+            <div class="metric-cell">
+                <div class="metric-val">83</div>
+                <div class="metric-label">Unit Tests Passed</div>
+            </div>
+            <div class="metric-cell">
+                <div class="metric-val">&lt; 300ms</div>
+                <div class="metric-label">Cold Boot Time</div>
+            </div>
         </div>
-    </section>
 
-    <!-- Live Dynamic Roadmap Section -->
-    <section class="container" id="roadmap" style="margin-bottom: 80px;">
-        <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.12), rgba(255, 138, 0, 0.08)); border: 1px solid rgba(0, 212, 255, 0.35); border-radius: 16px; padding: 40px 32px; backdrop-filter: blur(16px); box-shadow: 0 10px 30px rgba(0,0,0,0.4);">
-            
-            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; margin-bottom: 24px;">
-                <div>
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
-                        <span style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1.5px; background: rgba(0, 212, 255, 0.15); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(0, 212, 255, 0.3);">🗺️ Live Project Roadmap</span>
-                        <span id="roadmap-sync-badge" class="sync-badge">
-                            <span class="pulse-dot"></span> Auto-Syncing with <code>docs/roadmap.md</code>
-                        </span>
-                    </div>
-                    <h2 style="font-size: 2rem; font-weight: 800;">Real-Time Engineering Lifecycle & Tasks</h2>
-                    <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 4px;">
-                        Directly parsed from the repository markdown. Checking off or adding tasks in <code>docs/roadmap.md</code> on GitHub updates this live dashboard automatically.
-                    </p>
-                </div>
-                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-                    <a href="https://github.com/ijlaal1610/AEZEL/blob/main/docs/roadmap.md" class="btn btn-primary" target="_blank">📋 View raw docs/roadmap.md</a>
-                    <a href="https://github.com/ijlaal1610/AEZEL/edit/main/docs/roadmap.md" class="btn btn-outline" target="_blank">✏️ Check Off / Edit on GitHub</a>
-                </div>
-            </div>
-
-            <!-- Global Progress Bar Card -->
-            <div class="roadmap-stats-card">
-                <div class="stats-header">
-                    <div>
-                        <div class="stats-label">OVERALL FIRMWARE & HARDWARE PROGRESS</div>
-                        <div class="stats-percentage" id="global-progress-pct">--%</div>
-                    </div>
-                    <div class="stats-counts" id="global-progress-counts">
-                        Loading tasks from docs/roadmap.md...
-                    </div>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-fill" id="global-progress-fill" style="width: 0%;"></div>
-                </div>
-                
-                <!-- Filter Tabs -->
-                <div class="roadmap-filters">
-                    <button class="filter-btn active" data-filter="all" id="filter-all-btn">All Tasks (<span id="count-all">0</span>)</button>
-                    <button class="filter-btn" data-filter="pending" id="filter-pending-btn">Pending & In Progress (<span id="count-pending">0</span>)</button>
-                    <button class="filter-btn" data-filter="completed" id="filter-completed-btn">Completed (<span id="count-completed">0</span>)</button>
-                </div>
-            </div>
-
-            <!-- Live Phases Accordion Container -->
-            <div id="live-phases-container" class="phases-container">
-                <div id="roadmap-loading-status" style="text-align: center; padding: 40px 0;">
-                    <p style="color: var(--text-muted); font-family: var(--font-mono); font-size: 0.9rem;">Fetching live roadmap from docs/roadmap.md...</p>
-                </div>
-            </div>
-
-            <div style="margin-top: 24px; text-align: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 18px;">
-                <p style="font-size: 0.88rem; color: var(--text-muted);">
-                    💡 Also check out our deep navigation architecture specification: 
-                    <a href="https://github.com/ijlaal1610/AEZEL/blob/main/docs/navigation_and_telemetry_roadmap.md" target="_blank" style="font-weight: 700; color: var(--accent-cyan);">docs/navigation_and_telemetry_roadmap.md ↗</a>
-                </p>
-            </div>
-
+        <div class="banner-frame">
+            <img src="images/aezel_banner_new.jpg" alt="AEZEL Cockpit Platform Architecture">
         </div>
     </section>
 
-    <!-- Hardware Tiers -->
+    <!-- Hardware Tiers Architecture -->
     <section class="container" id="hardware-tiers">
         <div class="section-header">
-            <h2>Three Hardware Tiers for Every Vehicle</h2>
-            <p>From low-cost commuter bikes to high-performance touring motorcycles and custom automobiles.</p>
+            <span class="section-tag">Platform Matrix</span>
+            <h2 class="section-title">Three Hardware Tiers for Every Vehicle</h2>
+            <p class="section-desc">Designed to scale from low-cost daily commuter motorcycles to high-performance electric vehicles and custom automobiles.</p>
         </div>
 
         <div class="tiers-grid">
             <!-- Tier 1 -->
-            <div class="tier-card tier-lite">
-                <span class="tier-badge">Tier 1: Microcontroller Lite</span>
+            <div class="tier-card">
+                <div class="tier-top">
+                    <span class="tier-badge">TIER 1 • MICROCONTROLLER</span>
+                    <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan);">MCU LITE</span>
+                </div>
                 <h3>AEZEL Lite (ESP32-S3)</h3>
-                <p class="tier-desc">Instant-boot 60 FPS LVGL cluster with BLE Turn-by-Turn HUD mirroring real Google & Apple Maps.</p>
-                <ul class="tier-specs">
-                    <li>✓ 240 MHz Dual-Core Xtensa ESP32-S3</li>
-                    <li>✓ 3.5"–4.3" SPI / 8080 Parallel Display (480×320)</li>
-                    <li>✓ BLE Turn-by-Turn HUD (Official Maps via navHUD)</li>
-                    <li>✓ Dual Sensors (Hall/RPM/Float) + Automotive CAN</li>
-                    <li>✓ Cold Boot: &lt; 300 ms (Instant-On)</li>
+                <p class="tier-desc">Instant-boot 60 FPS LVGL digital instrument cluster with BLE Turn-by-Turn HUD mirroring real Google & Apple Maps.</p>
+                
+                <ul class="tier-spec-list">
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Compute:</strong> 240 MHz Dual-Core Xtensa ESP32-S3</span>
+                    </li>
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Display:</strong> 3.5"–4.3" SPI / 8080 Parallel TFT (480×320)</span>
+                    </li>
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Navigation:</strong> BLE Turn-by-Turn HUD (navHUD notification bridge)</span>
+                    </li>
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Telemetry:</strong> Dual Sensors (Hall / Float) + Automotive CAN</span>
+                    </li>
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Boot Latency:</strong> &lt; 300 ms (Instant-On)</span>
+                    </li>
                 </ul>
-                <div class="tier-cost">
-                    <span>Est. BOM Cost</span>
-                    <span style="color: var(--accent-cyan);">$20 – $35</span>
+
+                <div class="tier-footer">
+                    <span class="bom-label">Est. BOM Cost</span>
+                    <span class="bom-cost">$20 – $35</span>
                 </div>
             </div>
 
             <!-- Tier 2 -->
-            <div class="tier-card tier-auto">
-                <span class="tier-badge">Tier 2: RISC-V Automotive</span>
+            <div class="tier-card">
+                <div class="tier-top">
+                    <span class="tier-badge">TIER 2 • AUTOMOTIVE RISC-V</span>
+                    <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-blue);">PROJECTION</span>
+                </div>
                 <h3>AEZEL Auto (ESP32-P4)</h3>
-                <p class="tier-desc">Direct MCU-based Wireless Android Auto projection with VCU CAN telemetry overlay.</p>
-                <ul class="tier-specs">
-                    <li>✓ 400 MHz Dual RISC-V ESP32-P4 SoC</li>
-                    <li>✓ 4.3"–7.0" MIPI-DSI Touch Display (800×480)</li>
-                    <li>✓ Wireless Android Auto Projection (via esp32p4-aa)</li>
-                    <li>✓ Hardware PPA 2D Accelerator + esp_h264</li>
-                    <li>✓ Cold Boot: &lt; 1.2 seconds</li>
+                <p class="tier-desc">Direct MCU-based Wireless Android Auto video projection with live VCU CAN telemetry overlay.</p>
+                
+                <ul class="tier-spec-list">
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Compute:</strong> 400 MHz Dual-Core RISC-V ESP32-P4 SoC</span>
+                    </li>
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Display:</strong> 4.3"–7.0" MIPI-DSI Touch Display (800×480)</span>
+                    </li>
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Projection:</strong> Native Wireless Android Auto (esp32p4-aa)</span>
+                    </li>
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Hardware Accel:</strong> PPA 2D Accelerator + esp_h264</span>
+                    </li>
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Boot Latency:</strong> &lt; 1.2 seconds</span>
+                    </li>
                 </ul>
-                <div class="tier-cost">
-                    <span>Est. BOM Cost</span>
-                    <span style="color: var(--accent-green);">$45 – $65</span>
+
+                <div class="tier-footer">
+                    <span class="bom-label">Est. BOM Cost</span>
+                    <span class="bom-cost">$45 – $65</span>
                 </div>
             </div>
 
             <!-- Tier 3 -->
-            <div class="tier-card tier-pro">
-                <span class="tier-badge">Tier 3: Infotainment Pro</span>
+            <div class="tier-card">
+                <div class="tier-top">
+                    <span class="tier-badge">TIER 3 • INFOTAINMENT</span>
+                    <span style="font-family: var(--font-mono); font-size: 0.75rem; color: #a78bfa;">SBC LINUX</span>
+                </div>
                 <h3>AEZEL Pro (Raspberry Pi / Linux)</h3>
-                <p class="tier-desc">Full Apple CarPlay & Android Auto head unit with zero-copy GStreamer video and VCU gauges.</p>
-                <ul class="tier-specs">
-                    <li>✓ Raspberry Pi 4/5 / CM4 / CM5 (Quad ARM)</li>
-                    <li>✓ 5.0"–10.25" Ultrawide Touch Display (1080p)</li>
-                    <li>✓ Full Apple CarPlay & Android Auto (via LIVI)</li>
-                    <li>✓ Siri / Google Assistant & 2-Way Audio</li>
-                    <li>✓ Split-Screen: 70% Navigation + 30% AEZEL VCU</li>
+                <p class="tier-desc">Full In-Vehicle Infotainment engine featuring genuine Apple CarPlay & Android Auto via LIVI with zero-copy GStreamer.</p>
+                
+                <ul class="tier-spec-list">
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Compute:</strong> Raspberry Pi 4 / 5 / CM4 / CM5 (Quad ARM)</span>
+                    </li>
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Display:</strong> 5.0"–10.25" Ultrawide Touch Panel (1080p)</span>
+                    </li>
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Infotainment:</strong> Full Apple CarPlay & Android Auto (via LIVI)</span>
+                    </li>
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Voice & Audio:</strong> Siri / Google Assistant & 2-Way Audio</span>
+                    </li>
+                    <li>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                        <span><strong>Split-Screen:</strong> 70% Navigation + 30% AEZEL VCU Gauges</span>
+                    </li>
                 </ul>
-                <div class="tier-cost">
-                    <span>Est. BOM Cost</span>
-                    <span style="color: var(--accent-orange);">$85 – $130</span>
+
+                <div class="tier-footer">
+                    <span class="bom-label">Est. BOM Cost</span>
+                    <span class="bom-cost">$85 – $130</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Features -->
+    <!-- Engineering Features Grid -->
     <section class="container" id="features">
         <div class="section-header">
-            <h2>Engineered for Open-Source Mobility</h2>
-            <p>Every subsystem built for reliability, real-world harness safety, and seamless mobile connectivity.</p>
+            <span class="section-tag">Subsystem Architecture</span>
+            <h2 class="section-title">Engineered for Automotive Reliability</h2>
+            <p class="section-desc">Every layer built from the ground up for vibration resistance, electrical noise immunity, and deterministic timing.</p>
         </div>
 
         <div class="features-grid">
-            <div class="feature-box">
-                <div class="feature-icon">🏍️</div>
-                <h4>6 Built-in Vehicle Presets</h4>
-                <p>Pre-configured profiles for Bikes (5/6-speed manual, lean angle), Scooters (CVT automatic, belt wear), and Cars (OBD-II, PRND, dual G-force).</p>
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <h4>6 Built-in Vehicle Profiles</h4>
+                <p>Configurable profiles for Motorcycles (5/6-speed manual, lean angle), Scooters (CVT transmission, belt wear intervals), and Cars (OBD-II, PRND, dual G-force crash sensing).</p>
             </div>
-            <div class="feature-box">
-                <div class="feature-icon">🧭</div>
-                <h4>Real Google & Apple Maps</h4>
-                <p>Zero in-app map clones. Runs with your official navigation apps via BLE notification listener (Android) and native ANCS / MapKit (iOS).</p>
+
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
+                    </svg>
+                </div>
+                <h4>Official Google & Apple Maps HUD</h4>
+                <p>Zero in-app map clones. Runs with your phone's native navigation apps via BLE notification listener (Android) and CoreBluetooth / ANCS bridge (iOS).</p>
             </div>
-            <div class="feature-box">
-                <div class="feature-icon">🛰️</div>
+
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V17a1 1 0 0 1-2 0v-.07A7.003 7.003 0 0 1 5.07 11H5a1 1 0 0 1 0-2h.07A7.003 7.003 0 0 1 11 5.07V5a1 1 0 0 1 2 0v.07A7.003 7.003 0 0 1 18.93 11H19a1 1 0 0 1 0 2h-.07A7.003 7.003 0 0 1 13 16.93z"></path>
+                    </svg>
+                </div>
                 <h4>Dual-Source GNSS Telemetry</h4>
-                <p>Filtered u-blox NEO-6M hardware GPS ($GPRMC/$GPGGA) with seamless automatic fallback to smartphone fused GPS if satellite lock is lost.</p>
+                <p>Filtered u-blox hardware GNSS parsing ($GPRMC/$GPGGA) with automatic fallback to smartphone fused GPS if satellite fix is lost or hardware module is omitted.</p>
             </div>
-            <div class="feature-box">
-                <div class="feature-icon">📱</div>
-                <h4>Flutter Companion App</h4>
-                <p>Single cross-platform codebase for iOS & Android providing live cockpit gauges, vehicle preset switching, remote controls, and trip replay.</p>
+
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                        <line x1="12" y1="18" x2="12.01" y2="18"></line>
+                    </svg>
+                </div>
+                <h4>Flutter Companion App (iOS & Android)</h4>
+                <p>Single cross-platform companion codebase for live telemetry monitoring, vehicle preset switching, remote lock/hazard controls, and GPX trip replay.</p>
             </div>
-            <div class="feature-box">
-                <div class="feature-icon">🛡️</div>
-                <h4>Automotive-Grade Protection</h4>
-                <p>Opto-isolated discrete inputs, load-dump TVS clamping, RC low-pass ignition coil filter, and battery voltage supervision.</p>
+
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <h4>Automotive-Grade Electrical Protection</h4>
+                <p>Opto-isolated discrete inputs, load-dump TVS surge clamping, RC low-pass ignition-coil pickup filtering, and ignition-triggered deep sleep state machine.</p>
             </div>
-            <div class="feature-box">
-                <div class="feature-icon">📶</div>
-                <h4>One-Tap Wireless OTA</h4>
-                <p>Update cluster firmware over Wi-Fi softAP (AEZEL-VCU-AP) straight from your phone or browser without removing the motorcycle dash.</p>
+
+            <div class="feature-card">
+                <div class="feature-icon-box">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                        <path d="M12 12v9"></path>
+                        <path d="m8 17 4 4 4-4"></path>
+                    </svg>
+                </div>
+                <h4>Wireless SoftAP In-Field OTA</h4>
+                <p>One-tap firmware flashing over Wi-Fi SoftAP (AEZEL-VCU-AP) straight from any phone or laptop browser without disassembling the vehicle instrument cluster.</p>
             </div>
         </div>
     </section>
 
-    <!-- Sponsor & Hardware Prototyping Fund Section -->
-    <section class="container" id="sponsor" style="margin-bottom: 80px;">
+    <!-- Live Dynamic Roadmap Section (Linear / Enterprise Issue UI) -->
+    <section class="container" id="roadmap">
+        <div class="roadmap-container-card">
+            
+            <div class="roadmap-top-bar">
+                <div>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                        <span class="section-tag" style="margin-bottom: 0;">Roadmap</span>
+                        <span class="sync-indicator">
+                            <span class="sync-dot"></span> Synced with <code>docs/roadmap.md</code>
+                        </span>
+                    </div>
+                    <h2 style="font-size: 1.6rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px;">Live Engineering Lifecycle & Tasks</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.88rem;">
+                        Parsed dynamically from Git. Updating task checkboxes in <code>docs/roadmap.md</code> updates this interface automatically.
+                    </p>
+                </div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <a href="https://github.com/ijlaal1610/AEZEL/blob/main/docs/roadmap.md" class="btn btn-secondary" target="_blank" rel="noopener">
+                        docs/roadmap.md
+                    </a>
+                    <a href="https://github.com/ijlaal1610/AEZEL/edit/main/docs/roadmap.md" class="btn btn-primary" target="_blank" rel="noopener">
+                        Edit on GitHub ↗
+                    </a>
+                </div>
+            </div>
+
+            <!-- Overview Metrics Panel -->
+            <div class="roadmap-overview-bar">
+                <div class="overview-header">
+                    <div>
+                        <div style="font-family: var(--font-mono); font-size: 0.72rem; text-transform: uppercase; color: var(--text-tertiary); letter-spacing: 1px; margin-bottom: 2px;">
+                            Global Completion
+                        </div>
+                        <div class="overview-pct" id="global-progress-pct">--%</div>
+                    </div>
+                    <div class="overview-counts" id="global-progress-counts">
+                        Parsing roadmap items...
+                    </div>
+                </div>
+
+                <div class="progress-track">
+                    <div class="progress-fill" id="global-progress-fill" style="width: 0%;"></div>
+                </div>
+
+                <!-- Status Filter Pills -->
+                <div class="roadmap-filters">
+                    <button class="filter-btn active" data-filter="all">All Tasks (<span id="count-all">0</span>)</button>
+                    <button class="filter-btn" data-filter="pending">Pending & In Progress (<span id="count-pending">0</span>)</button>
+                    <button class="filter-btn" data-filter="completed">Completed (<span id="count-completed">0</span>)</button>
+                </div>
+            </div>
+
+            <!-- Dynamic Accordion Phases -->
+            <div id="live-phases-container" class="phases-list">
+                <div id="roadmap-loading-status" style="text-align: center; padding: 32px 0;">
+                    <p style="color: var(--text-secondary); font-family: var(--font-mono); font-size: 0.85rem;">Loading tasks from docs/roadmap.md...</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+                <span style="font-size: 0.82rem; color: var(--text-tertiary);">
+                    Looking for the navigation and CarPlay architecture specifications?
+                </span>
+                <a href="https://github.com/ijlaal1610/AEZEL/blob/main/docs/navigation_and_telemetry_roadmap.md" target="_blank" rel="noopener" style="font-size: 0.82rem; font-weight: 600; color: var(--accent-cyan);">
+                    docs/navigation_and_telemetry_roadmap.md ↗
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Hardware Prototyping & Sponsorship Section -->
+    <section class="container sponsor-section" id="sponsor">
         <div class="section-header">
-            <span class="pill-badge" style="background: rgba(234, 74, 170, 0.15); border-color: rgba(234, 74, 170, 0.4); color: #ff60c0;">💖 Community & Hardware Fund</span>
-            <h2>Support AEZEL Open-Source Development</h2>
-            <p>Help us validate on physical motorcycle harnesses, procure ESP32-P4 RISC-V automotive silicon, and accelerate CarPlay milestones.</p>
+            <span class="section-tag">Community Engineering Fund</span>
+            <h2 class="section-title">Support AEZEL Hardware Validation</h2>
+            <p class="section-desc">AEZEL is 100% open-source with zero paywalls. Community contributions directly fund real physical automotive silicon, oscilloscope bench rigs, and CAN Bus testing gear.</p>
         </div>
 
         <div class="sponsor-grid">
-            <!-- Card 1: GitHub Sponsors -->
+            <!-- GitHub Sponsors -->
             <div class="sponsor-card">
-                <div class="sponsor-icon" style="color: #ea4aaa;">💖</div>
-                <h3>GitHub Sponsors</h3>
+                <div class="sponsor-card-top">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color: #ea4aaa;">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <h4>GitHub Sponsors</h4>
+                </div>
                 <p>Direct sponsorship on GitHub with 0% platform cuts. Backers receive public sponsor credit in our repository and release notes.</p>
-                <a href="https://github.com/sponsors/ijlaal1610" target="_blank" class="btn btn-sponsor-gh">💖 Sponsor on GitHub</a>
+                <a href="https://github.com/sponsors/ijlaal1610" target="_blank" rel="noopener" class="btn btn-secondary" style="border-color: rgba(234, 74, 170, 0.4);">
+                    Sponsor on GitHub ↗
+                </a>
             </div>
 
-            <!-- Card 2: Buy Me a Coffee -->
+            <!-- PayPal -->
             <div class="sponsor-card">
-                <div class="sponsor-icon" style="color: #ffdd00;">☕</div>
-                <h3>Buy Me a Coffee</h3>
-                <p>One-click micro-donations to fund late-night FreeRTOS task optimizations, oscilloscope test runs, and hardware components.</p>
-                <a href="https://buymeacoffee.com/ijlaal" target="_blank" class="btn btn-sponsor-bmac">☕ Buy Me a Coffee</a>
+                <div class="sponsor-card-top">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color: #0079C1;">
+                        <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.789.789 0 0 1 .777-.665h6.634c3.433 0 5.671 1.492 5.097 4.96-.516 3.123-2.614 4.887-5.748 4.887H9.155l-1.31 7.77a.641.641 0 0 1-.769.665z"/>
+                    </svg>
+                    <h4>PayPal.me</h4>
+                </div>
+                <p>Instant global one-time contributions or international micro-donations via credit card or PayPal account.</p>
+                <a href="https://paypal.me/ijlaalakhtar" target="_blank" rel="noopener" class="btn btn-secondary">
+                    paypal.me/ijlaalakhtar ↗
+                </a>
             </div>
 
-            <!-- Card 3: Ko-fi -->
+            <!-- Buy Me a Coffee -->
             <div class="sponsor-card">
-                <div class="sponsor-icon" style="color: #ff5e5b;">☕</div>
-                <h3>Ko-fi Support</h3>
-                <p>Flexible one-time tips or recurring monthly micro-sponsorships via credit card or PayPal with zero extra platform fees.</p>
-                <a href="https://ko-fi.com/ijlaal" target="_blank" class="btn btn-sponsor-kofi">☕ Support on Ko-fi</a>
+                <div class="sponsor-card-top">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color: #ffdd00;">
+                        <path d="M20.216 6.415l-.132-.666c-.119-.597-.382-1.157-.768-1.624C18.423 3.033 17.207 2.5 15.772 2.5H4.256c-.958 0-1.836.425-2.43 1.177-.597.756-.84 1.745-.668 2.716l2.128 12.062C3.659 20.47 5.372 22 7.424 22h8.04c1.996 0 3.682-1.464 4.103-3.415l1.097-6.223c.895-.236 1.637-.791 2.086-1.564.445-.765.556-1.674.312-2.553l-.846-1.83zm-1.812 4.417c-.173.298-.466.516-.807.599l-.364.088-.415 2.351c-.279 1.293-1.401 2.26-2.734 2.26H7.424c-1.38 0-2.529-1.026-2.779-2.385L2.556 5.867c-.078-.444.032-.897.304-1.242.27-.342.668-.535 1.106-.535h11.516c.864 0 1.58.309 2.072.893.218.261.368.583.435.932l.846 1.83c.123.444.067.912-.155 1.296z"/>
+                    </svg>
+                    <h4>Buy Me a Coffee</h4>
+                </div>
+                <p>One-click micro-donations to fuel late-night FreeRTOS task optimizations, sensor math, and firmware testing.</p>
+                <a href="https://buymeacoffee.com/ijlaalakhtar" target="_blank" rel="noopener" class="btn btn-secondary">
+                    buymeacoffee.com ↗
+                </a>
+            </div>
+
+            <!-- Direct UPI -->
+            <div class="sponsor-card">
+                <div class="sponsor-card-top">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-cyan);">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                    <h4>Direct UPI (India)</h4>
+                </div>
+                <p>Instant zero-fee transfer via Google Pay, PhonePe, Paytm, or BHIM directly into our physical component testing pool.</p>
+                <div style="background: var(--bg-surface-elevated); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                    <span style="font-size: 0.72rem; color: var(--text-tertiary); font-family: var(--font-mono);">VPA</span>
+                    <code style="font-family: var(--font-mono); font-size: 0.88rem; color: var(--accent-cyan); font-weight: 600;">ijlaal@slc</code>
+                </div>
+                <button onclick="navigator.clipboard.writeText('ijlaal@slc'); this.textContent='Copied!';" class="btn btn-secondary" style="width: 100%;">
+                    Copy UPI ID
+                </button>
             </div>
         </div>
 
-        <!-- Hardware Fund Impact -->
-        <div style="background: rgba(18, 24, 38, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; padding: 28px; backdrop-filter: blur(12px);">
-            <h4 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
-                <span>🎯 What 100% of Community Sponsorship Directly Funds:</span>
-            </h4>
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px;">
-                <div style="background: rgba(8, 10, 15, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 16px;">
-                    <div style="color: var(--accent-cyan); font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;">🔬 ESP32-P4 RISC-V Dev Kits</div>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">Silicon evaluation boards and 800×480 MIPI-DSI ST7701 displays for native Android Auto testing.</p>
+        <!-- BOM Funding Transparency -->
+        <div class="bom-breakdown-card">
+            <div class="bom-breakdown-header">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-cyan);">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                Physical Hardware BOM Funding Allocation
+            </div>
+            
+            <div class="bom-grid">
+                <div class="bom-item">
+                    <div class="bom-item-title">ESP32-P4 RISC-V Development Kits</div>
+                    <div class="bom-item-desc">Hardware silicon evaluation boards and 800×480 MIPI-DSI ST7701 touch displays for Tier 2 Android Auto development.</div>
                 </div>
-                <div style="background: rgba(8, 10, 15, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 16px;">
-                    <div style="color: var(--accent-orange); font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;">🏍️ Motorcycle Harness Bench Rigs</div>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">Oscilloscope validation, 12V transient surge clamping, and opto-isolated discrete signal testing.</p>
+                <div class="bom-item">
+                    <div class="bom-item-title">12V Motorcycle Bench Harnesses</div>
+                    <div class="bom-item-desc">Oscilloscope validation rigs, 12V transient surge clamping, and opto-isolated discrete signal conditioning.</div>
                 </div>
-                <div style="background: rgba(8, 10, 15, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 16px;">
-                    <div style="color: var(--accent-green); font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;">📡 High-Precision GNSS Modules</div>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">u-blox NEO-M8N / M9N dual-band satellite receivers and active patch antennas.</p>
+                <div class="bom-item">
+                    <div class="bom-item-title">High-Precision GNSS Hardware</div>
+                    <div class="bom-item-desc">u-blox NEO-M8N / M9N dual-band satellite receivers and active IP67 external patch antennas.</div>
                 </div>
-                <div style="background: rgba(8, 10, 15, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 16px;">
-                    <div style="color: #ff60c0; font-weight: 700; font-size: 0.9rem; margin-bottom: 4px;">🔌 CAN Bus Transceivers</div>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">MCP2515 controllers and TJA1050 / SN65HVD230 transceivers for real ECU integration.</p>
+                <div class="bom-item">
+                    <div class="bom-item-title">Automotive CAN Transceivers</div>
+                    <div class="bom-item-desc">MCP2515 controllers and TJA1050 / SN65HVD230 transceivers for real ECU integration and telemetry sniffing.</div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Simulator Callout -->
+    <!-- Browser Simulator CTA -->
     <section class="container">
-        <div class="sim-callout">
-            <h2>Test Drive the AEZEL Cockpit in Your Browser</h2>
-            <p>Experience the 60 FPS tachometer arc, live swipe gestures, theme switcher, warning alert banners, and 6 vehicle presets right now.</p>
-            <a href="preview/" class="btn btn-primary" style="font-size: 1.1rem; padding: 14px 28px;">🚀 Open Interactive Simulator</a>
+        <div class="sim-banner">
+            <h2>Evaluate the AEZEL Cockpit in Your Browser</h2>
+            <p>Test the 60 FPS tachometer arc, swipe gestures, theme switcher, warning alert bitmask engine, and all 6 vehicle profiles right now.</p>
+            <a href="preview/" class="btn btn-primary" style="padding: 10px 22px; font-size: 0.95rem;">
+                Open Interactive Web Simulator
+            </a>
         </div>
     </section>
 
     <!-- Footer -->
     <footer>
-        <div class="container">
-            <p>AEZEL is open-source under the <a href="https://github.com/ijlaal1610/AEZEL/blob/main/LICENSE" target="_blank">Apache 2.0 License</a>.</p>
-            <p style="margin-top: 8px;">Maintained by <a href="https://github.com/ijlaal1610" target="_blank">Ijlaal Akhtar</a> & the AEZEL Community.</p>
+        <div class="container footer-wrap">
+            <div>
+                AEZEL Platform is released under the <a href="https://github.com/ijlaal1610/AEZEL/blob/main/LICENSE" target="_blank" rel="noopener">Apache 2.0 License</a>.
+            </div>
+            <div class="footer-links">
+                <a href="https://github.com/ijlaal1610/AEZEL" target="_blank" rel="noopener">GitHub</a>
+                <a href="#roadmap">Roadmap</a>
+                <a href="preview/">Simulator</a>
+                <a href="https://github.com/ijlaal1610/AEZEL/blob/main/SECURITY.md" target="_blank" rel="noopener">Security</a>
+                <a href="https://github.com/ijlaal1610" target="_blank" rel="noopener">Maintainer (@ijlaal1610)</a>
+            </div>
         </div>
     </footer>
 
-    <!-- Live Dynamic Roadmap JavaScript Engine -->
+    <!-- Clean Dynamic Roadmap JavaScript Engine -->
     <script>
         (function() {
             let allPhases = [];
             let currentFilter = 'all';
 
-            // Helper to escape HTML
             function escapeHtml(str) {
                 return str.replace(/&/g, '&amp;')
                           .replace(/</g, '&lt;')
                           .replace(/>/g, '&gt;');
             }
 
-            // Helper to format inline markdown (links, code, bold)
             function formatMarkdown(text) {
                 let formatted = escapeHtml(text);
                 // Convert markdown links to anchor tags
                 formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
-                // Convert `code` to <code class="inline-code">
+                // Convert code tags
                 formatted = formatted.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
-                // Convert **bold** to <strong>
+                // Convert bold tags
                 formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
                 return formatted;
             }
 
-            // Parse raw markdown from docs/roadmap.md
             function parseRoadmap(md) {
                 const lines = md.split('\n');
                 const phases = [];
@@ -1121,14 +1510,12 @@
                     } else if (currentTask && trimmed.startsWith('- ')) {
                         currentTask.sub.push(trimmed.substring(2));
                     } else if (currentTask && trimmed.length > 0 && !trimmed.startsWith('#')) {
-                        // Continuation line of previous task description
                         currentTask.text += ' ' + trimmed;
                     }
                 }
                 return phases;
             }
 
-            // Render phases and calculate stats
             function renderRoadmap() {
                 const container = document.getElementById('live-phases-container');
                 if (!container) return;
@@ -1146,17 +1533,15 @@
                 const pendingTasks = totalTasks - completedTasks;
                 const pct = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
 
-                // Update Overview Card
                 document.getElementById('global-progress-pct').textContent = pct + '%';
                 document.getElementById('global-progress-fill').style.width = pct + '%';
                 document.getElementById('global-progress-counts').innerHTML = 
-                    `<strong>${completedTasks}</strong> Completed / <strong>${totalTasks}</strong> Total Tasks`;
+                    `<strong>${completedTasks}</strong> Completed / <strong>${totalTasks}</strong> Total Items`;
 
                 document.getElementById('count-all').textContent = totalTasks;
                 document.getElementById('count-pending').textContent = pendingTasks;
                 document.getElementById('count-completed').textContent = completedTasks;
 
-                // Build Phase Cards
                 container.innerHTML = '';
 
                 allPhases.forEach((phase, index) => {
@@ -1164,49 +1549,48 @@
                     const phaseDone = phase.tasks.filter(t => t.done).length;
                     const phasePct = phaseTotal > 0 ? Math.round((phaseDone / phaseTotal) * 100) : 0;
 
-                    // Filter tasks based on current filter
                     const filteredTasks = phase.tasks.filter(task => {
                         if (currentFilter === 'completed') return task.done;
                         if (currentFilter === 'pending') return !task.done;
                         return true;
                     });
 
-                    // Don't show phase if no tasks match filter
                     if (filteredTasks.length === 0 && currentFilter !== 'all') {
                         return;
                     }
 
                     const card = document.createElement('div');
-                    card.className = 'phase-card open'; // default open
+                    card.className = 'phase-card open';
 
-                    // Extract phase tag and name
                     const match = phase.title.match(/^(Phase\s+\d+)\s*—\s*(.+)$/i);
                     const phaseTag = match ? match[1] : `Phase ${index}`;
                     const phaseName = match ? match[2] : phase.title;
 
-                    // Badge color logic
-                    let badgeColor = 'var(--accent-cyan)';
-                    if (phasePct === 100) badgeColor = 'var(--accent-green)';
-                    else if (phasePct > 0) badgeColor = 'var(--accent-cyan)';
-                    else badgeColor = 'var(--text-muted)';
+                    let statusBadgeText = `${phaseDone}/${phaseTotal} (${phasePct}%)`;
 
                     card.innerHTML = `
                         <div class="phase-header">
-                            <div class="phase-title-wrap">
-                                <span class="phase-tag" style="color: ${badgeColor}; border-color: ${badgeColor};">${escapeHtml(phaseTag)}</span>
+                            <div class="phase-title-group">
+                                <span class="phase-tag">${escapeHtml(phaseTag)}</span>
                                 <span class="phase-title">${escapeHtml(phaseName)}</span>
                             </div>
                             <div class="phase-meta">
-                                <span class="phase-progress-mini">${phaseDone}/${phaseTotal} (${phasePct}%)</span>
+                                <span class="phase-progress-val">${statusBadgeText}</span>
                                 <span class="phase-chevron">▼</span>
                             </div>
                         </div>
                         <div class="phase-body">
                             <ul class="task-list">
                                 ${filteredTasks.map(task => `
-                                    <li class="task-item ${task.done ? 'done' : 'pending'}">
-                                        <span class="task-icon">${task.done ? '✓' : '○'}</span>
-                                        <div class="task-content">
+                                    <li class="task-row ${task.done ? 'done' : 'pending'}">
+                                        <div class="task-check-icon ${task.done ? 'done' : 'pending'}">
+                                            ${task.done ? `
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                            ` : `
+                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle></svg>
+                                            `}
+                                        </div>
+                                        <div class="task-text">
                                             <div>${formatMarkdown(task.text)}</div>
                                             ${task.sub.length > 0 ? `
                                                 <ul class="sub-bullet-list">
@@ -1220,9 +1604,7 @@
                         </div>
                     `;
 
-                    // Click header to toggle open/close
-                    const header = card.querySelector('.phase-header');
-                    header.addEventListener('click', () => {
+                    card.querySelector('.phase-header').addEventListener('click', () => {
                         card.classList.toggle('open');
                     });
 
@@ -1230,7 +1612,6 @@
                 });
             }
 
-            // Wire Filter Buttons
             function setupFilters() {
                 const buttons = document.querySelectorAll('.filter-btn');
                 buttons.forEach(btn => {
@@ -1243,7 +1624,6 @@
                 });
             }
 
-            // Fetch roadmap.md from repo
             async function fetchRoadmapData() {
                 const candidates = [
                     'roadmap.md?t=' + Date.now(),
@@ -1265,21 +1645,16 @@
                     }
                 }
 
-                // If both fetches fail (e.g. offline)
                 const status = document.getElementById('roadmap-loading-status');
                 if (status) {
                     status.innerHTML = `
-                        <p style="color: var(--accent-orange); font-size: 0.95rem;">
-                            ⚠️ Unable to auto-load <code>docs/roadmap.md</code> offline.
-                            <br><a href="https://github.com/ijlaal1610/AEZEL/blob/main/docs/roadmap.md" target="_blank" style="color: var(--accent-cyan); font-weight: 700; margin-top: 8px; display: inline-block;">
-                                View Live Roadmap Directly on GitHub ↗
-                            </a>
+                        <p style="color: var(--status-pending); font-size: 0.88rem;">
+                            Unable to load live tasks offline. <a href="https://github.com/ijlaal1610/AEZEL/blob/main/docs/roadmap.md" target="_blank" rel="noopener" style="color: var(--accent-cyan); font-weight: 600;">View docs/roadmap.md on GitHub ↗</a>
                         </p>
                     `;
                 }
             }
 
-            // Run on load
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', fetchRoadmapData);
             } else {
