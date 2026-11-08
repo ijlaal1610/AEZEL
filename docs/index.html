@@ -409,6 +409,7 @@
         <div class="container nav-wrap">
             <a href="#" class="logo">⚡ AEZEL</a>
             <ul class="nav-links">
+                <li><a href="#roadmap">Roadmap</a></li>
                 <li><a href="#hardware-tiers">Hardware Tiers</a></li>
                 <li><a href="#features">Features</a></li>
                 <li><a href="preview/">Interactive Simulator</a></li>
@@ -429,12 +430,46 @@
         </p>
         <div class="hero-actions">
             <a href="preview/" class="btn btn-primary">🎮 Launch Live Web Simulator</a>
-            <a href="https://github.com/ijlaal1610/AEZEL" class="btn btn-outline" target="_blank">📦 View GitHub Source</a>
-            <a href="https://github.com/ijlaal1610/AEZEL#readme" class="btn btn-outline" target="_blank">📖 Read Docs</a>
+            <a href="#roadmap" class="btn btn-outline">🗺️ View Project Roadmap</a>
+            <a href="https://github.com/ijlaal1610/AEZEL" class="btn btn-outline" target="_blank">📦 GitHub Source</a>
         </div>
 
         <div class="banner-wrap">
             <img src="images/aezel_banner_new.jpg" alt="AEZEL Cockpit Banner">
+        </div>
+    </section>
+
+    <!-- Roadmap Highlight Section -->
+    <section class="container" id="roadmap" style="margin-bottom: 80px;">
+        <div style="background: linear-gradient(135deg, rgba(0, 212, 255, 0.12), rgba(255, 138, 0, 0.08)); border: 1px solid rgba(0, 212, 255, 0.35); border-radius: 16px; padding: 40px 32px; backdrop-filter: blur(16px); box-shadow: 0 10px 30px rgba(0,0,0,0.4);">
+            <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px; margin-bottom: 28px;">
+                <div>
+                    <span style="font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; color: var(--accent-cyan); text-transform: uppercase; letter-spacing: 1.5px; background: rgba(0, 212, 255, 0.15); padding: 4px 10px; border-radius: 6px; border: 1px solid rgba(0, 212, 255, 0.3);">🗺️ Project Roadmap</span>
+                    <h2 style="font-size: 2rem; font-weight: 800; margin-top: 10px;">Engineering Lifecycle & Multi-Phase Roadmap</h2>
+                </div>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a href="https://github.com/ijlaal1610/AEZEL/blob/main/docs/roadmap.md" class="btn btn-primary" target="_blank">📋 Master Roadmap (Phases 0–6)</a>
+                    <a href="https://github.com/ijlaal1610/AEZEL/blob/main/docs/navigation_and_telemetry_roadmap.md" class="btn btn-outline" target="_blank">🧭 Navigation & Infotainment Specs</a>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+                <div style="background: rgba(8, 10, 15, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px;">
+                    <div style="color: var(--accent-cyan); font-weight: 700; font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: 6px;">PHASE 0 – 2</div>
+                    <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">Core Instrumentation & UI</h4>
+                    <p style="font-size: 0.88rem; color: var(--text-muted);">60 FPS LVGL cluster, FreeRTOS dual-core tasks, 6 vehicle presets, and web-based telemetry simulation.</p>
+                </div>
+                <div style="background: rgba(8, 10, 15, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px;">
+                    <div style="color: var(--accent-green); font-weight: 700; font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: 6px;">PHASE 3 – 4</div>
+                    <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">Flutter App & Maps Bridge</h4>
+                    <p style="font-size: 0.88rem; color: var(--text-muted);">Cross-platform iOS & Android companion app, official Google & Apple Maps HUD mirroring, and dual GNSS fallback.</p>
+                </div>
+                <div style="background: rgba(8, 10, 15, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 20px;">
+                    <div style="color: var(--accent-orange); font-weight: 700; font-family: var(--font-mono); font-size: 0.85rem; margin-bottom: 6px;">PHASE 5 – 6</div>
+                    <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 8px;">CarPlay & Android Auto</h4>
+                    <p style="font-size: 0.88rem; color: var(--text-muted);">Automotive CAN Bus OBD-II, ESP32-P4 wireless Android Auto (esp32p4-aa), and Raspberry Pi Apple CarPlay (LIVI).</p>
+                </div>
+            </div>
         </div>
     </section>
 

@@ -10,39 +10,39 @@ Instead of relying on clunky, third-party in-app map clones that drain battery a
 
 ```mermaid
 flowchart TD
-    subgraph Mobile Devices (iOS & Android)
+    subgraph MobileDevices ["Mobile Devices (iOS and Android)"]
         direction TB
-        subgraph Official Map Engines
-            GMaps[Official Google Maps]
-            AMaps[Official Apple Maps]
+        subgraph OfficialEngines ["Official Map Engines"]
+            GMaps["Official Google Maps"]
+            AMaps["Official Apple Maps"]
         end
 
-        subgraph AEZEL Unified Flutter Companion App
+        subgraph FlutterApp ["AEZEL Unified Flutter Companion App"]
             direction TB
-            BLE_Core[BLE Connection Manager<br/>(flutter_reactive_ble)]
-            CockpitUI[Live Cockpit & Telemetry UI]
-            NavBridge[Navigation Bridge Service]
-            ProfileMgr[Vehicle Profile Switcher (6 Presets)]
-            RemoteCtl[Remote Controls (Hazard, Horn, Lock)]
-            TripSync[GPX Trip Log Sync & Leaflet Replay]
-            MaintTracker[Maintenance & Wear Reminders]
-            OtaFlasher[One-Tap Wi-Fi OTA Flasher]
+            BLE_Core["BLE Connection Manager<br/>flutter_reactive_ble"]
+            CockpitUI["Live Cockpit and Telemetry UI"]
+            NavBridge["Navigation Bridge Service"]
+            ProfileMgr["Vehicle Profile Switcher (6 Presets)"]
+            RemoteCtl["Remote Controls (Hazard, Horn, Lock)"]
+            TripSync["GPX Trip Log Sync and Leaflet Replay"]
+            MaintTracker["Maintenance and Wear Reminders"]
+            OtaFlasher["One-Tap Wi-Fi OTA Flasher"]
         end
 
-        GMaps -->|NotificationListenerService (Android)| NavBridge
-        AMaps -->|Deep-Link & ANCS Bridge (iOS)| NavBridge
-        PhoneGPS[Phone Fused Location] -->|Backup Location Stream| BLE_Core
+        GMaps -->|NotificationListenerService Android| NavBridge
+        AMaps -->|Deep-Link and ANCS Bridge iOS| NavBridge
+        PhoneGPS["Phone Fused Location"] -->|Backup Location Stream| BLE_Core
     end
 
-    subgraph AEZEL Cluster Hardware (ESP32-S3)
+    subgraph ClusterHW ["AEZEL Cluster Hardware (ESP32-S3)"]
         direction TB
-        BleMgr[BleManager.cpp (NimBLE GATT)]
-        NavMgr[NavigationManager.cpp]
-        GpsMgr[GpsManager.cpp]
-        State[VehicleState Central DataModel]
-        UI[LVGL 8.4 60fps Cluster (ScreenDashboard)]
-        SD[StorageManager.cpp (Micro-SD Logs)]
-        Relays[Relay Drivers (Starter, Horn, Hazard)]
+        BleMgr["BleManager.cpp (NimBLE GATT)"]
+        NavMgr["NavigationManager.cpp"]
+        GpsMgr["GpsManager.cpp"]
+        State["VehicleState Central DataModel"]
+        UI["LVGL 8.4 60fps Cluster (ScreenDashboard)"]
+        SD["StorageManager.cpp (Micro-SD Logs)"]
+        Relays["Relay Drivers (Starter, Horn, Hazard)"]
     end
 
     BLE_Core <-->|Unified BLE GATT Contract| BleMgr
@@ -194,25 +194,25 @@ To accommodate riders from entry-level commuter bikes to high-end touring motorc
 ```mermaid
 flowchart TD
     subgraph Tier1 ["Tier 1: AEZEL Lite (ESP32-S3 MCU)"]
-        S3[ESP32-S3 Xtensa Dual-Core] -->|SPI / 8080 TFT 3.5'| S3_UI[LVGL 8.4 60fps Cluster]
-        S3_BLE[BleManager.cpp] -->|BLE GATT NavPacket| S3_UI
-        Note1["Turn-by-Turn HUD via Companion App<br/>(Real Google Maps & Apple Maps)"]
+        S3["ESP32-S3 Xtensa Dual-Core"] -->|SPI / 8080 TFT 3.5in| S3_UI["LVGL 8.4 60fps Cluster"]
+        S3_BLE["BleManager.cpp"] -->|BLE GATT NavPacket| S3_UI
+        Note1["Turn-by-Turn HUD via Companion App<br/>Real Google Maps and Apple Maps"]
     end
 
     subgraph Tier2 ["Tier 2: AEZEL Auto (ESP32-P4 RISC-V SoC)"]
-        P4[ESP32-P4 Dual RISC-V 400MHz] -->|MIPI-DSI 800x480| P4_UI[Native Android Auto Wireless]
-        P4_PPA[Hardware PPA 2D Accelerator] --> P4_UI
-        P4_H264[esp_h264 Video Decoder] --> P4_UI
-        P4_C6[ESP32-C6 Wi-Fi 6 + WROOM BT] --> P4
+        P4["ESP32-P4 Dual RISC-V 400MHz"] -->|MIPI-DSI 800x480| P4_UI["Native Android Auto Wireless"]
+        P4_PPA["Hardware PPA 2D Accelerator"] --> P4_UI
+        P4_H264["esp_h264 Video Decoder"] --> P4_UI
+        P4_C6["ESP32-C6 Wi-Fi 6 + WROOM BT"] --> P4
         Note2["Ref: payalneg/esp32p4-android-auto<br/>Direct MCU Android Auto Projection"]
     end
 
     subgraph Tier3 ["Tier 3: AEZEL Pro (Raspberry Pi 4/5 / Linux SBC)"]
-        Pi[Raspberry Pi 4/5 / CM4 / CM5] -->|HDMI / DSI 60fps 1080p| Pi_UI[Full LIVI Infotainment Engine]
-        LIVI_Core[f-io/LIVI (Rust + Slint UI)] --> Pi_UI
-        GStreamer[GStreamer Zero-Copy HW Video] --> Pi_UI
-        SocketCAN[AEZEL Linux HAL / SocketCAN] --> Pi_UI
-        Note3["Ref: f-io/LIVI<br/>Full Apple CarPlay & Android Auto<br/>Wired + Wireless + Siri/Assistant"]
+        Pi["Raspberry Pi 4/5 / CM4 / CM5"] -->|HDMI / DSI 60fps 1080p| Pi_UI["Full LIVI Infotainment Engine"]
+        LIVI_Core["f-io/LIVI (Rust + Slint UI)"] --> Pi_UI
+        GStreamer["GStreamer Zero-Copy HW Video"] --> Pi_UI
+        SocketCAN["AEZEL Linux HAL / SocketCAN"] --> Pi_UI
+        Note3["Ref: f-io/LIVI<br/>Full Apple CarPlay and Android Auto<br/>Wired + Wireless + Siri/Assistant"]
     end
 ```
 

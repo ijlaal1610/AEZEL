@@ -20,6 +20,13 @@
 
 ---
 
+> [!IMPORTANT]
+> 🗺️ **Active Project Roadmaps & Technical Architecture Specifications**:
+> - 📋 **[Master Firmware & Hardware Roadmap (Phases 0–6)](docs/roadmap.md)**: From bench MVP and FreeRTOS task graphs to Apple CarPlay & Android Auto across our 3 hardware tiers.
+> - 🧭 **[Cross-Platform Companion & Navigation Roadmap](docs/navigation_and_telemetry_roadmap.md)**: Unified Flutter companion app (iOS & Android), zero-API Google & Apple Maps HUD mirroring, and deep technical specs for ESP32-P4 & LIVI.
+
+---
+
 ## 📑 Table of Contents
 
 - [Overview](#-overview)
@@ -108,18 +115,18 @@ AEZEL spans across **Three Hardware Tiers** to support everything from commuter 
 ```mermaid
 flowchart LR
     subgraph T1 ["Tier 1: Lite (ESP32-S3)"]
-        S3[ESP32-S3 MCU] -->|BLE GATT| HUD[BLE Turn-by-Turn HUD<br/>(Real Google & Apple Maps)]
+        S3["ESP32-S3 MCU"] -->|BLE GATT| HUD["BLE Turn-by-Turn HUD<br/>Real Google and Apple Maps"]
     end
 
     subgraph T2 ["Tier 2: Auto (ESP32-P4)"]
-        P4[ESP32-P4 RISC-V] -->|MIPI-DSI + PPA| AA[Wireless Android Auto<br/>(via payalneg/esp32p4-android-auto)]
+        P4["ESP32-P4 RISC-V"] -->|MIPI-DSI + PPA| AA["Wireless Android Auto<br/>via payalneg/esp32p4-android-auto"]
     end
 
     subgraph T3 ["Tier 3: Pro (Raspberry Pi / Linux)"]
-        RPi[Raspberry Pi 4/5 / Linux] -->|GStreamer HW Decode| CP[Apple CarPlay & Android Auto<br/>(via f-io/LIVI Infotainment)]
+        RPi["Raspberry Pi 4/5 / Linux"] -->|GStreamer HW Decode| CP["Apple CarPlay and Android Auto<br/>via f-io/LIVI Infotainment"]
     end
 
-    App[AEZEL Flutter Companion App (iOS & Android)] -.-> S3
+    App["AEZEL Flutter Companion App (iOS and Android)"] -.-> S3
     App -.-> P4
     App -.-> RPi
 ```
