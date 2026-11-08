@@ -98,6 +98,7 @@
             backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border-subtle);
             height: 64px;
+            animation: fadeIn 0.5s ease both;
         }
 
         .nav-wrap {
@@ -216,12 +217,46 @@
         }
 
         /* -------------------------------------------------------------
-           Hero Section
+           Hero Section & Entry Animations
            ------------------------------------------------------------- */
         .hero {
-            padding: 80px 0 60px;
+            padding: 70px 0 50px;
             text-align: center;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-14px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .anim-badge   { animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .anim-title   { animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both; }
+        .anim-desc    { animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both; }
+        .anim-actions { animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both; }
+        .anim-hud     { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both; }
+        .anim-metrics { animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both; }
 
         .badge-kicker {
             display: inline-flex;
@@ -264,8 +299,264 @@
             align-items: center;
             justify-content: center;
             gap: 14px;
-            margin-bottom: 48px;
+            margin-bottom: 36px;
             flex-wrap: wrap;
+        }
+
+        /* -------------------------------------------------------------
+           Automotive Cockpit Ignition Boot Preview (Interactive)
+           ------------------------------------------------------------- */
+        .cockpit-hud-panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            max-width: 880px;
+            margin: 0 auto 40px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cockpit-hud-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent-cyan), transparent);
+        }
+
+        .hud-top-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 14px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .hud-status-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hud-tag {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            background: var(--accent-cyan-subtle);
+            border: 1px solid rgba(0, 212, 255, 0.25);
+            padding: 2px 7px;
+            border-radius: var(--radius-sm);
+        }
+
+        .hud-subtag {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+        }
+
+        .hud-telltales {
+            display: flex;
+            gap: 6px;
+        }
+
+        .telltale {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-tertiary);
+            transition: all 0.25s ease;
+        }
+
+        .telltale.active-ok {
+            color: var(--status-success);
+            border-color: rgba(16, 185, 129, 0.35);
+            background: var(--status-success-subtle);
+        }
+
+        .telltale.active-warn {
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.35);
+            background: rgba(245, 158, 11, 0.12);
+        }
+
+        .hud-replay-btn {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            font-family: var(--font-sans);
+            font-size: 0.78rem;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .hud-replay-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--border-strong);
+            background: var(--bg-surface-subtle);
+        }
+
+        .hud-body-grid {
+            display: grid;
+            grid-template-columns: 160px 1fr 240px;
+            gap: 20px;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .hud-body-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+        }
+
+        .hud-speed-box {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            text-align: center;
+        }
+
+        .hud-label {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            letter-spacing: 1px;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .hud-speed-val {
+            font-family: var(--font-mono);
+            font-size: 2.8rem;
+            font-weight: 800;
+            line-height: 1;
+            color: var(--text-primary);
+        }
+
+        .hud-unit {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+            margin-bottom: 8px;
+        }
+
+        .hud-gear-pill {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            padding: 3px 8px;
+            border-radius: var(--radius-sm);
+        }
+
+        .hud-gear-pill span {
+            color: var(--accent-cyan);
+            font-weight: 700;
+        }
+
+        .hud-tacho-box {
+            text-align: center;
+            position: relative;
+        }
+
+        .tacho-svg {
+            width: 100%;
+            max-width: 220px;
+            height: auto;
+            overflow: visible;
+        }
+
+        .hud-rpm-readout {
+            margin-top: -10px;
+            font-family: var(--font-mono);
+        }
+
+        .hud-rpm-val {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .hud-rpm-unit {
+            font-size: 0.72rem;
+            color: var(--text-tertiary);
+            margin-left: 4px;
+        }
+
+        .hud-can-box {
+            background: var(--bg-surface-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 14px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hud-can-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--text-tertiary);
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 6px;
+            margin-bottom: 6px;
+        }
+
+        .can-live-dot {
+            width: 6px;
+            height: 6px;
+            background: var(--status-success);
+            border-radius: 50%;
+            box-shadow: 0 0 6px var(--status-success);
+            animation: pulse-dot 2s infinite ease-in-out;
+        }
+
+        .hud-can-feed {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            overflow-y: hidden;
+            line-height: 1.5;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column-reverse;
+        }
+
+        .hud-can-feed span {
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .can-addr {
+            color: var(--accent-cyan);
+            font-weight: 600;
         }
 
         /* Key Metrics Ribbon */
@@ -303,7 +594,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* Frame Wrap */
+        /* Banner Frame */
         .banner-frame {
             max-width: 1040px;
             margin: 0 auto 90px;
@@ -318,6 +609,21 @@
             width: 100%;
             height: auto;
             display: block;
+        }
+
+        /* -------------------------------------------------------------
+           Scroll-Triggered Reveals
+           ------------------------------------------------------------- */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
+        }
+
+        .reveal-on-scroll.is-revealed {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         /* -------------------------------------------------------------
@@ -611,7 +917,8 @@
             height: 100%;
             background: var(--accent-cyan);
             border-radius: var(--radius-pill);
-            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
         }
 
         /* Roadmap Filter Tabs */
@@ -1003,13 +1310,13 @@
 
     <!-- Hero Section -->
     <section class="hero container">
-        <span class="badge-kicker">Open-Source Vehicle Control Unit & Digital Cluster Platform</span>
-        <h1>The Connected Cockpit for Motorcycles, Scooters & Cars</h1>
-        <p>
+        <span class="badge-kicker anim-badge">Open-Source Vehicle Control Unit & Digital Cluster Platform</span>
+        <h1 class="anim-title">The Connected Cockpit for Motorcycles, Scooters & Cars</h1>
+        <p class="anim-desc">
             An open, modular embedded platform powering real-time 60 FPS LVGL instrumentation, automotive CAN Bus telemetry, and smartphone projection across ESP32-S3, ESP32-P4 RISC-V, and Linux SBCs.
         </p>
         
-        <div class="hero-actions">
+        <div class="hero-actions anim-actions">
             <a href="preview/" class="btn btn-primary">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polygon points="5 3 19 12 5 21 5 3"></polygon>
@@ -1032,8 +1339,70 @@
             </a>
         </div>
 
+        <!-- Interactive Cockpit Ignition Boot Preview (Telemetry Sweep Animation) -->
+        <div class="cockpit-hud-panel anim-hud">
+            <div class="hud-top-status">
+                <div class="hud-status-left">
+                    <span class="hud-tag">BOOT SEQUENCE</span>
+                    <span class="hud-subtag" id="hud-ignition-state">POWER-ON SELF-TEST</span>
+                </div>
+                <div class="hud-telltales">
+                    <span class="telltale active-warn" id="tt-sys">SYS</span>
+                    <span class="telltale active-warn" id="tt-can">CAN</span>
+                    <span class="telltale active-warn" id="tt-ble">BLE</span>
+                    <span class="telltale active-warn" id="tt-abs">ABS</span>
+                </div>
+                <button id="btn-replay-post" class="hud-replay-btn" title="Replay Gauge Sweep & Needle Calibration">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path></svg>
+                    Replay Boot Sweep
+                </button>
+            </div>
+
+            <div class="hud-body-grid">
+                <!-- Speedometer Box -->
+                <div class="hud-speed-box">
+                    <div class="hud-label">SPEED</div>
+                    <div class="hud-speed-val" id="hud-speed-num">0</div>
+                    <div class="hud-unit">KM/H</div>
+                    <div class="hud-gear-pill">GEAR <span id="hud-gear-val">N</span></div>
+                </div>
+
+                <!-- Tachometer Arc & Needle Sweep -->
+                <div class="hud-tacho-box">
+                    <svg class="tacho-svg" viewBox="0 0 200 120">
+                        <!-- Track Arc -->
+                        <path d="M 25 105 A 75 75 0 0 1 175 105" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="7" stroke-linecap="round"/>
+                        <!-- Redline Arc Zone -->
+                        <path d="M 148 55 A 75 75 0 0 1 175 105" fill="none" stroke="rgba(239, 68, 68, 0.45)" stroke-width="7" stroke-linecap="round"/>
+                        <!-- Dynamic Active Fill Arc -->
+                        <path id="tacho-arc-fill" d="M 25 105 A 75 75 0 0 1 175 105" fill="none" stroke="var(--accent-cyan)" stroke-width="7" stroke-linecap="round" stroke-dasharray="235" stroke-dashoffset="235"/>
+                        <!-- Needle Line -->
+                        <line id="tacho-needle" x1="100" y1="105" x2="30" y2="105" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="100" cy="105" r="5" fill="var(--accent-cyan)"/>
+                    </svg>
+                    <div class="hud-rpm-readout">
+                        <span id="hud-rpm-num" class="hud-rpm-val">0</span>
+                        <span class="hud-rpm-unit">RPM</span>
+                    </div>
+                </div>
+
+                <!-- Live CAN Bus & Telemetry Feed -->
+                <div class="hud-can-box">
+                    <div class="hud-can-header">
+                        <span>CAN BUS • TWAI 500 KBPS</span>
+                        <span class="can-live-dot"></span>
+                    </div>
+                    <div class="hud-can-feed" id="hud-can-feed">
+                        <span><span class="can-addr">0x100</span> SPEED: 84 km/h [Hall 18.2ms]</span>
+                        <span><span class="can-addr">0x101</span> RPM: 6,420 [Coil-Neg IRQ]</span>
+                        <span><span class="can-addr">0x102</span> TEMP_ENG: 86°C [DS18B20]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- System Metrics Ribbon -->
-        <div class="metrics-ribbon">
+        <div class="metrics-ribbon anim-metrics">
             <div class="metric-cell">
                 <div class="metric-val">6</div>
                 <div class="metric-label">Vehicle Presets</div>
@@ -1052,14 +1421,14 @@
             </div>
         </div>
 
-        <div class="banner-frame">
+        <div class="banner-frame reveal-on-scroll">
             <img src="images/aezel_banner_new.jpg" alt="AEZEL Cockpit Platform Architecture">
         </div>
     </section>
 
     <!-- Hardware Tiers Architecture -->
     <section class="container" id="hardware-tiers">
-        <div class="section-header">
+        <div class="section-header reveal-on-scroll">
             <span class="section-tag">Platform Matrix</span>
             <h2 class="section-title">Three Hardware Tiers for Every Vehicle</h2>
             <p class="section-desc">Designed to scale from low-cost daily commuter motorcycles to high-performance electric vehicles and custom automobiles.</p>
@@ -1067,7 +1436,7 @@
 
         <div class="tiers-grid">
             <!-- Tier 1 -->
-            <div class="tier-card">
+            <div class="tier-card reveal-on-scroll">
                 <div class="tier-top">
                     <span class="tier-badge">TIER 1 • MICROCONTROLLER</span>
                     <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-cyan);">MCU LITE</span>
@@ -1105,7 +1474,7 @@
             </div>
 
             <!-- Tier 2 -->
-            <div class="tier-card">
+            <div class="tier-card reveal-on-scroll">
                 <div class="tier-top">
                     <span class="tier-badge">TIER 2 • AUTOMOTIVE RISC-V</span>
                     <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-blue);">PROJECTION</span>
@@ -1143,7 +1512,7 @@
             </div>
 
             <!-- Tier 3 -->
-            <div class="tier-card">
+            <div class="tier-card reveal-on-scroll">
                 <div class="tier-top">
                     <span class="tier-badge">TIER 3 • INFOTAINMENT</span>
                     <span style="font-family: var(--font-mono); font-size: 0.75rem; color: #a78bfa;">SBC LINUX</span>
@@ -1184,14 +1553,14 @@
 
     <!-- Engineering Features Grid -->
     <section class="container" id="features">
-        <div class="section-header">
+        <div class="section-header reveal-on-scroll">
             <span class="section-tag">Subsystem Architecture</span>
             <h2 class="section-title">Engineered for Automotive Reliability</h2>
             <p class="section-desc">Every layer built from the ground up for vibration resistance, electrical noise immunity, and deterministic timing.</p>
         </div>
 
         <div class="features-grid">
-            <div class="feature-card">
+            <div class="feature-card reveal-on-scroll">
                 <div class="feature-icon-box">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10"></circle>
@@ -1202,7 +1571,7 @@
                 <p>Configurable profiles for Motorcycles (5/6-speed manual, lean angle), Scooters (CVT transmission, belt wear intervals), and Cars (OBD-II, PRND, dual G-force crash sensing).</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card reveal-on-scroll">
                 <div class="feature-icon-box">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
@@ -1212,7 +1581,7 @@
                 <p>Zero in-app map clones. Runs with your phone's native navigation apps via BLE notification listener (Android) and CoreBluetooth / ANCS bridge (iOS).</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card reveal-on-scroll">
                 <div class="feature-icon-box">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V17a1 1 0 0 1-2 0v-.07A7.003 7.003 0 0 1 5.07 11H5a1 1 0 0 1 0-2h.07A7.003 7.003 0 0 1 11 5.07V5a1 1 0 0 1 2 0v.07A7.003 7.003 0 0 1 18.93 11H19a1 1 0 0 1 0 2h-.07A7.003 7.003 0 0 1 13 16.93z"></path>
@@ -1222,7 +1591,7 @@
                 <p>Filtered u-blox hardware GNSS parsing ($GPRMC/$GPGGA) with automatic fallback to smartphone fused GPS if satellite fix is lost or hardware module is omitted.</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card reveal-on-scroll">
                 <div class="feature-icon-box">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
@@ -1233,7 +1602,7 @@
                 <p>Single cross-platform companion codebase for live telemetry monitoring, vehicle preset switching, remote lock/hazard controls, and GPX trip replay.</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card reveal-on-scroll">
                 <div class="feature-icon-box">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
@@ -1243,7 +1612,7 @@
                 <p>Opto-isolated discrete inputs, load-dump TVS surge clamping, RC low-pass ignition-coil pickup filtering, and ignition-triggered deep sleep state machine.</p>
             </div>
 
-            <div class="feature-card">
+            <div class="feature-card reveal-on-scroll">
                 <div class="feature-icon-box">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
@@ -1259,7 +1628,7 @@
 
     <!-- Live Dynamic Roadmap Section (Linear / Enterprise Issue UI) -->
     <section class="container" id="roadmap">
-        <div class="roadmap-container-card">
+        <div class="roadmap-container-card reveal-on-scroll">
             
             <div class="roadmap-top-bar">
                 <div>
@@ -1331,7 +1700,7 @@
 
     <!-- Hardware Prototyping & Sponsorship Section -->
     <section class="container sponsor-section" id="sponsor">
-        <div class="section-header">
+        <div class="section-header reveal-on-scroll">
             <span class="section-tag">Community Engineering Fund</span>
             <h2 class="section-title">Support AEZEL Hardware Validation</h2>
             <p class="section-desc">AEZEL is 100% open-source with zero paywalls. Community contributions directly fund real physical automotive silicon, oscilloscope bench rigs, and CAN Bus testing gear.</p>
@@ -1339,7 +1708,7 @@
 
         <div class="sponsor-grid">
             <!-- GitHub Sponsors -->
-            <div class="sponsor-card">
+            <div class="sponsor-card reveal-on-scroll">
                 <div class="sponsor-card-top">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color: #ea4aaa;">
                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
@@ -1353,7 +1722,7 @@
             </div>
 
             <!-- PayPal -->
-            <div class="sponsor-card">
+            <div class="sponsor-card reveal-on-scroll">
                 <div class="sponsor-card-top">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color: #0079C1;">
                         <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944 3.72a.789.789 0 0 1 .777-.665h6.634c3.433 0 5.671 1.492 5.097 4.96-.516 3.123-2.614 4.887-5.748 4.887H9.155l-1.31 7.77a.641.641 0 0 1-.769.665z"/>
@@ -1367,7 +1736,7 @@
             </div>
 
             <!-- Buy Me a Coffee -->
-            <div class="sponsor-card">
+            <div class="sponsor-card reveal-on-scroll">
                 <div class="sponsor-card-top">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="color: #ffdd00;">
                         <path d="M20.216 6.415l-.132-.666c-.119-.597-.382-1.157-.768-1.624C18.423 3.033 17.207 2.5 15.772 2.5H4.256c-.958 0-1.836.425-2.43 1.177-.597.756-.84 1.745-.668 2.716l2.128 12.062C3.659 20.47 5.372 22 7.424 22h8.04c1.996 0 3.682-1.464 4.103-3.415l1.097-6.223c.895-.236 1.637-.791 2.086-1.564.445-.765.556-1.674.312-2.553l-.846-1.83zm-1.812 4.417c-.173.298-.466.516-.807.599l-.364.088-.415 2.351c-.279 1.293-1.401 2.26-2.734 2.26H7.424c-1.38 0-2.529-1.026-2.779-2.385L2.556 5.867c-.078-.444.032-.897.304-1.242.27-.342.668-.535 1.106-.535h11.516c.864 0 1.58.309 2.072.893.218.261.368.583.435.932l.846 1.83c.123.444.067.912-.155 1.296z"/>
@@ -1381,7 +1750,7 @@
             </div>
 
             <!-- Direct UPI -->
-            <div class="sponsor-card">
+            <div class="sponsor-card reveal-on-scroll">
                 <div class="sponsor-card-top">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-cyan);">
                         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
@@ -1400,7 +1769,7 @@
         </div>
 
         <!-- BOM Funding Transparency -->
-        <div class="bom-breakdown-card">
+        <div class="bom-breakdown-card reveal-on-scroll">
             <div class="bom-breakdown-header">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-cyan);">
                     <circle cx="12" cy="12" r="10"></circle>
@@ -1433,7 +1802,7 @@
 
     <!-- Browser Simulator CTA -->
     <section class="container">
-        <div class="sim-banner">
+        <div class="sim-banner reveal-on-scroll">
             <h2>Evaluate the AEZEL Cockpit in Your Browser</h2>
             <p>Test the 60 FPS tachometer arc, swipe gestures, theme switcher, warning alert bitmask engine, and all 6 vehicle profiles right now.</p>
             <a href="preview/" class="btn btn-primary" style="padding: 10px 22px; font-size: 0.95rem;">
@@ -1458,9 +1827,134 @@
         </div>
     </footer>
 
-    <!-- Clean Dynamic Roadmap JavaScript Engine -->
+    <!-- Clean Dynamic Roadmap & Animation JavaScript Engine -->
     <script>
         (function() {
+            // -------------------------------------------------------------
+            // 1. Interactive Cockpit Ignition Boot & Needle Sweep Animation
+            // -------------------------------------------------------------
+            function runIgnitionSweep() {
+                const needle = document.getElementById('tacho-needle');
+                const arcFill = document.getElementById('tacho-arc-fill');
+                const speedEl = document.getElementById('hud-speed-num');
+                const gearEl = document.getElementById('hud-gear-val');
+                const rpmEl = document.getElementById('hud-rpm-num');
+                const stateEl = document.getElementById('hud-ignition-state');
+                const ttSys = document.getElementById('tt-sys');
+                const ttCan = document.getElementById('tt-can');
+                const ttBle = document.getElementById('tt-ble');
+                const ttAbs = document.getElementById('tt-abs');
+
+                if (!needle || !arcFill) return;
+
+                stateEl.textContent = 'SELF-TEST IN PROGRESS';
+                [ttSys, ttCan, ttBle, ttAbs].forEach(tt => {
+                    if (tt) tt.className = 'telltale active-warn';
+                });
+
+                const startTime = performance.now();
+                const duration = 1800; // 1.8 seconds sweep
+
+                function update(now) {
+                    const elapsed = now - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+
+                    // Smooth sine sweep: up to max redline and back down to idle (1,400 RPM)
+                    let sweepVal = 0;
+                    if (progress < 0.5) {
+                        sweepVal = Math.sin((progress / 0.5) * (Math.PI / 2));
+                    } else {
+                        const downProg = (progress - 0.5) / 0.5;
+                        sweepVal = 1 - (1 - 0.13) * Math.sin(downProg * (Math.PI / 2));
+                    }
+
+                    // Tacho Needle angle (0 to 180 deg)
+                    const angle = sweepVal * 180;
+                    const rad = (180 - angle) * (Math.PI / 180);
+                    const nx = 100 + 70 * Math.cos(rad);
+                    const ny = 105 - 70 * Math.sin(rad);
+                    needle.setAttribute('x2', nx);
+                    needle.setAttribute('y2', ny);
+
+                    // Arc Dash offset
+                    const offset = 235 - (sweepVal * 235);
+                    arcFill.setAttribute('stroke-dashoffset', offset);
+
+                    // RPM text
+                    const currentRpm = Math.round(sweepVal * 11000);
+                    rpmEl.textContent = currentRpm.toLocaleString();
+
+                    // Speed text
+                    const currentSpeed = progress < 0.5 ? Math.round(sweepVal * 188) : (progress > 0.9 ? 0 : Math.round(sweepVal * 80));
+                    speedEl.textContent = currentSpeed;
+
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    } else {
+                        stateEl.textContent = 'IDLE • 1,420 RPM';
+                        gearEl.textContent = 'N';
+                        if (ttSys) ttSys.className = 'telltale active-ok';
+                        if (ttCan) ttCan.className = 'telltale active-ok';
+                        if (ttBle) ttBle.className = 'telltale active-ok';
+                        if (ttAbs) ttAbs.className = 'telltale';
+                    }
+                }
+
+                requestAnimationFrame(update);
+            }
+
+            // Auto-trigger sweep after initial page mount
+            setTimeout(runIgnitionSweep, 450);
+
+            // Replay button listener
+            const replayBtn = document.getElementById('btn-replay-post');
+            if (replayBtn) {
+                replayBtn.addEventListener('click', runIgnitionSweep);
+            }
+
+            // -------------------------------------------------------------
+            // 2. Real-Time Simulated CAN Bus Telemetry Packet Feed
+            // -------------------------------------------------------------
+            const canFeed = document.getElementById('hud-can-feed');
+            const sampleFrames = [
+                '<span class="can-addr">0x100</span> SPEED: 84 km/h [Hall 18.2ms]',
+                '<span class="can-addr">0x101</span> RPM: 6,420 [Coil-Neg IRQ]',
+                '<span class="can-addr">0x102</span> TEMP_ENG: 86°C Ambient: 28°C',
+                '<span class="can-addr">0x103</span> BATT: 12.8V [Charging Normal]',
+                '<span class="can-addr">0x104</span> LEAN: +18.4° Pitch: +2.1° [IMU]',
+                '<span class="can-addr">0x105</span> GNSS: FIX_3D Sats: 11 [u-blox]',
+                '<span class="can-addr">0x106</span> BLE: PHONE_CONNECTED [GATT OK]',
+                '<span class="can-addr">0x107</span> NVS: LOG_SYNC_COMPLETED [SD-OK]'
+            ];
+            let frameIdx = 0;
+            setInterval(() => {
+                if (!canFeed) return;
+                const item = document.createElement('span');
+                item.innerHTML = sampleFrames[frameIdx % sampleFrames.length];
+                canFeed.prepend(item);
+                if (canFeed.children.length > 5) {
+                    canFeed.removeChild(canFeed.lastChild);
+                }
+                frameIdx++;
+            }, 1200);
+
+            // -------------------------------------------------------------
+            // 3. Scroll Reveal Animations (IntersectionObserver)
+            // -------------------------------------------------------------
+            const revealObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-revealed');
+                        revealObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.08 });
+
+            document.querySelectorAll('.reveal-on-scroll').forEach(el => revealObserver.observe(el));
+
+            // -------------------------------------------------------------
+            // 4. Dynamic Live Roadmap Markdown Parser
+            // -------------------------------------------------------------
             let allPhases = [];
             let currentFilter = 'all';
 
